@@ -1,12 +1,12 @@
 import socket
-from lobby import *
+from datetime import datetime
+from lobby import Lobby
 
 
 
 class Server:
     def __init__(self):
         self.lobby = Lobby()
-        #self.key = Key()
         #self.database = Database()     à voir
 
     # Initialize server and port
