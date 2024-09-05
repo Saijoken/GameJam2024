@@ -32,3 +32,16 @@ source .venv/bin/activate
 ```sh
 pip install -r requirements.txt 
 ```
+## Attribution des tâches
+
+Mohammed Ben Aicha : Lead Dev
+
+Axelle Broyer : Networking
+
+Marie Dos Santos : Dev
+
+Nacer Berkane : Lead Project
+
+Angel Gioanni : Graphic Designer, Dev
+
+

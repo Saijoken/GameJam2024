@@ -1,28 +1,51 @@
 import pygame
 
+
+
 # pygame setup
 pygame.init()
 
 # Full screen mode adapté à l'écran de l'utilisateur et positionné aux extremité de l'écran
 screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN, pygame.SCALED, vsync=1)
 
+
+from classes.camera import Camera
+
+class Player(pygame.sprite.Sprite):
+
+    def __init__(self):
+        super().__init__()
+        self.image = pygame.image.load('assets/player/Player1Idle.png')
+        self.rect = self.image.get_rect()
+        self.rect.x = 0
+        self.rect.y = 0
+
+
+class Game:
+
+    def __init__(self):
+        self.player = Player
+
+game = Game()
 clock = pygame.time.Clock()
 running = True
 dt = 0
 
 player_pos = pygame.Vector2(screen.get_width() / 2, screen.get_height() / 2)
 
+
 while running:
-    # poll for events
-    # pygame.QUIT event means the user clicked X to close your window
+
+    # Evenement permettant de selectionner la croix pour quitter le jeu
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
 
     # fill the screen with a color to wipe away anything from last frame
-    screen.fill("purple")
+    screen.fill("grey")
 
-    pygame.draw.circle(screen, "red", player_pos, 40)
+    screen.blit(game.player.image, game.player.rect)
+
 
     keys = pygame.key.get_pressed()
     if keys[pygame.K_z]:
