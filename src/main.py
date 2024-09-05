@@ -2,7 +2,10 @@ import pygame
 
 # pygame setup
 pygame.init()
-screen = pygame.display.set_mode((1280, 720))
+
+# Full screen mode adapté à l'écran de l'utilisateur et positionné aux extremité de l'écran
+screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN, pygame.SCALED, vsync=1)
+
 clock = pygame.time.Clock()
 running = True
 dt = 0
