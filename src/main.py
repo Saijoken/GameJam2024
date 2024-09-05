@@ -10,7 +10,7 @@ class Game:
     def __init__(self):
         self.player = Player()
 
-# Full screen mode adapted to the user's screen and positioned at screen edges
+# Fullscreen 
 screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN , pygame.SCALED, vsync=1)
 screen_size = pygame.Vector2(screen.get_width(), screen.get_height())
 
@@ -18,23 +18,23 @@ clock = pygame.time.Clock()
 running = True
 dt = 0
 
-# Initialize player position and camera
+# Initialisation du jeu initialisant le joueur et la camera
 game = Game()
 
 background = pygame.image.load('assets/backgrounds/BackgroundTest.png').convert_alpha()
 player_pos = pygame.Vector2(screen.get_width() / 2, screen.get_height() / 2)
 game.player.rect.topleft = player_pos
 
-# Initialize the camera to follow the player
-camera = Camera(screen_size, game.player)
+# Faire en sorte que la camera suit le joueur
+game.camera = Camera(screen_size, game.player)
 
 while running:
-    # Event to close the game when selecting the close button
+    # Fermeture du jeu quand le bouton X est cliqué
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
 
-    # Player movement using arrow keys
+    # Déplacement des collisions du joueur avec les ZQSD
     keys = pygame.key.get_pressed()
     if keys[pygame.K_z]:  # Move up
         player_pos.y -= 300 * dt
@@ -45,13 +45,12 @@ while running:
     if keys[pygame.K_d]:  # Move right
         player_pos.x += 300 * dt
 
-    # Update the player's rect based on movement
     game.player.rect.topleft = player_pos
 
     game.player.update()
 
     # Update the camera's position to follow the player
-    camera.update()
+    game.camera.update()
 
     screen.blit(background, (0,0))
 

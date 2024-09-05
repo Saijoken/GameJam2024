@@ -41,11 +41,11 @@ class Player(pygame.sprite.Sprite):
         return frames
 
     def update(self):
-        """Update the animation by changing the current frame every 10 ticks."""
+        """Update the animation by changing the current sprite every 10 frames."""
         self.frame_counter += 1
-        if self.frame_counter >= 20:  # Change frame every 10 ticks
+        if self.frame_counter >= 20:  # Changer de sprite toutes les 10 frames
             self.frame_counter = 0
-            # Move to the next frame
+            # Changement de frame dans la liste des frames déjà réalisé
             self.current_frame_index = (self.current_frame_index + 1) % self.total_frames
-            # Update the current image to the new frame
+            # Mise à jour du sprite pour le changement dans la liste
             self.image = self.frames[self.current_frame_index]
