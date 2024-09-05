@@ -34,16 +34,28 @@ while running:
         if event.type == pygame.QUIT:
             running = False
 
-    # Déplacement des collisions du joueur avec les ZQSD
+    # Player movement using arrow keys
     keys = pygame.key.get_pressed()
+
+    # Track if player is moving
+    moving = False
+
     if keys[pygame.K_z]:  # Move up
-        player_pos.y -= 300 * dt
+        player_pos.y -= 100 * dt
+        game.player.change_animation('up')
+        moving = True
     if keys[pygame.K_s]:  # Move down
-        player_pos.y += 300 * dt
+        player_pos.y += 100 * dt
+        game.player.change_animation('down')
+        moving = True
     if keys[pygame.K_q]:  # Move left
-        player_pos.x -= 300 * dt
+        player_pos.x -= 100 * dt
+        game.player.change_animation('left')
+        moving = True
     if keys[pygame.K_d]:  # Move right
-        player_pos.x += 300 * dt
+        player_pos.x += 100 * dt
+        game.player.change_animation('right')
+        moving = True
 
     game.player.rect.topleft = player_pos
 
