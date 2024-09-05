@@ -5,10 +5,6 @@ import pygame
 # pygame setup
 pygame.init()
 
-# Full screen mode adapté à l'écran de l'utilisateur et positionné aux extremité de l'écran
-screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN, pygame.SCALED, vsync=1)
-
-
 from classes.camera import Camera
 
 class Player(pygame.sprite.Sprite):
@@ -27,6 +23,10 @@ class Game:
         self.player = Player
 
 game = Game()
+
+# Full screen mode adapté à l'écran de l'utilisateur et positionné aux extremité de l'écran
+screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN, pygame.SCALED, vsync=1)
+
 clock = pygame.time.Clock()
 running = True
 dt = 0
@@ -44,7 +44,7 @@ while running:
     # fill the screen with a color to wipe away anything from last frame
     screen.fill("grey")
 
-    screen.blit(game.player.image, game.player.rect)
+    # screen.blit(game.player.image, game.player.rect)
 
 
     keys = pygame.key.get_pressed()
