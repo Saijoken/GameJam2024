@@ -12,8 +12,10 @@
 ├── README.md
 ├── requirements.txt
 └── src
+...
     ├── classes
     └── main.py
+    ...
 ```
 
 ### Environnement virtuel
@@ -25,7 +27,7 @@ python3 -m venv .venv
 source .venv/bin/activate
 ```
 
-### Installation des dépendances du projet
+### Installation des dépendances du projet
 
 ```sh
 pip install -r requirements.txt 
