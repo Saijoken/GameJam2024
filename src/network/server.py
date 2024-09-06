@@ -4,7 +4,13 @@ from lobby import Lobby
 import random
 import string
 
+# Initialize server and port
+server = socket.gethostname()
+port = 5555
 
+# Create socket and initialize connection type
+serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+server_ip = socket.gethostbyname(server)
 
 class Server:
     def __init__(self):
@@ -12,31 +18,27 @@ class Server:
         self.running = True
         #self.database = Database()     à voir
 
-    # Initialize server and port
-    server = socket.gethostname()
-    port = 5555
-
-    # Create socket and initialize connection type
-    serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-    server_ip = socket.gethostbyname(server)
 
     # Binding port to server and handling binding error
-    try:
-        serverSocket.bind((server_ip, port))
-    except socket.error as e:
-        print(str(e))
+    def init_connection(self):
+        try:
+            serverSocket.bind((server_ip, port))
+        except socket.error as e:
+            print(str(e))
 
     # Listen port and accept connections from client
     # Maximum of 2 connections since it's a two-player game
     def run(self):
+        serverSocket.listen(2)
         while self.running:
-            serverSocket.listen(2)
             client, address = serverSocket.accept()
+
+    # Get a game code when hosting
+
+    # Receive and enter a game code when joining
 
     def handle_client(self, client):
         data = client.recv(1024).decode()
-
         if data == "create":
             # Generate a random code for the new game
             code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
