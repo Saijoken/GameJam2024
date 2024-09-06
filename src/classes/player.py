@@ -4,7 +4,7 @@ class Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
         
-        # Load sprite sheets for different idle animations (assuming one sprite sheet per direction)
+        # Chargement de toutes les Sprite Sheets du personnage
         self.animations = {
             'idle_up': self.load_frames('assets/player/Player1IdleUp.png'),
             'idle_down': self.load_frames('assets/player/Player1Idle.png'),
@@ -16,25 +16,24 @@ class Player(pygame.sprite.Sprite):
             'walk_right': self.load_frames('assets/player/Player1WalkRight.png')
         }
         
-        # Set initial animation to idle down (facing down by default)
+        # Idle down -> Position par défaut
         self.current_animation = self.animations['idle_down']
         self.current_frame_index = 0
         self.image = self.current_animation[self.current_frame_index]
-        self.rect = self.image.get_rect()
+        self.rect = pygame.Rect(0,0,31,16)
         self.rect.x = 0
         self.rect.y = 0
 
         # Animation timing
         self.frame_counter = 0
 
-        # Store the last direction
-        self.last_direction = 'down'  # Default to down-facing animation
+        self.last_direction = 'down' 
 
     def load_frames(self, file_path):
         """Load frames from the sprite sheet."""
         sprite_sheet = pygame.image.load(file_path).convert_alpha()
         frames = []
-        frame_width, frame_height = 32, 32  # Assuming each frame is 32x32
+        frame_width, frame_height = 32, 32 
         for y in range(0, sprite_sheet.get_height(), frame_height):
             for x in range(0, sprite_sheet.get_width(), frame_width):
                 frame = sprite_sheet.subsurface(pygame.Rect(x, y, frame_width, frame_height))
@@ -44,11 +43,11 @@ class Player(pygame.sprite.Sprite):
     def update(self):
         """Update the animation frame."""
         self.frame_counter += 1
-        if self.frame_counter >= 10:  # Change frame every 10 ticks
+        if self.frame_counter >= 10:  # Changement toutes les 10 frames
             self.frame_counter = 0
-            # Move to the next frame
+            # Prochaine Frame
             self.current_frame_index = (self.current_frame_index + 1) % len(self.current_animation)
-            # Update the current image to the new frame
+            # Mise a jour de la frame du personnage
             self.image = self.current_animation[self.current_frame_index]
 
     def change_animation(self, direction, is_moving):
