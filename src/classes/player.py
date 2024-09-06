@@ -44,7 +44,7 @@ class Player(pygame.sprite.Sprite):
     def update(self):
         """Update the animation frame."""
         self.frame_counter += 1
-        if self.frame_counter >= 25:  # Change frame every 10 ticks
+        if self.frame_counter >= 10:  # Change frame every 10 ticks
             self.frame_counter = 0
             # Move to the next frame
             self.current_frame_index = (self.current_frame_index + 1) % len(self.current_animation)
@@ -55,7 +55,6 @@ class Player(pygame.sprite.Sprite):
         """Change the animation based on the player's movement direction and state."""
         self.is_moving = is_moving
         if is_moving:
-            # Set the appropriate walking animation
             if direction == 'up':
                 self.current_animation = self.animations['walk_up']
             elif direction == 'down':
@@ -65,7 +64,6 @@ class Player(pygame.sprite.Sprite):
             elif direction == 'right':
                 self.current_animation = self.animations['walk_right']
         else:
-            # Set the appropriate idle animation
             if direction == 'up':
                 self.current_animation = self.animations['idle_up']
             elif direction == 'down':
@@ -75,7 +73,4 @@ class Player(pygame.sprite.Sprite):
             elif direction == 'right':
                 self.current_animation = self.animations['idle_right']
 
-        # Reset frame index to start new animation from the first frame
-        self.current_frame_index = 0
-        self.image = self.current_animation[self.current_frame_index]
         self.last_direction = direction
