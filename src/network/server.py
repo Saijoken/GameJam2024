@@ -51,59 +51,17 @@ class Server:
         # Hosting a room
         if game_id is None:
             game_id = self.host()
+            # Send the game id to the client
+            client.send(game_id.encode())
             # Add game id to the db
 
             # Add one player
-            self.lobby.players.append()
-            # blabla
+            # Allow another connection : Wait and listen
+
         # Joining a room
         if game_id:
             pass
 
     # Save progression
-    def save(self, client, game_id):
-        # Nickname+address => character progression => room, save room
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        data = client.recv(1024).decode()
-        if data == "create":
-            # Generate a random code for the new game
-            code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
-
-            # Create a new game in the lobby with the generated code
-            game = self.lobby.create_game(code)
-
-            # Send the game code to the client
-            client.send(code.encode())
-
-        elif data.isdigit():
-            # Check if the code exists in the lobby
-            game = self.lobby.get_game_by_code(data)
-
-            if game:
-                # Join the existing game if it has room
-                if len(game.players) < 2:
-                    game.join_player(client)
-                    client.send("joined".encode())
-                else:
-                    client.send("full".encode())
-            else:
-                client.send("invalid".encode())
+    def save(self):
+        pass
