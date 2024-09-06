@@ -30,3 +30,8 @@ class Lobby(object):
 
     # Eventuellement une fonction qui envoie un message quand le jeu se lance
     # ou affiche une barre de chargement pendant l'attente dans le lobby
+    def create_game(self, code):
+        pass
+
+    def get_game_by_code(self, data):
+        pass
