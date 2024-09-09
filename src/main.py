@@ -14,7 +14,7 @@ screen = pygame.display.set_mode((800, 600))
 class Game:
     def __init__(self):
         self.player = Player(screen)
-        self.timer = Timer(20)
+        self.timer = Timer(70)
         self.props = []
         self.interaction_key_pressed = False
 
@@ -26,7 +26,6 @@ class Game:
         self.player.update()
         self.timer.update()
         self.player.rect.topleft = self.player.position
-
 
 
 pygame.display.set_caption("Game Jam")
@@ -42,10 +41,10 @@ game = Game()
 game.setup_collisions()
 
 # Créer une instance de TileMap
-tilemap = TileMap('assets/maps/map.tmx')
+tilemap = TileMap('assets/maps/enigma1.tmx')
 
 #Initialisation de la police du timer
-font = pygame.font.Font(None, 36)
+font = pygame.font.Font('assets/fonts/SpecialElite-Regular.ttf', 36)
 
 # Faire en sorte que la camera suit le joueur
 #game.camera = Camera(screen_size/2, game.player)
