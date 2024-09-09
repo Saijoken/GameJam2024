@@ -15,7 +15,7 @@ class TileMap:
             if isinstance(layer, pytmx.TiledTileLayer):
                 for x, y, gid in layer:
                     tile = self.tmx_data.get_tile_properties_by_gid(gid)
-                    if tile and 'collidable' in tile and tile['collidable']:
+                    if tile and 'WallsCol' in tile and tile['WallsCol']:
                         self.collision_layer.append(pygame.Rect(x * self.tile_size, y * self.tile_size, self.tile_size, self.tile_size))
 
     def draw(self, screen):

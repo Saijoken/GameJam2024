@@ -68,7 +68,6 @@ while running:
 
     if game.timer.is_time_up():
         print("Time's up!")
-        running = False
 
     # Flip the display to show the updated frame
     pygame.display.flip()
