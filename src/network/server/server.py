@@ -15,7 +15,7 @@ class Server:
     # Initialize server and port
     SERVER = socket.gethostname()
     PORT = 5555
-    # Create socket and initialize connection type
+    # Create socket
     serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server_ip = socket.gethostbyname(SERVER)
 
@@ -142,7 +142,7 @@ class Server:
     # Connection types handling (login, register...)
     ##########################################################################################
 
-    # Login
+    # Login a client
     def handle_login(self, client):
         # Ask the client for the login and password
         self.send_data(Protocols.Response.LOGIN_REQUEST, "Entrez votre nom d'utilisateur et mot de passe", client)
@@ -163,7 +163,7 @@ class Server:
             self.send_data(Protocols.Response.LOGIN_FAILED, "Requête invalide", client)
             return False
 
-    # Logout
+    # Logout a client
     def handle_logout(self, client):
         if client in self.clients:
             nickname = self.clients[client]
@@ -175,21 +175,21 @@ class Server:
             self.send_data(Protocols.Response.LOGOUT_FAILED, "Utilisateur non connecté", client)
             return False
     
-    # Disconnect
-    def handle_disconnect(self, client):
-        if client in self.clients:
-            nickname = self.clients[client]
-            game_id = self.find_game_for_client(client)
-            if game_id:
+    # Disconnect a client from the game
+    def handle_disconnect(self, client, game_id):
+        if game_id in self.lobby.games:
+            if self.lobby.games[game_id][client]:
                 self.lobby.remove_client_from_game(game_id, client)
-                self.send_data(Protocols.Response.PLAYER_DISCONNECTED, nickname, self.lobby.get_other_client(game_id, client))
-            del self.clients[client]
-            print(f"{self.time()} User {nickname} disconnected from game {game_id}")
+                self.send_data(Protocols.Response.DISCONNECTED_SUCCESS, nickname, self.lobby.get_other_client(game_id, client))
+                del self.clients[client]
+                print(f"{self.time()} User {nickname} disconnected from game {game_id}")
+            else:
+                self.send_data(Protocols.Response.DISCONNECTED_FAILED, "Utilisateur introuvable", client)
         else:
-            self.send_data(Protocols.Response.DISCONNECT_FAILED, "Utilisateur non connecté", client)
+            self.send_data(Protocols.Response.LOBBY_NOT_FOUND, "Lobby introuvable", client)
 
 
-    # Register
+    # Register a client
     def handle_register(self, client):
         self.send_data(Protocols.Response.REGISTER_REQUEST, "Entrez un nickname et un mot de passe", client)
         message = json.loads(client.recv(1024).decode("ascii"))

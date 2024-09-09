@@ -30,6 +30,12 @@ class Lobby(object):
             if self.games["clients"]:
                 self.games[game_id]["clients"].append(client)
 
+    # Remove a client (player) from an existing lobby when suddenly disconnected
+    def remove_client_from_game(self, game_id, client):
+        if game_id in self.games:
+            if client in self.games[game_id]["clients"]:
+                self.games[game_id]["clients"].remove(client)
+
     # Check if a lobby is full
     def is_full(self, game_id):
         return len(self.games[game_id]["clients"]) == 2
