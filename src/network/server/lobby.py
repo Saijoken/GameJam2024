@@ -1,0 +1,40 @@
+import pygame
+import json
+from datetime import datetime
+
+class Lobby(object):
+
+    def __init__(self):
+        # Dict structure : { "game1" : { "game_id" : game_id, "clients": [client1, client2], "game_started": False }}
+        self.games = {}
+
+    # Add the game_id as the lobby id and add the first client after a connection
+    def add_game(self, game_id, client):
+        self.games = {
+            "game_id": game_id,
+            "clients": [client],
+            "game_started": False
+        }
+
+    # Get lobby from game (join)
+    def get_game(self, game_id):
+        return self.games.get(game_id, None)
+
+    # Get length of players
+    def get_len(self, game_id):
+        return len(self.games[game_id]["clients"])
+
+    # Add a client (player) to an existing lobby
+    def add_client_to_game(self, game_id, client):
+        if game_id in self.games:
+            if self.games["clients"]:
+                self.games[game_id]["clients"].append(client)
+
+    # Check if a lobby is full
+    def is_full(self, game_id):
+        return len(self.games[game_id]["clients"]) == 2
+
+    # Start the game once the lobby has two clients
+    def start_game(self, game_id):
+        self.games[game_id]["game_started"] = True
+

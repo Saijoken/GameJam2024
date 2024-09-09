@@ -1,5 +1,4 @@
 import json
-
 import pygame
 
 class Client(object):
