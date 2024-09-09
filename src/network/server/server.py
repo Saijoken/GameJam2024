@@ -2,6 +2,7 @@ import json
 import socket
 import threading
 from datetime import datetime
+import hashlib
 # Pour le chrono du jeu, côté serveur afin de synchroniser le timer de chaque client
 from protocols import Protocols
 from lobby import Lobby
@@ -32,6 +33,11 @@ class Server:
         return datetime.now().strftime("[%d/%m - %H:%M:%S]")
 
     # Timer function for the game
+
+
+    ##########################################################################################
+    # First connection client-server and client handling
+    ##########################################################################################
 
     def init_connection(self):
         try:
@@ -76,10 +82,29 @@ class Server:
             else:
                 self.join_lobby(game_id, client)
 
+
+    # Get a valid nickname
+    def get_valid_nickname(self, client):
+        while self.running:
+            try:
+                # Ask client for the nickname
+                self.send_data(Protocols.Response.NICKNAME, None, client)
+                message = json.loads(client.recv(1024).decode("ascii"))
+                nickname = message.get("data")
+                # Check if nickname already exists
+                #TODO reload an existing game if the nickname already exists
+                if nickname in self.clients.values():
+                    self.send_data(Protocols.Response.NICKNAME_ERROR, "Nickname already taken", client)
+                else:
+                    return nickname
+            except Exception as e:
+                print(str(e))
+
+
     # Create a lobby
     def create_lobby(self, client):
         # Create a game_id and add it as the id of the lobby
-        game_id = self.host()
+        game_id = self.generate_game_id()
         self.lobby.add_game(game_id, client)
         # The client who creates the lobby is waiting for another connection
         self.waiting_for_pair = client
@@ -91,19 +116,110 @@ class Server:
         #game_thread = threading.Thread(target=self.handle_game, args=(game_id, player1, player2))
         #game_thread.start()
 
+
     # Join a lobby
     def join_lobby(self, game_id, client):
+        # Ask the client for the game_id
+        self.send_data(Protocols.Response.REQUEST_GAME_ID, None, client)
+        message = json.loads(client.recv(1024).decode("ascii"))
+        game_id = message.get("data")
         if game_id in self.lobby.games:
             if self.lobby.start_game(game_id):
-                return "Erreur: le jeu a déjà commencé"
+                self.send_data(Protocols.Response.LOBBY_FULL, "Le jeu a déjà commencé", client)
             else:
                 if self.lobby.get_len(game_id) == 1:
                     self.lobby.add_client_to_game(game_id, client)
+                    self.send_data(Protocols.Response.JOINED_LOBBY, {"game_id": game_id}, client)
                     self.lobby.start_game(game_id)
+                    # Start the game thread
                 else:
-                    return "Erreur: le lobby est complet"
+                    self.send_data(Protocols.Response.LOBBY_FULL, "Impossible de rejoindre le lobby", client)
         else:
-            return "Erreur: ce lobby n'existe pas"
+            self.send_data(Protocols.Response.LOBBY_NOT_FOUND, "Lobby introuvable", client)
+
+
+    ##########################################################################################
+    # Connection types handling (login, register...)
+    ##########################################################################################
+
+    # Login
+    def handle_login(self, client):
+        # Ask the client for the login and password
+        self.send_data(Protocols.Response.LOGIN_REQUEST, "Entrez votre nom d'utilisateur et mot de passe", client)
+        message = json.loads(client.recv(1024).decode("ascii"))
+        if message.get("type") == Protocols.Request.LOGIN:
+            nickname = message.get("data").get("nickname")
+            password = message.get("data").get("password")
+            
+            # Check if it matches with the database (à remplacer par une vérification dans la base de données)
+            if self.database.check_credentials(nickname, password):
+                self.send_data(Protocols.Response.LOGIN_SUCCESS, "Connexion réussie", client)
+                self.clients[client] = nickname
+                return True
+            else:
+                self.send_data(Protocols.Response.LOGIN_FAILED, "Identifiants incorrects", client)
+                return False
+        else:
+            self.send_data(Protocols.Response.LOGIN_FAILED, "Requête invalide", client)
+            return False
+
+    # Logout
+    def handle_logout(self, client):
+        if client in self.clients:
+            nickname = self.clients[client]
+            del self.clients[client]
+            self.send_data(Protocols.Response.LOGOUT_SUCCESS, "Déconnexion réussie", client)
+            print(f"{self.time()} User {nickname} logged out")
+            return True
+        else:
+            self.send_data(Protocols.Response.LOGOUT_FAILED, "Utilisateur non connecté", client)
+            return False
+    
+    # Disconnect
+    def handle_disconnect(self, client):
+        if client in self.clients:
+            nickname = self.clients[client]
+            game_id = self.find_game_for_client(client)
+            if game_id:
+                self.lobby.remove_client_from_game(game_id, client)
+                self.send_data(Protocols.Response.PLAYER_DISCONNECTED, nickname, self.lobby.get_other_client(game_id, client))
+            del self.clients[client]
+            print(f"{self.time()} User {nickname} disconnected from game {game_id}")
+        else:
+            self.send_data(Protocols.Response.DISCONNECT_FAILED, "Utilisateur non connecté", client)
+
+
+    # Register
+    def handle_register(self, client):
+        self.send_data(Protocols.Response.REGISTER_REQUEST, "Entrez un nickname et un mot de passe", client)
+        message = json.loads(client.recv(1024).decode("ascii"))
+        
+        if message.get("type") == Protocols.Request.REGISTER:
+            nickname = message.get("data").get("nickname")
+            password = message.get("data").get("password")
+            
+            if self.database.user_exists(nickname):
+                self.send_data(Protocols.Response.REGISTER_FAILED, "Nickname déjà utilisé", client)
+                return False
+            
+            # Hachage du mot de passe avant stockage
+            hashed_password = hashlib.sha256(password.encode()).hexdigest()
+            
+            if self.database.add_user(nickname, hashed_password):
+                self.send_data(Protocols.Response.REGISTER_SUCCESS, "Inscription réussie", client)
+                print(f"{self.time()} New user registered: {nickname}")
+                return True
+            else:
+                self.send_data(Protocols.Response.REGISTER_FAILED, "Erreur lors de l'inscription", client)
+                return False
+        else:
+            self.send_data(Protocols.Response.REGISTER_FAILED, "Requête invalide", client)
+            return False
+
+
+    ##########################################################################################
+    # Data handling (send, receive...)
+    ##########################################################################################
 
     # Get the data (for save/load, updates in the game)
     def get_data(self, client, bytes):
@@ -118,12 +234,9 @@ class Server:
         client.send(message)
 
     # Create unique ID for a new room
-    def host(self):
+    def generate_game_id(self):
         game_id = (str(uuid.uuid4())[:6])
         return game_id
-
-    # Fonction pour handle le login
-    # Fonction pour handle le logout/la déconnexion
 
 
     def receive_data(self):
@@ -132,22 +245,6 @@ class Server:
             print(f"Connected with {str(address)}")
             thread = threading.Thread(target=self.handle_client, args=(client, address))
             thread.start()
-
-
-    def get_valid_nickname(self, client):
-        while self.running:
-            try:
-                # Demander le pseudo au client
-                self.send_data(Protocols.Response.NICKNAME, None, client)
-                message = json.loads(client.recv(1024).decode("ascii"))
-                nickname = message.get("data")
-                # Vérifier si le pseudo est déjà pris
-                if nickname in self.clients.values():
-                    self.send_data(Protocols.Response.NICKNAME_ERROR, "Nickname already taken", client)
-                else:
-                    return nickname
-            except Exception as e:
-                print(str(e))
 
 
 if __name__ == "__main__":

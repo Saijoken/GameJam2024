@@ -36,5 +36,6 @@ class Lobby(object):
 
     # Start the game once the lobby has two clients
     def start_game(self, game_id):
-        self.games[game_id]["game_started"] = True
+        if self.get_len(game_id) == 2:
+            self.games[game_id]["game_started"] = True
 
