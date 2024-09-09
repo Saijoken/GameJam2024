@@ -9,7 +9,7 @@ from classes.timer import Timer
 from classes.prop import Prop
 
 # Fullscreen 
-screen = pygame.display.set_mode((800, 600))
+screen = pygame.display.set_mode((1024, 768))
 
 class Game:
     def __init__(self):
@@ -17,6 +17,7 @@ class Game:
         self.timer = Timer(20)
         self.props = []
         self.interaction_key_pressed = False
+        self.active_modal = None  # Ajout de cette ligne
 
     def setup_collisions(self):
         self.props.append(Prop("01_valve", "Valve", pygame.Rect(screen.get_width() // 2, screen.get_height() // 2, 50, 50)))
@@ -48,7 +49,7 @@ tilemap = TileMap('assets/maps/map.tmx')
 font = pygame.font.Font(None, 36)
 
 # Faire en sorte que la camera suit le joueur
-#game.camera = Camera(screen_size/2, game.player)
+game.camera = Camera(screen_size, game.player)
 
 game.player.rect.topleft = (32,32)
 
@@ -57,43 +58,59 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+        
+        # Gestion des événements du menu modal
+        if game.active_modal:
+            game.active_modal.handle_event(event)
 
     # Player movement using arrow keys
     keys = pygame.key.get_pressed()
     dt = clock.tick(60) / 1000
 
-    game.player.player_movement(keys, dt)
+    # Empêcher le mouvement du joueur si le menu modal est actif
+    if not game.active_modal:
+        game.player.player_movement(keys, dt)
 
     game.update_all()
+    
+    game.camera.update()
 
     # Affichage
+    # Affichage
     screen.fill((0, 0, 0))  # Fond noir
-    tilemap.draw(screen)  # Afficher la carte
+    tilemap.draw(screen, game.camera)  # Afficher la carte en tenant compte de la caméra
 
     # Check for collisions with interactible objects
     collided_object = None
     for prop in game.props:
         if prop.check_collision(game.player.rect):
             collided_object = prop
-        prop.draw(screen)
+        prop.draw(screen, game.camera)
 
-    screen.blit(game.player.image, game.player.rect)
-
+    screen.blit(game.player.image, game.camera.apply(game.player.rect))
     # Draw interaction text if collision is detected
     if collided_object:
         collided_object.draw_text(screen)
         
         # Check if 'E' key is pressed and not already pressed in the previous frame
         if keys[pygame.K_e] and not game.interaction_key_pressed:
-            collided_object.interact_with()
+            modal = collided_object.interact_with(screen)
+            if modal:
+                game.active_modal = modal
             game.interaction_key_pressed = True
         elif not keys[pygame.K_e]:
             game.interaction_key_pressed = False
 
+    # Dessiner le menu modal s'il est actif
+    if game.active_modal:
+        game.active_modal.draw()
+        if not game.active_modal.is_open:
+            game.active_modal = None
+
     game.timer.draw(screen, font)
     
-    if game.timer.is_time_up():
-        print("Time's up!")
+    # if game.timer.is_time_up():
+    #     print("Time's up!")
 
     # Flip the display to show the updated frame
     pygame.display.flip()
