@@ -6,6 +6,7 @@ from classes.camera import Camera
 from classes.player import Player
 from classes.tilemap import TileMap
 from classes.timer import Timer
+from classes.prop import Prop
 
 # Fullscreen 
 screen = pygame.display.set_mode((800, 600))
@@ -14,10 +15,18 @@ class Game:
     def __init__(self):
         self.player = Player(screen)
         self.timer = Timer(20)
+        self.props = []
+        self.interaction_key_pressed = False
+
+    def setup_collisions(self):
+        self.props.append(Prop("01_valve", "Valve", pygame.Rect(screen.get_width() // 2, screen.get_height() // 2, 50, 50)))
+        self.props.append(Prop("02_test", "Undefined prop", pygame.Rect(screen.get_width() // 4, screen.get_height() // 2, 150, 50)))
 
     def update_all(self):
         self.player.update()
         self.timer.update()
+        self.player.rect.topleft = self.player.position
+
 
 
 pygame.display.set_caption("Game Jam")
@@ -30,6 +39,7 @@ dt = 0
 
 # Initialisation du jeu initialisant le joueur et la camera
 game = Game()
+game.setup_collisions()
 
 # Créer une instance de TileMap
 tilemap = TileMap('assets/maps/map.tmx')
@@ -56,16 +66,32 @@ while running:
 
     game.update_all()
 
-    # Update the camera's position to follow the player
-    # game.camera.update()
-
     # Affichage
     screen.fill((0, 0, 0))  # Fond noir
     tilemap.draw(screen)  # Afficher la carte
-    screen.blit(game.player.image, game.player.rect)  # Use rect directly
+
+    # Check for collisions with interactible objects
+    collided_object = None
+    for prop in game.props:
+        if prop.check_collision(game.player.rect):
+            collided_object = prop
+        prop.draw(screen)
+
+    screen.blit(game.player.image, game.player.rect)
+
+    # Draw interaction text if collision is detected
+    if collided_object:
+        collided_object.draw_text(screen)
+        
+        # Check if 'E' key is pressed and not already pressed in the previous frame
+        if keys[pygame.K_e] and not game.interaction_key_pressed:
+            collided_object.interact_with()
+            game.interaction_key_pressed = True
+        elif not keys[pygame.K_e]:
+            game.interaction_key_pressed = False
 
     game.timer.draw(screen, font)
-
+    
     if game.timer.is_time_up():
         print("Time's up!")
 
