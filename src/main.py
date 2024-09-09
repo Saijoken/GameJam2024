@@ -65,14 +65,22 @@ while running:
     # Player movement using arrow keys
     keys = pygame.key.get_pressed()
     dt = clock.tick(60) / 1000
-
+    prev_position = game.player.rect.topleft
+    
     # Empêcher le mouvement du joueur si le menu modal est actif
     if not game.active_modal:
         game.player.player_movement(keys, dt)
 
+    
+
     game.update_all()
     
     game.camera.update()
+
+    if tilemap.collides_with_walls(game.player.rect):
+        # If there is a collision, revert to the previous position
+        game.player.rect.topleft = prev_position
+        game.player.position = pygame.Vector2(prev_position)
 
     # Affichage
     # Affichage
@@ -86,7 +94,7 @@ while running:
             collided_object = prop
         prop.draw(screen, game.camera)
 
-    screen.blit(game.player.image, game.camera.apply(game.player.rect))
+    screen.blit(game.player.image, game.camera.apply(game.player.rect.move(-10,-16)))
     # Draw interaction text if collision is detected
     if collided_object:
         collided_object.draw_text(screen)
