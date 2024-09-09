@@ -1,6 +1,11 @@
 class Protocols:
 
     class Response:
+        #MENU = "protocol.menu"
+        AUTH = "protocol.auth"
+        PLAY = "protocol.play"
+        CREDITS = "protocol.credits"
+        QUIT = "protocol.quit"
         NICKNAME = "protocol.request_nickname"
         NICKNAME_ERROR = "protocol.request.nickname_error"
         REQUEST_GAME_ID = "protocol.request_game_id"
@@ -13,15 +18,14 @@ class Protocols:
         START = "protocol.start"
         ANSWER_VALID = "protocol.answer_valid"
         ANSWER_INVALID = 'protocol.answer_invalid'
-        WINNER = "protocol.winner"
-        PLAYER_LEFT = "protocol.opponent_left"
-        REGISTER_REQUEST = "REGISTER_REQUEST"
-        REGISTER_SUCCESS = "REGISTER_SUCCESS"
-        REGISTER_FAILED = "REGISTER_FAILED"
-        DISCONNECTED_SUCCESS = "DISCONNECTED_SUCCESS"
-        DISCONNECTED_FAILED = "DISCONNECTED_FAILED"
+        PLAYER_LEFT = "protocol.player_left"
+        REGISTER_REQUEST = "protocol.register_request"
+        REGISTER_SUCCESS = "protocol.register_success"
+        REGISTER_FAILED = "protocol.register_failed"
+        DISCONNECTED_SUCCESS = "protocol.disconnected_success"
+        DISCONNECTED_FAILED = "protocol.disconnected_failed"
 
     class Request:
         NICKNAME = "protocol.send_nickname"
         LEAVE = "protocol.leave"
-        REGISTER = "REGISTER"
+        REGISTER = "protocol.register"

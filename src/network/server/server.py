@@ -3,30 +3,29 @@ import socket
 import threading
 from datetime import datetime
 import hashlib
-# Pour le chrono du jeu, côté serveur afin de synchroniser le timer de chaque client
 from protocols import Protocols
 from lobby import Lobby
 import uuid
 from database import Database
 
-
 class Server:
 
-    # Initialize server and port
-    SERVER = socket.gethostname()
-    PORT = 5555
-    # Create socket
-    serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server_ip = socket.gethostbyname(SERVER)
-
     def __init__(self):
+        self.SERVER = socket.gethostname()
+        self.PORT = 5555
+        self.serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.serverSocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        # Make the serverSocket non blocking
+        self.serverSocket.setblocking(False)
+        # Dynamic listening
+        self.server_ip = ''
         self.waiting_for_pair = None
         self.lobby = Lobby()
         self.running = True
         self.database = Database()
         self.database.create()
-        self.clients = { }
-        self.lobbies = { }
+        self.clients = {}
+        self.lobbies = {}
 
     # Time function
     def time(self):
@@ -41,47 +40,55 @@ class Server:
 
     def init_connection(self):
         try:
-            # Bind port to server and handle binding error
-            try:
-                self.serverSocket.bind((self.server_ip, self.PORT))
-            except socket.error as e:
-                print(str(e))
-            print(f"{self.time()} [SERVER ON]")
-            # Listen port and accept connections from client
-            # Maximum of 2 connections since it's a two-player game
+            print("server_ip:", self.server_ip)
+            self.serverSocket.bind((self.server_ip, self.PORT))
             self.serverSocket.listen(2)
+            print(f"{self.time()} [SERVER ON]")
+            
             while self.running:
                 try:
                     client, addr = self.serverSocket.accept()
-                    print("Connexion acceptée")
-                    thread = threading.Thread(target=self.handle_client(client, addr), args=(client, addr))
-                    print("Thread créé:", thread)
+                    print(f"Connexion acceptée de {addr}")
+                    thread = threading.Thread(target=self.handle_client, args=(client, addr))
                     thread.start()
                 except Exception as e:
-                    print(str(e))
+                    print(f"Erreur lors de l'acceptation de la connexion: {str(e)}")
         except Exception as e:
             print(str(e))
+        finally:
+            self.serverSocket.close()
 
-
-    # Handle hosting or joining a room
+    # Handle choice between play, credits, quit
+    # If play then handle login/register
+    # If login/register successful then handle joining or creating a lobby
     def handle_client(self, client, addr, game_id=None):
-        while self.running:
-            self.send_data(Protocols.Response.NICKNAME, None, client)
-            message = json.loads(client.recv(1024).decode("ascii"))
-            r_type = message.get("type")
-            nickname = self.get_valid_nickname(client)
-            # If nickname is valid, add the client to the list of clients for the server & lobby
-            if r_type == Protocols.Request.NICKNAME:
-                self.clients[client] = nickname
-            else:
-                continue
-            # If game_id doesn't exist yet, the first player creates the lobby
-            if not game_id and len(self.clients) == 1:
-                self.create_lobby(client)
-            # Else the client can join an existing lobby
-            else:
-                self.join_lobby(game_id, client)
-
+        try:
+            while self.running:
+                # Menu : choose play or credits or quit
+                self.send_menu_options(client)
+                choice = self.receive_menu_choice(client)
+                # Switch/case to handle the choice
+                if choice == "Credits":
+                    self.send_data(Protocols.Response.CREDITS, "Credits", client)
+                elif choice == "Quit":
+                    self.send_data(Protocols.Response.QUIT, "Quit", client)
+                    # Make sure to close everything
+                    self.serverSocket.close()
+                elif choice == "Play":
+                    # First register or login
+                    self.handle_auth(client)
+                    # Then choose register or login
+                    if self.handle_auth(client):
+                        if not game_id and len(self.clients) == 1:
+                            self.create_lobby(client)
+                        else:
+                            self.join_lobby(game_id, client)
+        except Exception as e:
+            print(str(e))
+        finally:
+            if client in self.clients:
+                del self.clients[client]
+            client.close()
 
     # Get a valid nickname
     def get_valid_nickname(self, client):
@@ -142,6 +149,18 @@ class Server:
     # Connection types handling (login, register...)
     ##########################################################################################
 
+    # Handle authentification choice
+    def handle_auth(self, client):
+        self.send_data(Protocols.Response.AUTH, ["Login", "Register", "Quit"], client)
+        choice = self.get_data(client)
+        # Switch/case on the choice
+        if choice == "Login":
+            return self.handle_login(client)
+        elif choice == "Register":
+            return self.handle_register(client)
+        else:
+            self.send_data(Protocols.Response.QUIT, None, client)
+
     # Login a client
     def handle_login(self, client):
         # Ask the client for the login and password
@@ -180,9 +199,9 @@ class Server:
         if game_id in self.lobby.games:
             if self.lobby.games[game_id][client]:
                 self.lobby.remove_client_from_game(game_id, client)
-                self.send_data(Protocols.Response.DISCONNECTED_SUCCESS, nickname, self.lobby.get_other_client(game_id, client))
+                self.send_data(Protocols.Response.DISCONNECTED_SUCCESS, None, self.lobby.get_other_client(game_id, client))
                 del self.clients[client]
-                print(f"{self.time()} User {nickname} disconnected from game {game_id}")
+                #print(f"{self.time()} User {nickname} disconnected from game {game_id}")
             else:
                 self.send_data(Protocols.Response.DISCONNECTED_FAILED, "Utilisateur introuvable", client)
         else:
@@ -222,9 +241,9 @@ class Server:
     ##########################################################################################
 
     # Get the data (for save/load, updates in the game)
-    def get_data(self, client, bytes):
-        data = client.recv(bytes)
-        data = json.loads(data.decode("ascii"))
+    def get_data(self, client):
+        data = client.recv(1024).decode("ascii")
+        data = json.loads(data).get("data")
         return data
 
     # Send an info to one client/player
@@ -239,15 +258,6 @@ class Server:
         return game_id
 
 
-    def receive_data(self):
-        while True:
-            client, address = self.serverSocket.accept()
-            print(f"Connected with {str(address)}")
-            thread = threading.Thread(target=self.handle_client, args=(client, address))
-            thread.start()
-
-
 if __name__ == "__main__":
     s = Server()
-    t1 = threading.Thread(target=s.init_connection())
-    t1.start()
+    s.init_connection()

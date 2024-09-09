@@ -1,0 +1,54 @@
+import selectors  # Ajoutez cette importation
+
+class Server:
+    def __init__(self):
+        # ... autres initialisations ...
+        self.serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.serverSocket.setblocking(False)  # Rend le socket non bloquant
+        self.selector = selectors.DefaultSelector()
+
+    def init_connection(self):
+        try:
+            self.serverSocket.bind((self.server_ip, self.PORT))
+            self.serverSocket.listen()
+            print(f"{self.time()} [SERVER ON]")
+            self.selector.register(self.serverSocket, selectors.EVENT_READ, self.accept_wrapper)
+            
+            while self.running:
+                events = self.selector.select(timeout=1)
+                for key, mask in events:
+                    callback = key.data
+                    callback(key.fileobj)
+        except Exception as e:
+            print(f"Erreur lors de l'initialisation du serveur: {str(e)}")
+        finally:
+            self.serverSocket.close()
+
+    def accept_wrapper(self, sock):
+        try:
+            client, addr = sock.accept()
+            print(f"Connexion acceptée de {addr}")
+            client.setblocking(False)
+            self.selector.register(client, selectors.EVENT_READ, self.handle_client)
+        except Exception as e:
+            print(f"Erreur lors de l'acceptation de la connexion: {str(e)}")
+
+    def handle_client(self, client):
+        try:
+            data = client.recv(1024)
+            if data:
+                message = json.loads(data.decode("ascii"))
+                # Traitez le message ici
+            else:
+                self.selector.unregister(client)
+                client.close()
+        except Exception as e:
+            print(f"Erreur lors de la gestion du client: {str(e)}")
+            self.selector.unregister(client)
+            client.close()
+
+    # ... autres méthodes ...
+
+if __name__ == "__main__":
+    s = Server()
+    s.init_connection()
