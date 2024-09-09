@@ -45,7 +45,7 @@ game.setup_collisions()
 tilemap = TileMap('assets/maps/enigma1.tmx')
 
 #Initialisation de la police du timer
-font = pygame.font.Font('assets/fonts/SpecialElite-Regular.ttf', 36)
+font = pygame.font.Font('assets/fonts/SpecialElite-Regular.ttf', 50)
 
 # Faire en sorte que la camera suit le joueur
 game.camera = Camera(screen_size, game.player)
