@@ -1,5 +1,5 @@
 import pygame
-
+from classes.modal_menu import ModalMenu
 class Prop:
     # Création d'un New Prop
     def __init__(self, id, name, rect):
@@ -13,8 +13,8 @@ class Prop:
         self.text_rect = self.text.get_rect()
         
     # Affichage du text + hitbox
-    def draw(self, screen):
-        pygame.draw.rect(screen, (255, 0, 0), self.rect)
+    def draw(self, screen, camera):
+        pygame.draw.rect(screen, (255, 0, 0), camera.apply(self.rect))
 
         
     def draw_text(self, screen):
@@ -36,16 +36,18 @@ class Prop:
             return self
         return None
     
-    def interact_with(self):
+    def interact_with(self, screen):
         """ 
         Fonction attachée a un objet executant l'intéraction voulue
+        
+        Retourne le menu modal a afficher
         """
         
         match self.id:
             case "01_valve":
-                print("Bien ouej")
+                modal_menu = ModalMenu(screen,"Valve d'évacuation", image_path="assets/images/test.png")
+                return modal_menu
             # Cas inconnu
             case _:
-                print("Connais pas mon chef")
-                
-    
+                modal_menu = ModalMenu(screen, image_path="assets/images/test.png")
+                return modal_menu

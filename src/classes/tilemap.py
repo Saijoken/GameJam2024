@@ -18,14 +18,15 @@ class TileMap:
                     if tile and 'WallsCol' in tile and tile['WallsCol']:
                         self.collision_layer.append(pygame.Rect(x * self.tile_size, y * self.tile_size, self.tile_size, self.tile_size))
 
-    def draw(self, screen):
+    def draw(self, screen, camera):
         for layer in self.tmx_data.visible_layers:
             if isinstance(layer, pytmx.TiledTileLayer):
                 for x, y, gid in layer:
                     tile_image = self.tmx_data.get_tile_image_by_gid(gid)
                     if tile_image:
-                        screen.blit(tile_image, (x * self.tile_size, y * self.tile_size))
-
+                        pos = camera.apply((x * self.tile_size, y * self.tile_size))
+                        screen.blit(tile_image, pos)
+    
     def collides_with_walls(self, rect):
         for tile in self.collision_layer:
             if rect.colliderect(tile):
