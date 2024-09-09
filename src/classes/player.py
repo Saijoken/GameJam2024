@@ -1,7 +1,7 @@
 import pygame
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self):
+    def __init__(self, screen):
         super().__init__()
         
         # Chargement de toutes les Sprite Sheets du personnage
@@ -23,6 +23,9 @@ class Player(pygame.sprite.Sprite):
         self.rect = pygame.Rect(0,0,31,16)
         self.rect.x = 0
         self.rect.y = 0
+        
+        self.position = pygame.Vector2(screen.get_width() // 2,screen.get_height() // 2)
+        self.speed = 100
 
         # Animation timing
         self.frame_counter = 0
@@ -53,23 +56,37 @@ class Player(pygame.sprite.Sprite):
     def change_animation(self, direction, is_moving):
         """Change the animation based on the player's movement direction and state."""
         self.is_moving = is_moving
-        if is_moving:
-            if direction == 'up':
-                self.current_animation = self.animations['walk_up']
-            elif direction == 'down':
-                self.current_animation = self.animations['walk_down']
-            elif direction == 'left':
-                self.current_animation = self.animations['walk_left']
-            elif direction == 'right':
-                self.current_animation = self.animations['walk_right']
-        else:
-            if direction == 'up':
-                self.current_animation = self.animations['idle_up']
-            elif direction == 'down':
-                self.current_animation = self.animations['idle_down']
-            elif direction == 'left':
-                self.current_animation = self.animations['idle_left']
-            elif direction == 'right':
-                self.current_animation = self.animations['idle_right']
+        self.current_animation = self.animations[f'{"walk" if is_moving else "idle"}_{direction}']
 
         self.last_direction = direction
+
+    def player_movement(self, keys, dt):
+        dx, dy = 0, 0
+        moving = False
+
+        if keys[pygame.K_z]:
+            dy -= self.speed * dt
+            moving = True
+            self.last_direction = 'up'
+        if keys[pygame.K_s]:
+            dy += self.speed * dt
+            moving = True
+            self.last_direction = 'down'
+        if keys[pygame.K_q]:
+            dx -= self.speed * dt
+            moving = True
+            self.last_direction = 'left'
+        if keys[pygame.K_d]:
+            dx += self.speed * dt
+            moving = True
+            self.last_direction = 'right'
+
+        # Mouvement en diagonale normalisé
+        if dx != 0 and dy != 0:
+            dx /= 1.414
+            dy /= 1.414
+
+        self.position.x += dx
+        self.position.y += dy
+
+        self.change_animation(self.last_direction, moving)

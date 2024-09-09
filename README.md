@@ -31,7 +31,7 @@ source .venv/bin/activate
 
 ```sh
 pip install -r requirements.txt 
-```
+``` 
 ## Attribution des tâches
 
 Mohammed Ben Aicha : Lead Dev
