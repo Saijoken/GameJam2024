@@ -94,7 +94,7 @@ while running:
             collided_object = prop
         prop.draw(screen, game.camera)
 
-    screen.blit(game.player.image, game.camera.apply(game.player.rect.move(-10,-16)))
+    screen.blit(game.player.image, game.camera.apply(game.player.rect.move(-7,-16)))
     # Draw interaction text if collision is detected
     if collided_object:
         collided_object.draw_text(screen)

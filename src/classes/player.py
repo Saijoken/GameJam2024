@@ -20,7 +20,7 @@ class Player(pygame.sprite.Sprite):
         self.current_animation = self.animations['idle_down']
         self.current_frame_index = 0
         self.image = self.current_animation[self.current_frame_index]
-        self.rect = pygame.Rect(0,0,16,16)
+        self.rect = pygame.Rect(0,0,18,16)
         self.position = pygame.Vector2(100, 300)
         self.rect.center = self.position  # Set initial position
         self.speed = 100
