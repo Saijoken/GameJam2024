@@ -20,11 +20,9 @@ class Player(pygame.sprite.Sprite):
         self.current_animation = self.animations['idle_down']
         self.current_frame_index = 0
         self.image = self.current_animation[self.current_frame_index]
-        self.rect = pygame.Rect(0,0,31,16)
-        self.rect.x = 0
-        self.rect.y = 0
-        
-        self.position = pygame.Vector2(screen.get_width() // 2,screen.get_height() // 2)
+        self.rect = self.image.get_rect()  # Use the image's rect
+        self.position = pygame.Vector2(screen.get_width() // 2, screen.get_height() // 2)
+        self.rect.center = self.position  # Set initial position
         self.speed = 100
 
         # Animation timing
@@ -52,6 +50,7 @@ class Player(pygame.sprite.Sprite):
             self.current_frame_index = (self.current_frame_index + 1) % len(self.current_animation)
             # Mise a jour de la frame du personnage
             self.image = self.current_animation[self.current_frame_index]
+        self.rect.center = self.position  # Update rect position
 
     def change_animation(self, direction, is_moving):
         """Change the animation based on the player's movement direction and state."""
@@ -88,5 +87,6 @@ class Player(pygame.sprite.Sprite):
 
         self.position.x += dx
         self.position.y += dy
+        self.rect.center = self.position  # Update rect position
 
         self.change_animation(self.last_direction, moving)

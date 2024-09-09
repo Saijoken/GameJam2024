@@ -62,7 +62,7 @@ while running:
     # Affichage
     screen.fill((0, 0, 0))  # Fond noir
     tilemap.draw(screen)  # Afficher la carte
-    screen.blit(game.player.image, game.player.rect.move(0, -16))  # Afficher le joueur
+    screen.blit(game.player.image, game.player.rect)  # Use rect directly
 
     game.timer.draw(screen, font)
 
