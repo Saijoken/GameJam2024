@@ -51,9 +51,13 @@ class ModalMenu:
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             if self.close_button.collidepoint(event.pos):
                 self.is_open = False
+                return True  # Modal closed
     
         if self.custom_content:
-            self.custom_content.update([event])
+            if self.custom_content.update([event]):
+                return False  # Symbol selected, but modal stays open
+
+        return False  # No action taken
 
     # Supprimez ou commentez la méthode handle_module si elle n'est plus nécessaire
     # def handle_module(self, prop):
