@@ -11,17 +11,19 @@ from classes.prop import Prop
 from classes.raycast import Raycast
 
 # Fullscreen 
-screen = pygame.display.set_mode((1024, 768))
+screen = pygame.display.set_mode((1024, 768), pygame.SCALED)
 
 class Game:
-    def __init__(self):
+    def __init__(self, screen_size, tilemap):
         self.player = Player(screen)
         self.timer = Timer(70)
         self.props = []
         self.interaction_key_pressed = False
         self.active_modal = None  
         self.ray = Raycast(self.player.rect.center, 0, 200, math.radians(45))
-        self.active_modal = None  
+        
+        map_size = pygame.Vector2(tilemap.map_width, tilemap.map_height)
+        self.camera = Camera(screen_size, self.player, map_size)
 
     def setup_collisions(self):
         self.props.append(Prop("01_valve", "Valve", pygame.Rect(305, 75, 35, 35), "valve", single_use=True))
@@ -50,17 +52,23 @@ running = True
 dt = 0
 
 # Initialisation du jeu initialisant le joueur et la camera
-game = Game()
-game.setup_collisions()
-
-# Créer une instance de TileMap
 tilemap = TileMap('assets/maps/enigma1.tmx')
 
-#Initialisation de la police du timer
+# Initialisation du jeu
+game = Game(screen_size, tilemap)
+game.setup_collisions()
+
+# Créer la caméra avec la taille de la carte
+map_size = pygame.Vector2(tilemap.map_width, tilemap.map_height)
+game.camera = Camera(screen_size, game.player, map_size)
+
+game.camera.set_zoom(2)  # Set initial zoom level
+
+# Initialisation de la police du timer
 font = pygame.font.Font('assets/fonts/SpecialElite-Regular.ttf', 50)
 
 # Faire en sorte que la camera suit le joueur
-game.camera = Camera(screen_size, game.player)
+# game.camera = Camera(screen_size, game.player)
 
 game.player.rect.topleft = (32,32)
 
@@ -96,17 +104,18 @@ while running:
 
     # Affichage
     screen.fill((0, 0, 0))  # Fond noir
-    tilemap.draw(screen, game.camera)  # Afficher la carte en tenant compte de la caméra
-
+    tilemap.draw(screen, game.camera)
+    
     # Check for collisions with interactible objects
     collided_object = None
     for prop in game.props:
         if prop.check_collision(game.player.rect):
-            if not (prop.single_use and prop.used):
-                collided_object = prop
+            collided_object = prop
         prop.draw(screen, game.camera)
 
     screen.blit(game.player.image, game.camera.apply(game.player.rect.move(-7,-16)))
+    game.ray.draw(screen)
+
     # Draw interaction text if collision is detected
     if collided_object:
         collided_object.draw_text(screen)
@@ -119,9 +128,6 @@ while running:
             game.interaction_key_pressed = True
         elif not keys[pygame.K_e]:
             game.interaction_key_pressed = False
-    
-    #Use camera.apply to draw the ray
-    game.ray.draw(screen)
 
     # Dessiner le menu modal s'il est actif
     if game.active_modal:
