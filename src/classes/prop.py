@@ -9,7 +9,7 @@ class Prop:
         self.rect = rect
         self.type = type
         
-        # Affichage du text intéraction
+        # Affichage du text interaction
         self.font = pygame.font.Font(None, 36)
         self.text = self.font.render("Appuyez sur E pour interagir avec " + name, True, (255, 255, 255))
         self.text_rect = self.text.get_rect()
