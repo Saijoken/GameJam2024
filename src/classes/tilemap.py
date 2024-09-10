@@ -9,6 +9,7 @@ class TileMap:
         self.map_width = self.tmx_data.width * self.tile_size
         self.map_height = self.tmx_data.height * self.tile_size
         self.collision_layer = []
+        self.isValveOpen = True
 
         # Extraire les collisions sur la map.
         for layer in self.tmx_data.layers:
@@ -32,6 +33,10 @@ class TileMap:
     def draw(self, screen, camera):
         for layer in self.tmx_data.visible_layers:
             if isinstance(layer, pytmx.TiledTileLayer):
+                if layer.name == 'SewerCode' and self.isValveOpen == True:
+                    layer.visible = False
+                if layer.name == 'SewerWaterFall' and self.isValveOpen == False:
+                    layer.visible = False
                 for x, y, gid in layer:
                     tile_image = self.tmx_data.get_tile_image_by_gid(gid)
                     if tile_image:
