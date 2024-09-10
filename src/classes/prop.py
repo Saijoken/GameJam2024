@@ -1,11 +1,13 @@
 import pygame
 from classes.modal_menu import ModalMenu
+from classes.prop_types.potentiometer import Potentiometer
 class Prop:
     # Création d'un New Prop
-    def __init__(self, id, name, rect):
+    def __init__(self, id, name, rect,type):
         self.id = id
         self.name = name
         self.rect = rect
+        self.type = type
         
         # Affichage du text intéraction
         self.font = pygame.font.Font(None, 36)
@@ -47,6 +49,9 @@ class Prop:
             case "01_valve":
                 modal_menu = ModalMenu(screen,"Valve d'évacuation", image_path="assets/images/test.png")
                 return modal_menu
+            case "02_potentiometer":
+                potentiometer = Potentiometer(screen)
+                return ModalMenu(screen, "Potentiomètre", custom_content=potentiometer)
             # Cas inconnu
             case _:
                 modal_menu = ModalMenu(screen, image_path="assets/images/test.png")

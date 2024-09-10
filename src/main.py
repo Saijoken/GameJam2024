@@ -20,8 +20,8 @@ class Game:
         self.active_modal = None  # Ajout de cette ligne
 
     def setup_collisions(self):
-        self.props.append(Prop("01_valve", "Valve", pygame.Rect(screen.get_width() // 2, screen.get_height() // 2, 50, 50)))
-        self.props.append(Prop("02_test", "Undefined prop", pygame.Rect(screen.get_width() // 4, screen.get_height() // 2, 150, 50)))
+        self.props.append(Prop("01_valve", "Valve", pygame.Rect(screen.get_width() // 2, screen.get_height() // 2, 50, 50), "valve"))
+        self.props.append(Prop("02_potentiometer", "Potentiometer", pygame.Rect(screen.get_width() // 4, screen.get_height() // 2, 150, 50), "potentiometer"))
 
     def update_all(self):
         self.player.update()
@@ -112,9 +112,5 @@ while running:
     # if game.timer.is_time_up():
     #     print("Time's up!")
 
-    # Flip the display to show the updated frame
     pygame.display.flip()
-
-    # Limit FPS to 60 and calculate delta time
-
 pygame.quit()
