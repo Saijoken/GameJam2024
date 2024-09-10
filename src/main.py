@@ -1,3 +1,4 @@
+import math
 import pygame
 
 pygame.init()
@@ -7,6 +8,7 @@ from classes.player import Player
 from classes.tilemap import TileMap
 from classes.timer import Timer
 from classes.prop import Prop
+from classes.raycast import Raycast
 
 # Fullscreen 
 screen = pygame.display.set_mode((1024, 768))
@@ -64,14 +66,12 @@ while running:
 
     # Player movement using arrow keys
     keys = pygame.key.get_pressed()
-    dt = clock.tick(60) / 1000
+    ray = Raycast(start_pos=game.player.position, direction=math.radians(45), length=200)
     prev_position = game.player.rect.topleft
     
     # Empêcher le mouvement du joueur si le menu modal est actif
     if not game.active_modal:
         game.player.player_movement(keys, dt)
-
-    
 
     game.update_all()
     
@@ -82,7 +82,6 @@ while running:
         game.player.rect.topleft = prev_position
         game.player.position = pygame.Vector2(prev_position)
 
-    # Affichage
     # Affichage
     screen.fill((0, 0, 0))  # Fond noir
     tilemap.draw(screen, game.camera)  # Afficher la carte en tenant compte de la caméra
@@ -107,6 +106,10 @@ while running:
             game.interaction_key_pressed = True
         elif not keys[pygame.K_e]:
             game.interaction_key_pressed = False
+    
+    ray.update()
+    #Use camera.apply to draw the ray
+    pygame.draw.line(screen, (255, 255, 255), game.camera.apply(ray.start_pos), game.camera.apply(ray.end_pos))
 
     # Dessiner le menu modal s'il est actif
     if game.active_modal:
@@ -122,6 +125,7 @@ while running:
     # Flip the display to show the updated frame
     pygame.display.flip()
 
-    # Limit FPS to 60 and calculate delta time
+    # Calculate delta time
+    dt = clock.tick(60) / 1000
 
 pygame.quit()
