@@ -19,7 +19,8 @@ class Game:
         self.timer = Timer(70)
         self.props = []
         self.interaction_key_pressed = False
-        self.active_modal = None  # Ajout de cette ligne
+        self.active_modal = None  
+        self.ray = Raycast(self.player.rect.center, 0, 200, math.radians(45))
 
     def setup_collisions(self):
         self.props.append(Prop("01_valve", "Valve", pygame.Rect(305, 75, 35, 35), "valve"))
@@ -30,7 +31,13 @@ class Game:
         self.player.update()
         self.timer.update()
         self.player.rect.topleft = self.player.position
-
+        mouse_pos = pygame.mouse.get_pos()
+        player_center = self.player.rect.center + pygame.Vector2(0,-10)
+        camera_offset = self.camera.position_cam
+        
+        world_mouse_pos = (mouse_pos[0] + camera_offset.x, mouse_pos[1] + camera_offset.y)
+        angle = Raycast.calculate_angle(player_center, world_mouse_pos)
+        self.ray.update(player_center, angle, self.camera)
 
 pygame.display.set_caption("Game Jam")
 
@@ -67,7 +74,9 @@ while running:
 
     # Player movement using arrow keys
     keys = pygame.key.get_pressed()
-    ray = Raycast(start_pos=game.player.position, direction=math.radians(45), length=200)
+    #def __init__(self, start_pos, direction, length, angle_spread, num_rays, color=(255, 255, 0)):
+    #to create the new Raycast use these parameters adding the angle_spread and num_rays:
+
     prev_position = game.player.rect.topleft
     
     # Empêcher le mouvement du joueur si le menu modal est actif
@@ -108,9 +117,8 @@ while running:
         elif not keys[pygame.K_e]:
             game.interaction_key_pressed = False
     
-    ray.update()
     #Use camera.apply to draw the ray
-    pygame.draw.line(screen, (255, 255, 255), game.camera.apply(ray.start_pos), game.camera.apply(ray.end_pos))
+    game.ray.draw(screen)
 
     # Dessiner le menu modal s'il est actif
     if game.active_modal:
