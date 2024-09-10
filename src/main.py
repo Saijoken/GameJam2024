@@ -17,12 +17,13 @@ class Game:
         self.timer = Timer(70)
         self.props = []
         self.interaction_key_pressed = False
-        self.active_modal = None  # Ajout de cette ligne
+        self.active_modal = None  
 
     def setup_collisions(self):
-        self.props.append(Prop("01_valve", "Valve", pygame.Rect(305, 75, 35, 35), "valve"))
+        self.props.append(Prop("01_valve", "Valve", pygame.Rect(305, 75, 35, 35), "valve", single_use=True))
         self.props.append(Prop("01_potentiometer1", "Potentiomètre 1", pygame.Rect(253, 195, 25, 35), "potentiometer"))
         self.props.append(Prop("01_potentiometer2", "Potentiomètre 2", pygame.Rect(285, 195, 25, 35), "potentiometer"))
+        self.props.append(Prop("01_symbol_lock", "Symboles", pygame.Rect(188, 22, 25, 35), "symbol_lock"))        
 
     def update_all(self):
         self.player.update()
@@ -92,8 +93,9 @@ while running:
     collided_object = None
     for prop in game.props:
         if prop.check_collision(game.player.rect):
-            collided_object = prop
-        # prop.draw(screen, game.camera)
+            if not (prop.single_use and prop.used):
+                collided_object = prop
+        prop.draw(screen, game.camera)
 
     screen.blit(game.player.image, game.camera.apply(game.player.rect.move(-7,-16)))
     # Draw interaction text if collision is detected
