@@ -22,8 +22,9 @@ class Game:
         self.active_modal = None  # Ajout de cette ligne
 
     def setup_collisions(self):
-        self.props.append(Prop("01_valve", "Valve", pygame.Rect(screen.get_width() // 2, screen.get_height() // 2, 50, 50)))
-        self.props.append(Prop("02_test", "Undefined prop", pygame.Rect(screen.get_width() // 4, screen.get_height() // 2, 150, 50)))
+        self.props.append(Prop("01_valve", "Valve", pygame.Rect(305, 75, 35, 35), "valve"))
+        self.props.append(Prop("01_potentiometer1", "Potentiomètre 1", pygame.Rect(253, 195, 25, 35), "potentiometer"))
+        self.props.append(Prop("01_potentiometer2", "Potentiomètre 2", pygame.Rect(285, 195, 25, 35), "potentiometer"))
 
     def update_all(self):
         self.player.update()
@@ -91,7 +92,7 @@ while running:
     for prop in game.props:
         if prop.check_collision(game.player.rect):
             collided_object = prop
-        prop.draw(screen, game.camera)
+        # prop.draw(screen, game.camera)
 
     screen.blit(game.player.image, game.camera.apply(game.player.rect.move(-7,-16)))
     # Draw interaction text if collision is detected
@@ -122,7 +123,6 @@ while running:
     # if game.timer.is_time_up():
     #     print("Time's up!")
 
-    # Flip the display to show the updated frame
     pygame.display.flip()
 
     # Calculate delta time

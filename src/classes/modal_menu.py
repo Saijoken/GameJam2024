@@ -1,7 +1,9 @@
 import pygame
 
+from classes.prop_types.potentiometer import Potentiometer
+
 class ModalMenu:
-    def __init__(self, screen, name="Menu", image_path=None):
+    def __init__(self, screen, name="Menu", image_path=None, custom_content=None):
         self.screen = screen
         self.font = pygame.font.Font(None, 36)
         # Convert 'name' to a string explicitly
@@ -31,6 +33,8 @@ class ModalMenu:
             self.image_rect = self.image.get_rect()
             self.image_rect.center = (screen.get_width() // 2, screen.get_height() * 5 // 8)  # Centré et plus bas
 
+        self.custom_content = custom_content
+
     def draw(self):
         if self.is_open:
             self.screen.blit(self.overlay, (0, 0))
@@ -39,8 +43,20 @@ class ModalMenu:
             
             if self.image:
                 self.screen.blit(self.image, self.image_rect)
+            
+            if self.custom_content:
+                self.custom_content.draw()
 
     def handle_event(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             if self.close_button.collidepoint(event.pos):
                 self.is_open = False
+    
+        if self.custom_content:
+            self.custom_content.update([event])
+
+    # Supprimez ou commentez la méthode handle_module si elle n'est plus nécessaire
+    # def handle_module(self, prop):
+    #     if prop.type == "potentiometer":
+    #         potentiometer = Potentiometer(self.screen)
+    #         potentiometer.draw()
