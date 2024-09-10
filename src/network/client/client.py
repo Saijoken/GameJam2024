@@ -14,6 +14,6 @@ class Client(object):
     def send_data(self, msg):
         self.connection.sendall(json.dumps(msg).encode())
 
-    def send_data(self, data_type, data):
+    def send_data_with_type(self, data_type, data):
         msg = json.dumps({"type": data_type, "data": data})
         self.client.send(msg.encode('ascii'))

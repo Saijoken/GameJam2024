@@ -7,6 +7,9 @@ from protocols import Protocols
 from lobby import Lobby
 import uuid
 from database import Database
+import select
+import errno
+import time
 
 class Server:
 
@@ -15,16 +18,15 @@ class Server:
         self.PORT = 5555
         self.serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.serverSocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        # Make the serverSocket non blocking
-        self.serverSocket.setblocking(False)
-        # Dynamic listening
         self.server_ip = ''
         self.waiting_for_pair = None
         self.lobby = Lobby()
         self.running = True
         self.database = Database()
         self.database.create()
+        # Struct of self.clients dict : { clientSocket1: nickname1, clientSocket2: nickname2 ...}
         self.clients = {}
+        # Struct of self.lobbies dict : { 'game_id1': [clientSocket1, clientSocket2], 'game_id2': [clientSocket1] ... }
         self.lobbies = {}
 
     # Time function
@@ -51,10 +53,21 @@ class Server:
                     print(f"Connexion acceptée de {addr}")
                     thread = threading.Thread(target=self.handle_client, args=(client, addr))
                     thread.start()
+                except socket.error as e:
+                    if e.errno == errno.EWOULDBLOCK:
+                        # Aucune connexion n'est disponible actuellement, on continue la boucle
+                        continue
+                    else:
+                        # Une autre erreur s'est produite, on la gère
+                        print(f"Erreur inattendue lors de l'acceptation de la connexion: {str(e)}")
                 except Exception as e:
                     print(f"Erreur lors de l'acceptation de la connexion: {str(e)}")
+                
+                # Petite pause pour éviter une utilisation excessive du CPU
+                time.sleep(0.1)
+                
         except Exception as e:
-            print(str(e))
+            print(f"Erreur dans init_connection: {str(e)}")
         finally:
             self.serverSocket.close()
 
@@ -65,16 +78,17 @@ class Server:
         try:
             while self.running:
                 # Menu : choose play or credits or quit
-                self.send_menu_options(client)
-                choice = self.receive_menu_choice(client)
+                options = ["Play", "Credits", "Quit"]
+                self.send_data(Protocols.Response.MENU, options, client)
+                choice = self.get_data(client)
                 # Switch/case to handle the choice
                 if choice == "Credits":
                     self.send_data(Protocols.Response.CREDITS, "Credits", client)
                 elif choice == "Quit":
                     self.send_data(Protocols.Response.QUIT, "Quit", client)
-                    # Make sure to close everything
-                    self.serverSocket.close()
+                    break
                 elif choice == "Play":
+                    print("choice: Play")
                     # First register or login
                     self.handle_auth(client)
                     # Then choose register or login
@@ -151,7 +165,9 @@ class Server:
 
     # Handle authentification choice
     def handle_auth(self, client):
-        self.send_data(Protocols.Response.AUTH, ["Login", "Register", "Quit"], client)
+        print("Started handling authentification")
+        options = ["Login", "Register", "Quit"]
+        self.send_data(Protocols.Response.AUTH, options, client)
         choice = self.get_data(client)
         # Switch/case on the choice
         if choice == "Login":
@@ -165,12 +181,15 @@ class Server:
     def handle_login(self, client):
         # Ask the client for the login and password
         self.send_data(Protocols.Response.LOGIN_REQUEST, "Entrez votre nom d'utilisateur et mot de passe", client)
+        #TODO get_data
         message = json.loads(client.recv(1024).decode("ascii"))
+        #TODO utiliser dict
         if message.get("type") == Protocols.Request.LOGIN:
             nickname = message.get("data").get("nickname")
             password = message.get("data").get("password")
             
-            # Check if it matches with the database (à remplacer par une vérification dans la base de données)
+            #TODO do DB!!
+            # Check if it matches with the database
             if self.database.check_credentials(nickname, password):
                 self.send_data(Protocols.Response.LOGIN_SUCCESS, "Connexion réussie", client)
                 self.clients[client] = nickname
@@ -201,7 +220,6 @@ class Server:
                 self.lobby.remove_client_from_game(game_id, client)
                 self.send_data(Protocols.Response.DISCONNECTED_SUCCESS, None, self.lobby.get_other_client(game_id, client))
                 del self.clients[client]
-                #print(f"{self.time()} User {nickname} disconnected from game {game_id}")
             else:
                 self.send_data(Protocols.Response.DISCONNECTED_FAILED, "Utilisateur introuvable", client)
         else:
@@ -211,11 +229,12 @@ class Server:
     # Register a client
     def handle_register(self, client):
         self.send_data(Protocols.Response.REGISTER_REQUEST, "Entrez un nickname et un mot de passe", client)
-        message = json.loads(client.recv(1024).decode("ascii"))
+        message = self.get_data(client)
         
-        if message.get("type") == Protocols.Request.REGISTER:
-            nickname = message.get("data").get("nickname")
-            password = message.get("data").get("password")
+        #TODO
+        if isinstance(message, dict) and "nickname" in message and "password" in message:
+            nickname = message["nickname"]
+            password = message["password"]
             
             if self.database.user_exists(nickname):
                 self.send_data(Protocols.Response.REGISTER_FAILED, "Nickname déjà utilisé", client)
@@ -226,7 +245,6 @@ class Server:
             
             if self.database.add_user(nickname, hashed_password):
                 self.send_data(Protocols.Response.REGISTER_SUCCESS, "Inscription réussie", client)
-                print(f"{self.time()} New user registered: {nickname}")
                 return True
             else:
                 self.send_data(Protocols.Response.REGISTER_FAILED, "Erreur lors de l'inscription", client)
@@ -234,7 +252,8 @@ class Server:
         else:
             self.send_data(Protocols.Response.REGISTER_FAILED, "Requête invalide", client)
             return False
-
+        
+        
 
     ##########################################################################################
     # Data handling (send, receive...)

@@ -1,7 +1,7 @@
 class Protocols:
 
     class Response:
-        #MENU = "protocol.menu"
+        MENU = "protocol.menu"
         AUTH = "protocol.auth"
         PLAY = "protocol.play"
         CREDITS = "protocol.credits"
