@@ -22,7 +22,7 @@ class Player(pygame.sprite.Sprite):
         self.image = self.current_animation[self.current_frame_index]
         self.rect = pygame.Rect(0,0,18,16)
         self.position = pygame.Vector2(100, 300)
-        self.rect.center = self.position  # Set initial position
+        self.rect.center = self.position 
         self.speed = 100
 
         # Animation timing

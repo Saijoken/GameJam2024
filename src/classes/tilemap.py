@@ -17,7 +17,6 @@ class TileMap:
                 print(f"Object layer: {layer.name}")
                 for obj in layer:
                     if layer.name == "WallsCol":  # Use the object name or other properties to identify collisions
-                        print(f"Found collision object: {obj.name}")
                         rect = pygame.Rect(obj.x, obj.y, obj.width, obj.height)
                         self.collision_layer.append(rect)
             

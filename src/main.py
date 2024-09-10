@@ -1,3 +1,4 @@
+import math
 import pygame
 
 pygame.init()
@@ -7,6 +8,7 @@ from classes.player import Player
 from classes.tilemap import TileMap
 from classes.timer import Timer
 from classes.prop import Prop
+from classes.raycast import Raycast
 
 # Fullscreen 
 screen = pygame.display.set_mode((1024, 768))
@@ -17,6 +19,8 @@ class Game:
         self.timer = Timer(70)
         self.props = []
         self.interaction_key_pressed = False
+        self.active_modal = None  
+        self.ray = Raycast(self.player.rect.center, 0, 200, math.radians(45))
         self.active_modal = None  
 
     def setup_collisions(self):
@@ -29,7 +33,13 @@ class Game:
         self.player.update()
         self.timer.update()
         self.player.rect.topleft = self.player.position
-
+        mouse_pos = pygame.mouse.get_pos()
+        player_center = self.player.rect.center + pygame.Vector2(0,-10)
+        camera_offset = self.camera.position_cam
+        
+        world_mouse_pos = (mouse_pos[0] + camera_offset.x, mouse_pos[1] + camera_offset.y)
+        angle = Raycast.calculate_angle(player_center, world_mouse_pos)
+        self.ray.update(player_center, angle, self.camera)
 
 pygame.display.set_caption("Game Jam")
 
@@ -66,14 +76,14 @@ while running:
 
     # Player movement using arrow keys
     keys = pygame.key.get_pressed()
-    dt = clock.tick(60) / 1000
+    #def __init__(self, start_pos, direction, length, angle_spread, num_rays, color=(255, 255, 0)):
+    #to create the new Raycast use these parameters adding the angle_spread and num_rays:
+
     prev_position = game.player.rect.topleft
     
     # Empêcher le mouvement du joueur si le menu modal est actif
     if not game.active_modal:
         game.player.player_movement(keys, dt)
-
-    
 
     game.update_all()
     
@@ -84,7 +94,6 @@ while running:
         game.player.rect.topleft = prev_position
         game.player.position = pygame.Vector2(prev_position)
 
-    # Affichage
     # Affichage
     screen.fill((0, 0, 0))  # Fond noir
     tilemap.draw(screen, game.camera)  # Afficher la carte en tenant compte de la caméra
@@ -110,6 +119,9 @@ while running:
             game.interaction_key_pressed = True
         elif not keys[pygame.K_e]:
             game.interaction_key_pressed = False
+    
+    #Use camera.apply to draw the ray
+    game.ray.draw(screen)
 
     # Dessiner le menu modal s'il est actif
     if game.active_modal:
@@ -123,4 +135,8 @@ while running:
     #     print("Time's up!")
 
     pygame.display.flip()
+
+    # Calculate delta time
+    dt = clock.tick(60) / 1000
+
 pygame.quit()

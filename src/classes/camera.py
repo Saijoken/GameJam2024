@@ -22,8 +22,10 @@ class Camera:
             return target.move(-int(self.position_cam.x), -int(self.position_cam.y))
         elif isinstance(target, tuple):
             return (target[0] - int(self.position_cam.x), target[1] - int(self.position_cam.y))
+        elif isinstance(target, pygame.Vector2):
+            return target - self.position_cam
         else:
-            raise TypeError("L'argument doit être un pygame.Rect ou un tuple")
+            raise TypeError("L'argument doit être un pygame.Rect un tuple ou un pygame.Vector2")
 
     @staticmethod
     def lerp(start: float, end: float, amount: float) -> float:
