@@ -8,14 +8,26 @@ class TileMap:
         self.tile_size = self.tmx_data.tilewidth
         self.map_width = self.tmx_data.width * self.tile_size
         self.map_height = self.tmx_data.height * self.tile_size
+        self.collision_layer = []
 
         # Extraire les collisions sur la map.
-        self.collision_layer = []
-        for layer in self.tmx_data.visible_layers:
-            if isinstance(layer, pytmx.TiledTileLayer):
+        for layer in self.tmx_data.layers:
+            # Check if it's an object layer (TiledObjectGroup)
+            if isinstance(layer, pytmx.TiledObjectGroup):
+                print(f"Object layer: {layer.name}")
+                for obj in layer:
+                    if layer.name == "WallsCol":  # Use the object name or other properties to identify collisions
+                        print(f"Found collision object: {obj.name}")
+                        rect = pygame.Rect(obj.x, obj.y, obj.width, obj.height)
+                        self.collision_layer.append(rect)
+            
+            # Check if it's a tile layer (TiledTileLayer)
+            elif isinstance(layer, pytmx.TiledTileLayer):
+                print(f"Tile layer: {layer.name}")
                 for x, y, gid in layer:
                     tile = self.tmx_data.get_tile_properties_by_gid(gid)
                     if tile and 'WallsCol' in tile and tile['WallsCol']:
+                        print(f"Tile collision at ({x}, {y})")
                         self.collision_layer.append(pygame.Rect(x * self.tile_size, y * self.tile_size, self.tile_size, self.tile_size))
 
     def draw(self, screen, camera):

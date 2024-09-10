@@ -14,7 +14,7 @@ screen = pygame.display.set_mode((1024, 768))
 class Game:
     def __init__(self):
         self.player = Player(screen)
-        self.timer = Timer(20)
+        self.timer = Timer(70)
         self.props = []
         self.interaction_key_pressed = False
         self.active_modal = None  # Ajout de cette ligne
@@ -27,7 +27,6 @@ class Game:
         self.player.update()
         self.timer.update()
         self.player.rect.topleft = self.player.position
-
 
 
 pygame.display.set_caption("Game Jam")
@@ -43,10 +42,10 @@ game = Game()
 game.setup_collisions()
 
 # Créer une instance de TileMap
-tilemap = TileMap('assets/maps/map.tmx')
+tilemap = TileMap('assets/maps/enigma1.tmx')
 
 #Initialisation de la police du timer
-font = pygame.font.Font(None, 36)
+font = pygame.font.Font('assets/fonts/SpecialElite-Regular.ttf', 50)
 
 # Faire en sorte que la camera suit le joueur
 game.camera = Camera(screen_size, game.player)
@@ -66,14 +65,22 @@ while running:
     # Player movement using arrow keys
     keys = pygame.key.get_pressed()
     dt = clock.tick(60) / 1000
-
+    prev_position = game.player.rect.topleft
+    
     # Empêcher le mouvement du joueur si le menu modal est actif
     if not game.active_modal:
         game.player.player_movement(keys, dt)
 
+    
+
     game.update_all()
     
     game.camera.update()
+
+    if tilemap.collides_with_walls(game.player.rect):
+        # If there is a collision, revert to the previous position
+        game.player.rect.topleft = prev_position
+        game.player.position = pygame.Vector2(prev_position)
 
     # Affichage
     # Affichage
@@ -87,7 +94,7 @@ while running:
             collided_object = prop
         prop.draw(screen, game.camera)
 
-    screen.blit(game.player.image, game.camera.apply(game.player.rect))
+    screen.blit(game.player.image, game.camera.apply(game.player.rect.move(-7,-16)))
     # Draw interaction text if collision is detected
     if collided_object:
         collided_object.draw_text(screen)

@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <tileset version="1.10" tiledversion="1.11.0" name="Valve" tilewidth="16" tileheight="16" tilecount="4" columns="2">
- <image source="../Sprite GameJam 24/Pipes/Valve.png" width="32" height="32"/>
+ <image source="../tiles/Pipes/Valve.png" width="32" height="32"/>
 </tileset>
