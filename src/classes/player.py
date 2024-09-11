@@ -24,6 +24,7 @@ class Player(pygame.sprite.Sprite):
         self.position = pygame.Vector2(100, 300)
         self.rect.center = self.position 
         self.speed = 100
+        self.temporality = "past" # "past" or "future"
 
         # Animation timing
         self.frame_counter = 0

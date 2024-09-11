@@ -11,6 +11,8 @@ from classes.prop import Prop
 from classes.raycast import Raycast
 from classes.water_animation import WaterAnimation
 from classes.cinematic import Cinematic
+from classes.hint_system import HintSystem, hint_system
+from classes.modal_menu import ModalMenu
 
 # Fullscreen 
 screen = pygame.display.set_mode((1024, 768), pygame.SCALED)
@@ -25,7 +27,9 @@ class Game:
         self.ray = Raycast(self.player.rect.center, 0, 200, math.radians(45))
         self.active_modal = None 
         self.water_animation = WaterAnimation(screen) 
-        
+        self.hint_system = hint_system
+        self.current_puzzle_id = "valve_puzzle"  # À modifier selon l'énigme en cours
+
         map_size = pygame.Vector2(tilemap.map_width, tilemap.map_height)
         self.camera = Camera(screen_size, self.player, map_size)
         self.cinematic = Cinematic(screen)
@@ -49,6 +53,16 @@ class Game:
         world_mouse_pos = (mouse_pos[0] + camera_offset.x, mouse_pos[1] + camera_offset.y)
         angle = Raycast.calculate_angle(player_center, world_mouse_pos)
         self.ray.update(player_center, angle, self.camera)
+
+    def display_hint(self):
+        hint = self.hint_system.get_current_hint(self.player.temporality, self.current_puzzle_id)
+        self.active_modal = ModalMenu(screen, name="Indice", text=hint)
+
+    def advance_hint(self):
+        if self.hint_system.next_hint(self.player.temporality, self.current_puzzle_id):
+            self.display_hint()
+        else:
+            print("Debug: Pas d'autre indice disponible.")
 
 pygame.display.set_caption("Game Jam")
 
@@ -101,8 +115,19 @@ while running:
         
         # Gestion des événements du menu modal
         if game.active_modal:
-            game.active_modal.handle_event(event)
+            if game.active_modal.handle_event(event):
+                game.active_modal = None
 
+        # Contrôles de débogage pour les indices
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_h:
+                game.display_hint()
+            elif event.key == pygame.K_RIGHT:
+                game.advance_hint()
+            elif event.key == pygame.K_i:
+                print(f"Debug: Indice actuel pour {game.player.temporality}, {game.current_puzzle_id}: {game.hint_system.get_current_hint(game.player.temporality, game.current_puzzle_id)}")
+            elif event.key == pygame.K_UP:
+                game.current_puzzle_id = "nuit"
     # Player movement using arrow keys
     keys = pygame.key.get_pressed()
     #def __init__(self, start_pos, direction, length, angle_spread, num_rays, color=(255, 255, 0)):
