@@ -10,6 +10,7 @@ from classes.timer import Timer
 from classes.prop import Prop
 from classes.raycast import Raycast
 from classes.water_animation import WaterAnimation
+from classes.cinematic import Cinematic
 
 # Fullscreen 
 screen = pygame.display.set_mode((1024, 768))
@@ -17,13 +18,14 @@ screen = pygame.display.set_mode((1024, 768))
 class Game:
     def __init__(self):
         self.player = Player(screen)
-        self.timer = Timer(70)
+        self.timer = Timer(300)
         self.props = []
         self.interaction_key_pressed = False
         self.active_modal = None  
         self.ray = Raycast(self.player.rect.center, 0, 200, math.radians(45))
         self.active_modal = None 
         self.water_animation = WaterAnimation(screen) 
+        self.cinematic = Cinematic(screen)
 
     def setup_collisions(self):
         if tilemap != None:
@@ -53,7 +55,7 @@ running = True
 dt = 0
 
 # Créer une instance de TileMap
-tilemap = TileMap('assets/maps/enigma1.tmx')
+tilemap = TileMap('assets/maps/enigma4.tmx')
 
 # Initialisation du jeu initialisant le joueur et la camera
 game = Game()
@@ -69,6 +71,12 @@ game.camera = Camera(screen_size, game.player)
 
 game.player.rect.topleft = (32,32)
 game.water_animation.rect.topleft = (16,16)
+
+
+#load the cinematic
+game.cinematic.story_screen()
+
+running = True
 
 while running:
     # Fermeture du jeu quand le bouton X est cliqué
