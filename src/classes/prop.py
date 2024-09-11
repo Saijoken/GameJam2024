@@ -6,7 +6,7 @@ from classes.tilemap import TileMap
 
 class Prop:
     # Création d'un New Prop
-    def __init__(self, id, name, rect, type, single_use=False, tilemap=None):
+    def __init__(self, id, name, rect, type, single_use=False, tilemap=None, text=None, usable=True):
         self.id = id
         self.name = name
         self.rect = rect
@@ -15,9 +15,10 @@ class Prop:
         self.used = False
         self.tilemap = tilemap
         
-        # Affichage du text interaction
-        self.font = pygame.font.Font(None, 36)
-        self.text = self.font.render("Appuyez sur E pour interagir avec " + name, True, (255, 255, 255))
+        # Affichage du text intéraction
+        self.font = pygame.font.Font(None, 36) 
+
+        self.text = self.font.render(text if text is not None else f"Appuyez sur E pour interagir avec {name}", True, (255, 255, 255))
         self.text_rect = self.text.get_rect()
         
     # Affichage du text + hitbox
@@ -74,6 +75,9 @@ class Prop:
             case "symbol_lock":
                 symbol_lock = SymbolLock(screen)
                 return ModalMenu(screen, "Symboles", custom_content=symbol_lock)
+            case "01_door_past":
+                print("Porte verouiller")
+                return None
             case _:
                 modal_menu = ModalMenu(screen, image_path="assets/images/test.png")
                 return modal_menu

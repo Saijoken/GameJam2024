@@ -43,10 +43,13 @@ class TileMap:
 
         for layer in self.tmx_data.visible_layers:
             if isinstance(layer, pytmx.TiledTileLayer):
-                if layer.name == 'SewerCode' and self.isValveOpen == True:
-                    layer.visible = False
-                if layer.name == 'SewerWaterFall' and self.isValveOpen == False:
-                    layer.visible = False
+                match layer.name:
+                    case 'SewerCode':
+                        if self.isValveOpen == True:
+                            layer.visible = False
+                    case 'SewerWaterFall':
+                        if self.isValveOpen == False:
+                            layer.visible = False
                 for x in range(start_x, end_x):
                     for y in range(start_y, end_y):
                         gid = layer.data[y][x]
@@ -62,7 +65,7 @@ class TileMap:
                                 # Redimensionner l'image de la tuile
                                 scaled_tile = pygame.transform.scale(tile_image, scaled_size)
                                 screen.blit(scaled_tile, scaled_pos)
-
+    
     def collides_with_walls(self, rect):
         for tile in self.collision_layer:
             if rect.colliderect(tile):
