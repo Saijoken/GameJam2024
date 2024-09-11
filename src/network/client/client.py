@@ -1,19 +1,51 @@
+import asyncio
+import asyncudp
 import json
-import socket
-import threading
+from server.protocols import Protocols
 
-class Client(object):
+class Client:
+    def __init__(self, server_ip, server_port):
+        self.server_ip = server_ip
+        self.server_port = server_port
+        self.client_socket = None
+        self.running = True
 
-    def __init__(self, server_ip, port):
-        # Initialize server and port
-        self.server_ip = str(server_ip)
-        self.port = 5555
-        # Create socket and initialize connection type
-        self.clientSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    async def connect(self):
+        self.client_socket = await asyncudp.create_socket(remote_addr=(self.server_ip, self.server_port))
+        print(f"Connected to server")
 
-    def send_data(self, msg):
-        self.connection.sendall(json.dumps(msg).encode())
+    # Send any data
+    async def send_data(self, data):
+        message = json.dumps(data).encode()
+        self.client_socket.sendto(message)
 
-    def send_data_with_type(self, data_type, data):
-        msg = json.dumps({"type": data_type, "data": data})
-        self.client.send(msg.encode('ascii'))
+    # Send formated message
+    async def send_command(self, command, data=None):
+        message = {
+            "type": command,
+            "data": data
+        }
+        await self.send_data(message)
+
+    async def receive_data(self):
+        data, _ = await self.client_socket.recvfrom()
+        return json.loads(data.decode())
+
+    async def listen(self):
+        while self.running:
+            try:
+                data = await self.receive_data()
+                print("Received from server:", data)
+            except Exception as e:
+                print(f"Error receiving data: {e}")
+                if not self.running:
+                    break
+
+    async def run(self):
+        await self.connect()
+        listen_task = asyncio.create_task(self.listen())
+        await listen_task
+
+if __name__ == "__main__":
+    client = Client("localhost", 5555)
+    asyncio.run(client.run())
