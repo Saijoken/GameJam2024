@@ -67,18 +67,18 @@ class Game:
         if self.level.get_level_name() == "enigma1":
             #Props Enigma 1
             # 1er Salle
-            self.props.append(Prop("01_valve", "Valve", pygame.Rect(305, 75, 35, 35), "valve", single_use=True, tilemap=tilemap))
-            self.props.append(Prop("01_potentiometer1", "Potentiomètre 1", pygame.Rect(253, 195, 25, 35), "potentiometer",tilemap=tilemap))
-            self.props.append(Prop("01_potentiometer2", "Potentiomètre 2", pygame.Rect(285, 195, 25, 35), "potentiometer",tilemap=tilemap))
-            self.props.append(Prop("01_symbol_lock", "Symboles", pygame.Rect(188, 22, 25, 35), "symbol_lock"))
+            self.props.append(Prop("01_valve", "Valve", pygame.Rect(308, 100, 50, 50), "valve", single_use=True, tilemap=tilemap))
+            self.props.append(Prop("01_potentiometer1", "Potentiomètre 1", pygame.Rect(253, 205, 45, 65), "potentiometer",tilemap=tilemap))
+            self.props.append(Prop("01_potentiometer2", "Potentiomètre 2", pygame.Rect(285, 205, 45, 65), "potentiometer",tilemap=tilemap))
+            self.props.append(Prop("01_symbol_lock", "Symboles", pygame.Rect(188, 22, 55, 95), "symbol_lock"))
             if self.path_level[0]["visible"] == False:
-                self.props.append(Prop("01_door_closed_past_1_up", "Porte verouillée", pygame.Rect(9*16, 3*16, 32, 16), "door_closed_past_1_up", text="Porte verouillée"))
+                self.props.append(Prop("01_door_closed_past_1_up", "Porte verouillée", pygame.Rect(9*16, 3*16, 64, 32), "door_closed_past_1_up", text="Porte verouillée"))
             else:
-                self.props.append(Prop("01_door_opened_past_1_up", "Porte ouverte", pygame.Rect(9*16, 3*16, 32, 16), "door_opened_past_1_up", text="Porte ouverte"))
+                self.props.append(Prop("01_door_opened_past_1_up", "Porte ouverte", pygame.Rect(9*16, 3*16, 64, 32), "door_opened_past_1_up", text="Porte ouverte"))
             self.props.append(Prop("01_door_future", "Porte verouillée", pygame.Rect(35*16, 3*16, 32, 16), "door_future", text="Porte verouillée"))       
-            self.props.append(Prop("01_sign_teleporter_past", "Téléporteur", pygame.Rect(16, 14*16, 32, 32), "sign_teleporter", text="Salle du téléporteur"))
+            self.props.append(Prop("01_sign_teleporter_past", "Téléporteur", pygame.Rect(16, 15*16, 50, 50), "sign_teleporter", text="Salle du téléporteur"))
             self.props.append(Prop("01_sign_teleporter_future", "Téléporteur", pygame.Rect(27*16, 14*16, 32, 32), "sign_teleporter", text="Salle du téléporteur"))
-            self.props.append(Prop("01_sign_valve", "Valve", pygame.Rect(21*16, 7*16, 32, 32), "sign_valve", text="Contrôle de la valve"))     
+            self.props.append(Prop("01_sign_valve", "Valve", pygame.Rect(21*16, 7*16, 50, 50), "sign_valve", text="Contrôle de la valve"))     
         elif self.level.get_level_name() == "enigma2and3":
             pass
             #Props Enigma 2 and 3
@@ -239,7 +239,7 @@ while running:
             collided_object = prop
         prop.draw(screen, game.camera)
 
-    screen.blit(game.player.image, game.camera.apply(game.player.rect.move(-7,-16)))
+    screen.blit(game.player.image, game.camera.apply(game.player.rect.move(-8,-16)))
     #game.ray.draw(screen)
 
     # Draw interaction text if collision is detected

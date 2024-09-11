@@ -66,15 +66,15 @@ class Prop:
         - None if no collision
         """
         prop_center = pygame.Vector2(self.rect.center)
-        player_center = pygame.Vector2(player_pos)
+        player_feet = pygame.Vector2(player_pos[0] + 8, player_pos[1] + 16)  # Ajustement pour les pieds du joueur
         
-        distance = prop_center.distance_to(player_center)
+        distance = prop_center.distance_to(player_feet)
         
         if distance <= interaction_radius:
             # Draw hitbox
             hitbox_surface = pygame.Surface((interaction_radius * 2, interaction_radius * 2), pygame.SRCALPHA)
             pygame.draw.circle(hitbox_surface, (255, 0, 0, 128), (interaction_radius, interaction_radius), interaction_radius)
-            screen.blit(hitbox_surface, camera.apply(player_center - pygame.Vector2(interaction_radius, interaction_radius)))
+            screen.blit(hitbox_surface, camera.apply(player_feet - pygame.Vector2(interaction_radius, interaction_radius)))
             return self
         return None
     
