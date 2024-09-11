@@ -7,15 +7,22 @@ from src.network.client.client import Client
 from protocols import Protocols
 
 async def test_client_past():
-    client = Client("localhost", 5555)
+    client = Client("127.0.0.1", 5555)
     await client.connect()
-
+    # Send first message to get the server to know the client
+    #await client.send_data("First connection")
     # Play
     response = await client.receive_data()
-    print("Première réponse:", response)
-    await client.send_command(Protocols.Request.WANT_TO_PLAY, None)
-    auth_options = await client.receive_data()
-    print("Auth options:", auth_options)
+    print("Première réponse (menu):", response)
+    # S'assurer que la réponse est bien le menu avant d'envoyer une commande
+    if response and response.get("type") == Protocols.Response.MENU:
+        await asyncio.sleep(0.1)
+        await client.send_command(Protocols.Request.WANT_TO_PLAY, None)
+        # Attendre les options d'authentification après avoir demandé à jouer
+        auth_options = await client.receive_data()
+        print("Auth options:", auth_options)
+    else:
+        print("Erreur : le menu n'a pas été reçu correctement")
 
     # Login
     # Ne va potentiellement pas fonctionner

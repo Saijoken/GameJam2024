@@ -7,7 +7,7 @@ from src.network.client.client import Client
 from protocols import Protocols
 
 async def test_client_future():
-    client = Client("localhost", 5555)
+    client = Client("127.0.0.1", 5555)
     await client.connect()
 
     # Play

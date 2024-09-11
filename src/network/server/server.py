@@ -18,7 +18,7 @@ class Server:
         self.PORT = 5555
         #self.server_ip = socket.gethostbyname(self.SERVER)
         # Listening on all available interfaces
-        self.server_ip = "0.0.0.0"
+        self.server_ip = "127.0.0.1"
         self.udp_socket = None
         self.waiting_for_pair = None
         self.lobby = Lobby()
@@ -60,7 +60,9 @@ class Server:
                     #thread.start()
 
                     # UDP doesn't use connections
+                    print(f"{self.time()} En attente de données")
                     data, addr = await self.udp_socket.recvfrom()
+                    print(f"Reçu {data} de {addr}")
                     # Create the first task (the debut of the game, handle_client)
                     # Now handle_client doesn't use connections anymore just data
                     asyncio.create_task(self.handle_client(data, addr))
@@ -77,18 +79,21 @@ class Server:
     # If login/register successful then handle joining or creating a lobby
     async def handle_client(self, data, addr, game_id=None):
         try:
-            # Decode the received data
-            #decoded_data = json.loads(data.decode())
-            #response_type = decoded_data.get('type')
-            #response_data = decoded_data.get('data')
+            # Ajout d'un log pour voir les données reçues
+            print(f"Data received from {addr}: {data}")
+            # Send menu to client
             options = ["Play", "Credits", "Settings", "Quit"]
             await self.send_data(Protocols.Response.MENU, options, addr)
             # Wait for the response
+            await asyncio.sleep(0.1)
             response = await self.receive_data(addr)
+            print(f"Client response: {response}")
             choice = response.get('type')
             #print(f"Received from {addr}: type={response_type}, data={response_data}")
             if choice == Protocols.Request.WANT_TO_PLAY:
                 auth_success = await self.handle_auth(addr)
+                # Log pour voir si l'authentification est atteinte
+                print(f"Authentication success: {auth_success}")
                 if auth_success:
                     lobby_opt = ["Create a lobby", "Join a lobby"]
                     await self.send_data(Protocols.Response.CREATE_JOIN, lobby_opt, addr)

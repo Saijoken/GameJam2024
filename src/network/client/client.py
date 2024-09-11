@@ -12,6 +12,7 @@ class Client:
     async def connect(self):
         self.client_socket = await asyncudp.create_socket(remote_addr=(self.server_ip, self.server_port))
         print(f"Connected to server")
+        await self.send_data("First")
 
     # Send any data
     async def send_data(self, data):
@@ -24,6 +25,7 @@ class Client:
             "type": command,
             "data": data
         }
+        print(f"Sending command: {message}")
         await self.send_data(message)
 
     # 
