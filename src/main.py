@@ -11,6 +11,7 @@ from classes.prop import Prop
 from classes.raycast import Raycast
 from classes.water_animation import WaterAnimation
 from classes.cinematic import Cinematic
+from classes.sound import Sound
 
 # Fullscreen 
 screen = pygame.display.set_mode((1024, 768), pygame.SCALED)
@@ -31,13 +32,34 @@ class Game:
         self.cinematic = Cinematic(screen)
 
     def setup_collisions(self):
-        if tilemap != None:
+        if tilemap.name == "enigma1.tmx":
+            #Props Enigma 1
             self.props.append(Prop("01_valve", "Valve", pygame.Rect(305, 75, 35, 35), "valve", single_use=True, tilemap=tilemap))
             self.props.append(Prop("01_potentiometer1", "Potentiomètre 1", pygame.Rect(253, 195, 25, 35), "potentiometer",tilemap=tilemap))
             self.props.append(Prop("01_potentiometer2", "Potentiomètre 2", pygame.Rect(285, 195, 25, 35), "potentiometer",tilemap=tilemap))
             self.props.append(Prop("01_symbol_lock", "Symboles", pygame.Rect(188, 22, 25, 35), "symbol_lock"))
             self.props.append(Prop("01_door_past", "Porte verouillée", pygame.Rect(9*16, 3*16, 32, 16), "door_past", text="Porte verouillée"))   
             self.props.append(Prop("01_door_future", "Porte verouillée", pygame.Rect(35*16, 3*16, 32, 16), "door_future", text="Porte verouillée"))   
+        elif tilemap.name == "enigma2and3.tmx":
+            pass
+            #Props Enigma 2 and 3
+        elif tilemap.name == "enigma4.tmx":
+            #Props Enigma 4
+            self.props.append(Prop("01_note_plate", "Note", pygame.Rect(112, 144, 64, 64), "note_plate"))
+            self.props.append(Prop("02_note_plate", "Note", pygame.Rect(144, 144, 64, 64), "note_plate"))
+            self.props.append(Prop("03_note_plate", "Note", pygame.Rect(208, 144, 64, 64), "note_plate"))
+            self.props.append(Prop("04_note_plate", "Note", pygame.Rect(240, 144, 64, 64), "note_plate"))
+            self.props.append(Prop("05_note_plate", "Note", pygame.Rect(112, 176, 64, 64), "note_plate"))
+            self.props.append(Prop("06_note_plate", "Note", pygame.Rect(144, 176, 64, 64), "note_plate"))
+            self.props.append(Prop("07_note_plate", "Note", pygame.Rect(208, 176, 64, 64), "note_plate"))
+            self.props.append(Prop("08_note_plate", "Note", pygame.Rect(240, 208, 64, 64), "note_plate"))
+            self.props.append(Prop("09_note_plate", "Note", pygame.Rect(144, 240, 64, 64), "note_plate"))
+            self.props.append(Prop("10_note_plate", "Note", pygame.Rect(240, 240, 64, 64), "note_plate"))
+            self.props.append(Prop("11_note_plate", "Note", pygame.Rect(144, 272, 64, 64), "note_plate"))
+            self.props.append(Prop("12_note_plate", "Note", pygame.Rect(208, 272, 64, 64), "note_plate"))
+            self.props.append(Prop("13_note_plate", "Note", pygame.Rect(240, 272, 64, 64), "note_plate"))
+
+            
     def update_all(self):
         self.player.update()
         self.timer.update()
@@ -59,7 +81,6 @@ running = True
 dt = 0
 
 # Créer une instance de TileMap
-#tilemap = TileMap('assets/maps/enigma4.tmx')
 tilemap = TileMap('assets/maps/enigma1.tmx')
 
 # Initialisation du jeu
@@ -81,9 +102,10 @@ font = pygame.font.Font('assets/fonts/SpecialElite-Regular.ttf', 50)
 game.player.rect.topleft = (32,32)
 game.water_animation.rect.topleft = (16,16)
 
-
 #load the cinematic
 game.cinematic.story_screen()
+
+Sound.get().loop_music("midna")
 
 running = True
 
@@ -99,8 +121,6 @@ while running:
 
     # Player movement using arrow keys
     keys = pygame.key.get_pressed()
-    #def __init__(self, start_pos, direction, length, angle_spread, num_rays, color=(255, 255, 0)):
-    #to create the new Raycast use these parameters adding the angle_spread and num_rays:
 
     prev_position = game.player.rect.topleft
     
@@ -113,7 +133,7 @@ while running:
     game.camera.update()
 
     game.water_animation.update()
-
+        
     if tilemap.collides_with_walls(game.player.rect):
         # If there is a collision, revert to the previous position
         game.player.rect.topleft = prev_position
@@ -144,7 +164,11 @@ while running:
     # Check for collisions with interactible objects
     collided_object = None
     for prop in game.props:
+        #draw the player rect in green
         if prop.check_collision(game.player.rect):
+            # Draw player rect in red
+            #pygame.draw.rect(screen, (255, 0, 0), game.camera.apply(pygame.Rect(game.player.rect.x - 7, game.player.rect.y - 16, game.player.rect.width, game.player.rect.height)), 2)
+
             collided_object = prop
         prop.draw(screen, game.camera)
 

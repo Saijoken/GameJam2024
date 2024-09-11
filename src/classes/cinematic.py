@@ -10,19 +10,19 @@ class Cinematic:
 
     def story_screen(self):
         story_text = [
-            "Il etait une fois dans un monde voue a l'apocalypse,",
-            "2 heros lies par une pierre.",
-            "Cette pierre magique traversant les temps et les dimensions,",
-            "permettait a ces deux personnes de temps differents ",
+            "Il était une fois, dans un monde voué à l'apocalypse,",
+            "2 héros liés par une pierre.",
+            "Cette pierre magique, traversant les temps et les dimensions,",
+            "permettait à ces deux personnes de temps différents",
             "de communiquer entre elles.",
-            "Afin d'eviter de faire sombrer le monde qu'ils aiment tant,",
-            "ces deux heros vont devoir collaborer ensemble",
+            "Afin d'éviter de faire sombrer le monde qu'ils aiment tant,",
+            "ces deux héros vont devoir collaborer ensemble",
             "afin de sauver le monde.",
-            "Mais qui sait quelles peripeties ils vont rencontrer...",
-            "Est ce que cette amitie est vouee a durer ?"
+            "Mais qui sait quelles péripéties ils vont rencontrer...",
+            "Est-ce que cette amitié est vouée à durer ?"
         ]
 
-        font = pygame.font.Font("./assets/fonts/Toriko.ttf", 36)
+        font = pygame.font.Font("./assets/fonts/RetroGaming.ttf", 19)
         
         # Background
         pygame.draw.rect(self.screen, (100, 100, 100), (self.screen.get_width()/2 - 400, self.screen.get_height() / 2 - 250, 800, 500))
@@ -57,7 +57,7 @@ class Cinematic:
             pygame.draw.rect(self.screen, (100, 100, 100), (self.screen.get_width()/2 - 400, self.screen.get_height() / 2 - 250, 800, 500))
             
             for i, line in enumerate(story_text):
-                text = font.render(line.upper(), True, (255, 255, 255))
+                text = font.render(line, True, (255, 255, 255))
                 text_surface = pygame.Surface(text.get_size(), pygame.SRCALPHA)
                 text_surface.fill((255, 255, 255, 0))
                 text_surface.blit(text, (0, 0))
@@ -77,8 +77,5 @@ class Cinematic:
             pygame.display.flip()
             clock.tick(60)  # Limit to 60 FPS
 
-
-# what value to change to speed up the time between each text ?
-# It
     def end_screen(self):
         pass

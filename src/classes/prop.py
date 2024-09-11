@@ -2,6 +2,7 @@ import pygame
 from classes.modal_menu import ModalMenu
 from classes.prop_types.potentiometer import Potentiometer
 from classes.prop_types.symbol_lock import SymbolLock
+from classes.prop_types.note_plate import NotePlate
 from classes.tilemap import TileMap
 
 class Prop:
@@ -14,7 +15,6 @@ class Prop:
         self.single_use = single_use
         self.used = False
         self.tilemap = tilemap
-        
         # Affichage du text intéraction
         self.font = pygame.font.Font(None, 36) 
 
@@ -75,6 +75,9 @@ class Prop:
             case "symbol_lock":
                 symbol_lock = SymbolLock(screen)
                 return ModalMenu(screen, "Symboles", custom_content=symbol_lock)
+            case "note_plate":
+                #note_plate = NotePlate(self.player_rect, screen)
+                return None
             case "01_door_past":
                 print("Porte verouiller")
                 return None

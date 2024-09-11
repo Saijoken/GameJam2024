@@ -8,8 +8,6 @@ class Symbol:
         self.selected = False
         # Split assets/symbol_lock/symbol1.png pour avoir uniquement le nombre
         self.id = image_path.split("symbol")[2].split(".png")[0]
-        
-
 
     def draw(self, screen):
         screen.blit(self.image, self.rect.topleft)

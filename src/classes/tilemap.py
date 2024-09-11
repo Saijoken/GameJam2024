@@ -1,5 +1,6 @@
 import pygame
 import pytmx
+import os
 
 class TileMap:
     def __init__(self, tmx_file):
@@ -10,6 +11,7 @@ class TileMap:
         self.map_height = self.tmx_data.height * self.tile_size
         self.collision_layer = []
         self.isValveOpen = True
+        self.name = os.path.basename(tmx_file)  #getfile name
 
         # Extraire les collisions sur la map.
         for layer in self.tmx_data.layers:
