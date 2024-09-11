@@ -4,6 +4,7 @@ from classes.prop_types.potentiometer import Potentiometer
 from classes.prop_types.symbol_lock import SymbolLock
 from classes.prop_types.note_plate import NotePlate
 from classes.tilemap import TileMap
+from classes.level import Level
 
 class Prop:
     # Création d'un New Prop
@@ -21,9 +22,20 @@ class Prop:
         self.usable = usable
         self.text = self.font.render(text if text is not None else f"Appuyez sur E pour interagir avec {name}", True, (255, 255, 255))
         self.text_rect = self.text.get_rect()
+        self.level = None
         
     def update_usability(self, usable):
         self.usable = usable
+
+    def update_text(self, text):
+        self.text = self.font.render(text, True, (255, 255, 255))
+        self.text_rect = self.text.get_rect()
+
+    def update_type(self, type):
+        self.type = type
+
+    def update_id(self, id):
+        self.id = id
     
     # Affichage du text + hitbox
     def draw(self, screen, camera):
@@ -82,5 +94,16 @@ class Prop:
             case "note_plate":
                 #note_plate = NotePlate(self.player_rect, screen)
                 return None
+            case "door_opened_past_1_up":
+                return None
+            case "door":
+                if self.usable:
+                    match self.id:
+                        case "01_door_opened_past_1_up":
+                            level = Level(150, 260, "past", "enigma2and3")
+                            return None
+                else:
+                    return None
+            
             case _:
                 return None

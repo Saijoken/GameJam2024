@@ -15,7 +15,6 @@ from classes.sound import Sound
 from classes.hint_system import HintSystem, hint_system
 from classes.modal_menu import ModalMenu
 from classes.level import Level
-
 # Fullscreen 
 screen = pygame.display.set_mode((1024, 768), pygame.SCALED)
 
@@ -34,6 +33,27 @@ class Game:
         self.hint_system = hint_system
         self.current_puzzle_id = "valve_puzzle"  # À modifier selon l'énigme en cours
         self.level = Level(150, 260, "past", "enigma1")
+        self.path_level = [{
+            "name": "enigma1",
+            "visible": False,
+            },
+            {
+            "name": "enigma2and3",
+            "visible": False,
+            },
+            {
+            "name": "enigma4",
+            "visible": False,
+            },
+            {
+            "name": "enigma5",
+            "visible": False,
+            },
+            {
+            "name": "teleporter",
+            "visible": False,
+            }
+        ]
 
         map_size = pygame.Vector2(tilemap.map_width, tilemap.map_height)
         self.camera = Camera(screen_size, self.player, map_size)
@@ -42,23 +62,26 @@ class Game:
         self.error_number = 0
 
     def setup_collisions(self):
-
-        if level.get_level_name() == "enigma1":
+        print("Level : ",self.level.get_level_name())
+        if self.level.get_level_name() == "enigma1":
             #Props Enigma 1
             # 1er Salle
             self.props.append(Prop("01_valve", "Valve", pygame.Rect(305, 75, 35, 35), "valve", single_use=True, tilemap=tilemap))
             self.props.append(Prop("01_potentiometer1", "Potentiomètre 1", pygame.Rect(253, 195, 25, 35), "potentiometer",tilemap=tilemap))
             self.props.append(Prop("01_potentiometer2", "Potentiomètre 2", pygame.Rect(285, 195, 25, 35), "potentiometer",tilemap=tilemap))
             self.props.append(Prop("01_symbol_lock", "Symboles", pygame.Rect(188, 22, 25, 35), "symbol_lock"))
-            self.props.append(Prop("01_door_past", "Porte verouillée", pygame.Rect(9*16, 3*16, 32, 16), "door_past", text="Porte verouillée"))
+            if self.path_level[0]["visible"] == False:
+                self.props.append(Prop("01_door_closed_past_1_up", "Porte verouillée", pygame.Rect(9*16, 3*16, 32, 16), "door_closed_past_1_up", text="Porte verouillée"))
+            else:
+                self.props.append(Prop("01_door_opened_past_1_up", "Porte ouverte", pygame.Rect(9*16, 3*16, 32, 16), "door_opened_past_1_up", text="Porte ouverte"))
             self.props.append(Prop("01_door_future", "Porte verouillée", pygame.Rect(35*16, 3*16, 32, 16), "door_future", text="Porte verouillée"))       
             self.props.append(Prop("01_sign_teleporter_past", "Téléporteur", pygame.Rect(16, 14*16, 32, 32), "sign_teleporter", text="Salle du téléporteur"))
             self.props.append(Prop("01_sign_teleporter_future", "Téléporteur", pygame.Rect(27*16, 14*16, 32, 32), "sign_teleporter", text="Salle du téléporteur"))
             self.props.append(Prop("01_sign_valve", "Valve", pygame.Rect(21*16, 7*16, 32, 32), "sign_valve", text="Contrôle de la valve"))     
-        elif level.get_level_name() == "enigma2and3":
+        elif self.level.get_level_name() == "enigma2and3":
             pass
             #Props Enigma 2 and 3
-        elif level.get_level_name() == "enigma4":
+        elif self.level.get_level_name() == "enigma4":
             #Props Enigma 4
             self.props.append(Prop("01_note_plate", "Note", pygame.Rect(112, 144, 64, 64), "note_plate"))
             self.props.append(Prop("02_note_plate", "Note", pygame.Rect(144, 144, 64, 64), "note_plate"))
@@ -132,7 +155,7 @@ game.water_animation.rect.topleft = (16,16)
 #load the cinematic
 game.cinematic.story_screen()
 
-# Sound.get().loop_music("midna")
+#Sound.get().loop_music("midna")
 
 running = True
 
@@ -182,13 +205,14 @@ while running:
     screen.fill((0, 0, 0))  # Fond noir
     tilemap.draw(screen, game.camera)  # Afficher la carte en tenant compte de la caméra
 
-    # Affichage des vaguellette sur l'eau Passé
-    game.water_animation.draw(game.camera,3,9)
-    game.water_animation.draw(game.camera,4,8)
-    game.water_animation.draw(game.camera,5,7)
-    game.water_animation.draw(game.camera,6,8)
-    game.water_animation.draw(game.camera,7,7)
-    game.water_animation.draw(game.camera,8,9)
+    if game.level.get_level_name() == "enigma1":
+        # Affichage des vaguellette sur l'eau Passé
+        game.water_animation.draw(game.camera,3,9)
+        game.water_animation.draw(game.camera,4,8)
+        game.water_animation.draw(game.camera,5,7)
+        game.water_animation.draw(game.camera,6,8)
+        game.water_animation.draw(game.camera,7,7)
+        game.water_animation.draw(game.camera,8,9)
 
     if tilemap.isValveOpen == True:
     # Affichage des vaguellette sur l'eau Future
@@ -198,6 +222,8 @@ while running:
         game.water_animation.draw(game.camera,32,8)
         game.water_animation.draw(game.camera,33,7)
         game.water_animation.draw(game.camera,34,9)
+    
+
 
 
     # Check for collisions with interactible objects
@@ -217,15 +243,27 @@ while running:
     # Draw interaction text if collision is detected
     if collided_object and collided_object.usable == True:
         collided_object.draw_text(screen)
+        print(collided_object.id)
         
         # Check if 'E' key is pressed and not already pressed in the previous frame
         if keys[pygame.K_e] and not game.interaction_key_pressed:
+            match collided_object.id:
+                case "01_door_opened_past_1_up":
+                    tilemap = game.level.level_tilemap("enigma2and3")
+                    game.player.position = game.level.position_player(405, 330)
+                    game.path_level[0]["visible"] = True
+                    game.props = []
+                    game.setup_collisions()
+                case _:
+                    pass
             modal = collided_object.interact_with(screen)
             if modal:
                 game.active_modal = modal
             game.interaction_key_pressed = True
         elif not keys[pygame.K_e]:
             game.interaction_key_pressed = False
+
+        
         
     #DEBUG TP MAP
     if keys[pygame.K_1]:
@@ -251,6 +289,11 @@ while running:
         game.player.position = game.level.position_player(181, 54)
         game.setup_collisions()
 
+    if keys[pygame.K_5]:
+        tilemap = game.level.level_tilemap("teleporter")
+        game.player.position = game.level.position_player(181, 54)
+        game.setup_collisions()
+
     if keys[pygame.K_w]:
         print(game.player.position)
             
@@ -266,6 +309,14 @@ while running:
             for prop in game.props:
                 if prop.id == "01_symbol_lock":
                     prop.update_usability(False)
+                    for prop_door in game.props:
+                        if prop_door.id == "01_door_closed_past_1_up":
+                            prop_door.update_usability(True)
+                            prop_door.update_type("door_opened_past_1_up")
+                            prop_door.update_id("01_door_opened_past_1_up")
+                            print(prop_door.type)
+                            prop_door.update_text("Porte ouverte ! Appuyez sur E !")
+                            
             game.active_modal = None
             
         if game.active_modal is not None and not game.active_modal.is_open:
