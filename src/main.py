@@ -28,10 +28,11 @@ class Game:
     def setup_collisions(self):
         if tilemap != None:
             self.props.append(Prop("01_valve", "Valve", pygame.Rect(305, 75, 35, 35), "valve", single_use=True, tilemap=tilemap))
-            self.props.append(Prop("01_potentiometer1", "Potentiomètre 1", pygame.Rect(253, 195, 25, 35), "potentiometer"))
-            self.props.append(Prop("01_potentiometer2", "Potentiomètre 2", pygame.Rect(285, 195, 25, 35), "potentiometer"))
-        self.props.append(Prop("01_symbol_lock", "Symboles", pygame.Rect(188, 22, 25, 35), "symbol_lock"))        
-
+            self.props.append(Prop("01_potentiometer1", "Potentiomètre 1", pygame.Rect(253, 195, 25, 35), "potentiometer",tilemap=tilemap))
+            self.props.append(Prop("01_potentiometer2", "Potentiomètre 2", pygame.Rect(285, 195, 25, 35), "potentiometer",tilemap=tilemap))
+            self.props.append(Prop("01_symbol_lock", "Symboles", pygame.Rect(188, 22, 25, 35), "symbol_lock"))
+            self.props.append(Prop("01_door_past", "Porte verouillée", pygame.Rect(9*16, 3*16, 32, 16), "door_past", text="Porte verouillée"))   
+            self.props.append(Prop("01_door_future", "Porte verouillée", pygame.Rect(35*16, 3*16, 32, 16), "door_future", text="Porte verouillée"))   
     def update_all(self):
         self.player.update()
         self.timer.update()
