@@ -35,6 +35,7 @@ class Game:
         self.camera = Camera(screen_size, self.player, map_size)
         self.cinematic = Cinematic(screen)
         self.symbol_clicked = False
+        self.error_number = 0
 
     def setup_collisions(self):
         if tilemap.name == "enigma1.tmx":
@@ -127,7 +128,7 @@ game.water_animation.rect.topleft = (16,16)
 #load the cinematic
 game.cinematic.story_screen()
 
-Sound.get().loop_music("midna")
+# Sound.get().loop_music("midna")
 
 running = True
 
@@ -164,9 +165,7 @@ while running:
 
         
     game.update_all()
-    
     game.camera.update()
-
     game.water_animation.update()
         
     if tilemap.collides_with_walls(game.player.rect):
@@ -211,7 +210,7 @@ while running:
     #game.ray.draw(screen)
 
     # Draw interaction text if collision is detected
-    if collided_object:
+    if collided_object and collided_object.usable == True:
         collided_object.draw_text(screen)
         
         # Check if 'E' key is pressed and not already pressed in the previous frame
@@ -222,17 +221,33 @@ while running:
             game.interaction_key_pressed = True
         elif not keys[pygame.K_e]:
             game.interaction_key_pressed = False
+            
+    # if game.active_modal and game.active_modal.custom_content:
+    #     print(game.active_modal.custom_content.correct_symbol)
 
+    #TODO : Penser a ajouter un systeme de compteur d'erreur pour les symboles & tout
     # Dessiner le menu modal s'il est actif
     if game.active_modal:
         game.active_modal.draw()
-        if not game.active_modal.is_open:
+        if game.active_modal.name == "Symboles" and game.active_modal.custom_content.correct_symbol == True:
+            print("Bon symbole !")
+            for prop in game.props:
+                if prop.id == "01_symbol_lock":
+                    prop.update_usability(False)
             game.active_modal = None
+            
+        if game.active_modal is not None and not game.active_modal.is_open:
+            game.active_modal = None
+
 
     game.timer.draw(screen, font)
     
-    # if game.timer.is_time_up():
-    #     print("Time's up!")
+    if game.timer.is_time_up():
+        print("Time's up!")
+        
+    if game.error_number > 1:
+        print("Game Over")
+        running = False
 
     pygame.display.flip()
 

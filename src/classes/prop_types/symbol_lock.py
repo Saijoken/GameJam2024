@@ -26,7 +26,6 @@ class SymbolLock:
         self.bg_rect = self.background.get_rect(center=(screen.get_width() // 2, screen.get_height() // 2))
         self.correct_symbol = False
         
-        
         self.symbols_per_row = 4
         symbol_paths = [f'assets/symbol_lock/symbol{i}.png' for i in range(1, 11)]
         random.shuffle(symbol_paths)
@@ -51,7 +50,7 @@ class SymbolLock:
             self.symbols.append(Symbol(path, (x, y)))
 
         self.selected_symbol = None
-
+        
     def draw(self):
         self.screen.blit(self.background, self.bg_rect.topleft)
         for symbol in self.symbols:
@@ -67,7 +66,6 @@ class SymbolLock:
                         self.selected_symbol = i
                         symbol.selected = True
                         if symbol.id == "8":
-                            print(symbol.id)
                             self.correct_symbol = True
                             print(self.correct_symbol)
                         else:
