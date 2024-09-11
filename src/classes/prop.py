@@ -18,10 +18,13 @@ class Prop:
         self.correct_symbol = False
         # Affichage du text intéraction
         self.font = pygame.font.Font(None, 36) 
-
+        self.usable = usable
         self.text = self.font.render(text if text is not None else f"Appuyez sur E pour interagir avec {name}", True, (255, 255, 255))
         self.text_rect = self.text.get_rect()
         
+    def update_usability(self, usable):
+        self.usable = usable
+    
     # Affichage du text + hitbox
     def draw(self, screen, camera):
         color_with_alpha = (255, 0, 0, 128) # Opacité 50% pour débug
@@ -60,7 +63,7 @@ class Prop:
         
         self.used = True
         
-        match self.type:  # Changez 'self.id' en 'self.type'
+        match self.type:  
             case "valve":
                 print("valve")
                 self.tilemap.isValveOpen = False
@@ -75,8 +78,6 @@ class Prop:
                 return ModalMenu(screen, "Potentiomètre", custom_content=potentiometer)
             case "symbol_lock":
                 symbol_lock = SymbolLock(screen)
-                self.correct_symbol = symbol_lock.correct_symbol
-                print(self.correct_symbol)
                 return ModalMenu(screen, "Symboles", custom_content=symbol_lock)
             case "note_plate":
                 #note_plate = NotePlate(self.player_rect, screen)
