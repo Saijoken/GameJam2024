@@ -50,11 +50,21 @@ class TileMap:
                     case 'SewerWaterFall':
                         if self.isValveOpen == False:
                             layer.visible = False
-                for x, y, gid in layer:
-                    tile_image = self.tmx_data.get_tile_image_by_gid(gid)
-                    if tile_image:
-                        pos = camera.apply((x * self.tile_size, y * self.tile_size))
-                        screen.blit(tile_image, pos)
+                for x in range(start_x, end_x):
+                    for y in range(start_y, end_y):
+                        gid = layer.data[y][x]
+                        if gid:
+                            tile_image = self.tmx_data.get_tile_image_by_gid(gid)
+                            if tile_image:
+                                # Calculer la position exacte du tile
+                                pos_x = x * self.tile_size - cam_x
+                                pos_y = y * self.tile_size - cam_y
+                                # Appliquer le zoom
+                                scaled_pos = (pos_x * camera.zoom, pos_y * camera.zoom)
+                                scaled_size = (self.tile_size * camera.zoom, self.tile_size * camera.zoom)
+                                # Redimensionner l'image de la tuile
+                                scaled_tile = pygame.transform.scale(tile_image, scaled_size)
+                                screen.blit(scaled_tile, scaled_pos)
     
     def collides_with_walls(self, rect):
         for tile in self.collision_layer:
