@@ -2,18 +2,20 @@ import pygame
 from classes.modal_menu import ModalMenu
 from classes.prop_types.potentiometer import Potentiometer
 from classes.prop_types.symbol_lock import SymbolLock
+from classes.tilemap import TileMap
 
 class Prop:
     # Création d'un New Prop
-    def __init__(self, id, name, rect, type, single_use=False):
+    def __init__(self, id, name, rect, type, single_use=False, tilemap=None):
         self.id = id
         self.name = name
         self.rect = rect
         self.type = type
         self.single_use = single_use
         self.used = False
+        self.tilemap = tilemap
         
-        # Affichage du text intéraction
+        # Affichage du text interaction
         self.font = pygame.font.Font(None, 36)
         self.text = self.font.render("Appuyez sur E pour interagir avec " + name, True, (255, 255, 255))
         self.text_rect = self.text.get_rect()
@@ -59,6 +61,12 @@ class Prop:
         match self.type:  # Changez 'self.id' en 'self.type'
             case "valve":
                 print("valve")
+                self.tilemap.isValveOpen = False
+                for layer in self.tilemap.tmx_data.layers:
+                    if layer.name == "SewerCode":
+                        layer.visible = True
+                    if layer.name == "SewerWaterFall":
+                        layer.visible = False
                 return None
             case "potentiometer":
                 potentiometer = Potentiometer(screen)

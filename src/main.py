@@ -9,6 +9,7 @@ from classes.tilemap import TileMap
 from classes.timer import Timer
 from classes.prop import Prop
 from classes.raycast import Raycast
+from classes.water_animation import WaterAnimation
 
 # Fullscreen 
 screen = pygame.display.set_mode((1024, 768), pygame.SCALED)
@@ -21,14 +22,17 @@ class Game:
         self.interaction_key_pressed = False
         self.active_modal = None  
         self.ray = Raycast(self.player.rect.center, 0, 200, math.radians(45))
+        self.active_modal = None 
+        self.water_animation = WaterAnimation(screen) 
         
         map_size = pygame.Vector2(tilemap.map_width, tilemap.map_height)
         self.camera = Camera(screen_size, self.player, map_size)
 
     def setup_collisions(self):
-        self.props.append(Prop("01_valve", "Valve", pygame.Rect(305, 75, 35, 35), "valve", single_use=True))
-        self.props.append(Prop("01_potentiometer1", "Potentiomètre 1", pygame.Rect(253, 195, 25, 35), "potentiometer"))
-        self.props.append(Prop("01_potentiometer2", "Potentiomètre 2", pygame.Rect(285, 195, 25, 35), "potentiometer"))
+        if tilemap != None:
+            self.props.append(Prop("01_valve", "Valve", pygame.Rect(305, 75, 35, 35), "valve", single_use=True, tilemap=tilemap))
+            self.props.append(Prop("01_potentiometer1", "Potentiomètre 1", pygame.Rect(253, 195, 25, 35), "potentiometer"))
+            self.props.append(Prop("01_potentiometer2", "Potentiomètre 2", pygame.Rect(285, 195, 25, 35), "potentiometer"))
         self.props.append(Prop("01_symbol_lock", "Symboles", pygame.Rect(188, 22, 25, 35), "symbol_lock"))        
 
     def update_all(self):
@@ -51,7 +55,14 @@ clock = pygame.time.Clock()
 running = True
 dt = 0
 
+# Créer une instance de TileMap
+tilemap = TileMap('assets/maps/enigma1.tmx')
+
 # Initialisation du jeu initialisant le joueur et la camera
+game = Game(screen_size, tilemap)
+game.setup_collisions()
+
+# Créer une instance de TileMap
 tilemap = TileMap('assets/maps/enigma1.tmx')
 
 # Initialisation du jeu
@@ -71,6 +82,7 @@ font = pygame.font.Font('assets/fonts/SpecialElite-Regular.ttf', 50)
 # game.camera = Camera(screen_size, game.player)
 
 game.player.rect.topleft = (32,32)
+game.water_animation.rect.topleft = (16,16)
 
 while running:
     # Fermeture du jeu quand le bouton X est cliqué
@@ -97,6 +109,8 @@ while running:
     
     game.camera.update()
 
+    game.water_animation.update()
+
     if tilemap.collides_with_walls(game.player.rect):
         # If there is a collision, revert to the previous position
         game.player.rect.topleft = prev_position
@@ -104,8 +118,26 @@ while running:
 
     # Affichage
     screen.fill((0, 0, 0))  # Fond noir
-    tilemap.draw(screen, game.camera)
-    
+    tilemap.draw(screen, game.camera)  # Afficher la carte en tenant compte de la caméra
+
+    # Affichage des vaguellette sur l'eau Passé
+    game.water_animation.draw(game.camera,3,9)
+    game.water_animation.draw(game.camera,4,8)
+    game.water_animation.draw(game.camera,5,7)
+    game.water_animation.draw(game.camera,6,8)
+    game.water_animation.draw(game.camera,7,7)
+    game.water_animation.draw(game.camera,8,9)
+
+    if tilemap.isValveOpen == True:
+    # Affichage des vaguellette sur l'eau Future
+        game.water_animation.draw(game.camera,29,9)
+        game.water_animation.draw(game.camera,30,8)
+        game.water_animation.draw(game.camera,31,7)
+        game.water_animation.draw(game.camera,32,8)
+        game.water_animation.draw(game.camera,33,7)
+        game.water_animation.draw(game.camera,34,9)
+
+
     # Check for collisions with interactible objects
     collided_object = None
     for prop in game.props:
