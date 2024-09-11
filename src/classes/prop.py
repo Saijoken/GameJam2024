@@ -2,6 +2,7 @@ import pygame
 from classes.modal_menu import ModalMenu
 from classes.prop_types.potentiometer import Potentiometer
 from classes.prop_types.symbol_lock import SymbolLock
+from classes.prop_types.note_plate import NotePlate
 from classes.tilemap import TileMap
 
 class Prop:
@@ -15,7 +16,6 @@ class Prop:
         self.used = False
         self.tilemap = tilemap
         self.correct_symbol = False
-        
         # Affichage du text intéraction
         self.font = pygame.font.Font(None, 36) 
 
@@ -78,5 +78,8 @@ class Prop:
                 self.correct_symbol = symbol_lock.correct_symbol
                 print(self.correct_symbol)
                 return ModalMenu(screen, "Symboles", custom_content=symbol_lock)
+            case "note_plate":
+                #note_plate = NotePlate(self.player_rect, screen)
+                return None
             case _:
                 return None

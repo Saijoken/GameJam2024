@@ -3,13 +3,24 @@ import pygame
 from classes.prop_types.potentiometer import Potentiometer
 
 class ModalMenu:
-    def __init__(self, screen, name="Menu", image_path=None, custom_content=None):
+    def __init__(self, screen, name="Menu", image_path=None, custom_content=None, text=None):
         self.screen = screen
         self.font = pygame.font.Font(None, 36)
-        # Convert 'name' to a string explicitly
-        self.text = self.font.render(str(name), True, (255, 255, 255))
-        self.text_rect = self.text.get_rect()
-        self.text_rect.center = (screen.get_width() // 2, screen.get_height() // 4)  # Déplacé plus haut
+        self.name = str(name)
+        self.text = text  # Nouveau paramètre pour le texte
+
+        # Render du titre
+        self.title_text = self.font.render(self.name, True, (255, 255, 255))
+        self.title_rect = self.title_text.get_rect()
+        self.title_rect.center = (screen.get_width() // 2, screen.get_height() // 4)
+
+        # Render du texte supplémentaire si fourni
+        self.content_text = None
+        self.content_rect = None
+        if self.text:
+            self.content_text = self.font.render(self.text, True, (255, 255, 255))
+            self.content_rect = self.content_text.get_rect()
+            self.content_rect.center = (screen.get_width() // 2, screen.get_height() // 2)
 
         # Ajout du bouton de fermeture
         self.close_button = pygame.Rect(screen.get_width() * 3 // 4, screen.get_height() // 4, 30, 30)
@@ -38,11 +49,14 @@ class ModalMenu:
     def draw(self):
         if self.is_open:
             self.screen.blit(self.overlay, (0, 0))
-            self.screen.blit(self.text, self.text_rect)
+            self.screen.blit(self.title_text, self.title_rect)
             pygame.draw.rect(self.screen, (255, 0, 0), self.close_button)
             
             if self.image:
                 self.screen.blit(self.image, self.image_rect)
+            
+            if self.content_text:
+                self.screen.blit(self.content_text, self.content_rect)
             
             if self.custom_content:
                 self.custom_content.draw()
