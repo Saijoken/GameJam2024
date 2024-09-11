@@ -58,8 +58,8 @@ class Prop:
         
         self.used = True
         
-        match self.id:
-            case "01_valve":
+        match self.type:  # Changez 'self.id' en 'self.type'
+            case "valve":
                 print("valve")
                 self.tilemap.isValveOpen = False
                 for layer in self.tilemap.tmx_data.layers:
@@ -68,13 +68,10 @@ class Prop:
                     if layer.name == "SewerWaterFall":
                         layer.visible = False
                 return None
-            case "01_potentiometer1":
+            case "potentiometer":
                 potentiometer = Potentiometer(screen)
                 return ModalMenu(screen, "Potentiomètre", custom_content=potentiometer)
-            case "01_potentiometer2":
-                potentiometer = Potentiometer(screen)
-                return ModalMenu(screen, "Potentiomètre", custom_content=potentiometer)
-            case "01_symbol_lock":
+            case "symbol_lock":
                 symbol_lock = SymbolLock(screen)
                 return ModalMenu(screen, "Symboles", custom_content=symbol_lock)
             case _:
