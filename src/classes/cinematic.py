@@ -39,9 +39,9 @@ class Cinematic:
                 
                 self.screen.blit(text_surface, (self.screen.get_width() / 2 - text.get_width() / 2, self.screen.get_height()/3 - 100 + (text.get_height() + 10) * i ))
                 pygame.display.flip()
-                pygame.time.wait(20)  # Adjust this value to control fade speed
+                pygame.time.wait(1)  # Adjust this value to control fade speed
 
-            pygame.time.wait(100)  # Wait after fully faded in
+            pygame.time.wait(1)  # Wait after fully faded in
 
         text = font.render("Appuyez sur une touche pour commencer", True, (255, 255, 255, alpha))
 

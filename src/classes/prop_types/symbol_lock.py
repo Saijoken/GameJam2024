@@ -1,6 +1,7 @@
 import pygame
 import random
 
+
 class Symbol:
     def __init__(self, image_path, position):
         self.image = pygame.image.load(image_path)
@@ -22,8 +23,11 @@ class Symbol:
 class SymbolLock:
     def __init__(self, screen):
         self.screen = screen
+
         self.background = pygame.image.load('assets/symbol_lock/bg_symbol_lock.png')
         self.bg_rect = self.background.get_rect(center=(screen.get_width() // 2, screen.get_height() // 2))
+        self.correct_symbol = False
+        
         
         self.symbols_per_row = 4
         symbol_paths = [f'assets/symbol_lock/symbol{i}.png' for i in range(1, 11)]
@@ -66,6 +70,8 @@ class SymbolLock:
                         symbol.selected = True
                         if symbol.id == "8":
                             print(symbol.id)
+                            self.correct_symbol = True
+                            print(self.correct_symbol)
                         else:
                             print("Ayiiii le movai simbol")
                             

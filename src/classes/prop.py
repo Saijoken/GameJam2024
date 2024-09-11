@@ -14,6 +14,7 @@ class Prop:
         self.single_use = single_use
         self.used = False
         self.tilemap = tilemap
+        self.correct_symbol = False
         
         # Affichage du text intéraction
         self.font = pygame.font.Font(None, 36) 
@@ -74,10 +75,8 @@ class Prop:
                 return ModalMenu(screen, "Potentiomètre", custom_content=potentiometer)
             case "symbol_lock":
                 symbol_lock = SymbolLock(screen)
+                self.correct_symbol = symbol_lock.correct_symbol
+                print(self.correct_symbol)
                 return ModalMenu(screen, "Symboles", custom_content=symbol_lock)
-            case "01_door_past":
-                print("Porte verouiller")
-                return None
             case _:
-                modal_menu = ModalMenu(screen, image_path="assets/images/test.png")
-                return modal_menu
+                return None

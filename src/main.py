@@ -29,15 +29,21 @@ class Game:
         map_size = pygame.Vector2(tilemap.map_width, tilemap.map_height)
         self.camera = Camera(screen_size, self.player, map_size)
         self.cinematic = Cinematic(screen)
+        self.symbol_clicked = False
 
     def setup_collisions(self):
         if tilemap != None:
+            # 1er Salle
             self.props.append(Prop("01_valve", "Valve", pygame.Rect(305, 75, 35, 35), "valve", single_use=True, tilemap=tilemap))
             self.props.append(Prop("01_potentiometer1", "Potentiomètre 1", pygame.Rect(253, 195, 25, 35), "potentiometer",tilemap=tilemap))
             self.props.append(Prop("01_potentiometer2", "Potentiomètre 2", pygame.Rect(285, 195, 25, 35), "potentiometer",tilemap=tilemap))
             self.props.append(Prop("01_symbol_lock", "Symboles", pygame.Rect(188, 22, 25, 35), "symbol_lock"))
-            self.props.append(Prop("01_door_past", "Porte verouillée", pygame.Rect(9*16, 3*16, 32, 16), "door_past", text="Porte verouillée"))   
-            self.props.append(Prop("01_door_future", "Porte verouillée", pygame.Rect(35*16, 3*16, 32, 16), "door_future", text="Porte verouillée"))   
+            self.props.append(Prop("01_door_past", "Porte verouillée", pygame.Rect(9*16, 3*16, 32, 16), "door_past", text="Porte verouillée"))
+            self.props.append(Prop("01_door_future", "Porte verouillée", pygame.Rect(35*16, 3*16, 32, 16), "door_future", text="Porte verouillée"))            
+            self.props.append(Prop("01_sign_teleporter_past", "Téléporteur", pygame.Rect(16, 14*16, 32, 32), "sign_teleporter", text="Salle du téléporteur"))
+            self.props.append(Prop("01_sign_teleporter_future", "Téléporteur", pygame.Rect(27*16, 14*16, 32, 32), "sign_teleporter", text="Salle du téléporteur"))
+            self.props.append(Prop("01_sign_valve", "Valve", pygame.Rect(21*16, 7*16, 32, 32), "sign_valve", text="Contrôle de la valve"))
+
     def update_all(self):
         self.player.update()
         self.timer.update()
@@ -70,6 +76,7 @@ tilemap = TileMap('assets/maps/enigma1.tmx')
 
 # Initialisation du jeu
 game = Game(screen_size, tilemap)
+
 game.setup_collisions()
 
 # Créer la caméra avec la taille de la carte
@@ -113,7 +120,9 @@ while running:
     # Empêcher le mouvement du joueur si le menu modal est actif
     if not game.active_modal:
         game.player.player_movement(keys, dt)
+    
 
+        
     game.update_all()
     
     game.camera.update()
