@@ -10,20 +10,25 @@ from classes.timer import Timer
 from classes.prop import Prop
 from classes.raycast import Raycast
 from classes.water_animation import WaterAnimation
+from classes.cinematic import Cinematic
 
 # Fullscreen 
-screen = pygame.display.set_mode((1024, 768))
+screen = pygame.display.set_mode((1024, 768), pygame.SCALED)
 
 class Game:
-    def __init__(self):
+    def __init__(self, screen_size, tilemap):
         self.player = Player(screen)
-        self.timer = Timer(70)
+        self.timer = Timer(300)
         self.props = []
         self.interaction_key_pressed = False
         self.active_modal = None  
         self.ray = Raycast(self.player.rect.center, 0, 200, math.radians(45))
         self.active_modal = None 
         self.water_animation = WaterAnimation(screen) 
+        
+        map_size = pygame.Vector2(tilemap.map_width, tilemap.map_height)
+        self.camera = Camera(screen_size, self.player, map_size)
+        self.cinematic = Cinematic(screen)
 
     def setup_collisions(self):
         if tilemap != None:
@@ -54,22 +59,39 @@ running = True
 dt = 0
 
 # Créer une instance de TileMap
-tilemap = TileMap('assets/maps/enigma1.tmx')
+tilemap = TileMap('assets/maps/enigma4.tmx')
 
 # Initialisation du jeu initialisant le joueur et la camera
-game = Game()
+game = Game(screen_size, tilemap)
 game.setup_collisions()
 
+# Créer une instance de TileMap
+tilemap = TileMap('assets/maps/enigma1.tmx')
 
+# Initialisation du jeu
+game = Game(screen_size, tilemap)
+game.setup_collisions()
 
-#Initialisation de la police du timer
+# Créer la caméra avec la taille de la carte
+map_size = pygame.Vector2(tilemap.map_width, tilemap.map_height)
+game.camera = Camera(screen_size, game.player, map_size)
+
+game.camera.set_zoom(2)  # Set initial zoom level
+
+# Initialisation de la police du timer
 font = pygame.font.Font('assets/fonts/SpecialElite-Regular.ttf', 50)
 
 # Faire en sorte que la camera suit le joueur
-game.camera = Camera(screen_size, game.player)
+# game.camera = Camera(screen_size, game.player)
 
 game.player.rect.topleft = (32,32)
 game.water_animation.rect.topleft = (16,16)
+
+
+#load the cinematic
+game.cinematic.story_screen()
+
+running = True
 
 while running:
     # Fermeture du jeu quand le bouton X est cliqué
@@ -129,11 +151,12 @@ while running:
     collided_object = None
     for prop in game.props:
         if prop.check_collision(game.player.rect):
-            if not (prop.single_use and prop.used):
-                collided_object = prop
+            collided_object = prop
         prop.draw(screen, game.camera)
 
     screen.blit(game.player.image, game.camera.apply(game.player.rect.move(-7,-16)))
+    game.ray.draw(screen)
+
     # Draw interaction text if collision is detected
     if collided_object:
         collided_object.draw_text(screen)
@@ -146,9 +169,6 @@ while running:
             game.interaction_key_pressed = True
         elif not keys[pygame.K_e]:
             game.interaction_key_pressed = False
-    
-    #Use camera.apply to draw the ray
-    game.ray.draw(screen)
 
     # Dessiner le menu modal s'il est actif
     if game.active_modal:

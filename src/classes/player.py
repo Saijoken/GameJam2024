@@ -20,7 +20,7 @@ class Player(pygame.sprite.Sprite):
         self.current_animation = self.animations['idle_down']
         self.current_frame_index = 0
         self.image = self.current_animation[self.current_frame_index]
-        self.rect = pygame.Rect(0,0,18,16)
+        self.rect = pygame.Rect(0, 0, 18, 16)  # Ajustez ces valeurs si nécessaire
         self.position = pygame.Vector2(100, 300)
         self.rect.center = self.position 
         self.speed = 100
@@ -28,7 +28,7 @@ class Player(pygame.sprite.Sprite):
         # Animation timing
         self.frame_counter = 0
 
-        self.last_direction = 'down' 
+        self.last_direction = 'down'
 
     def load_frames(self, file_path):
         """Load frames from the sprite sheet."""
@@ -38,6 +38,8 @@ class Player(pygame.sprite.Sprite):
         for y in range(0, sprite_sheet.get_height(), frame_height):
             for x in range(0, sprite_sheet.get_width(), frame_width):
                 frame = sprite_sheet.subsurface(pygame.Rect(x, y, frame_width, frame_height))
+                # Mettre à l'échelle le frame si nécessaire
+                frame = pygame.transform.scale(frame, (frame_width * 2, frame_height * 2))
                 frames.append(frame)
         return frames
 
@@ -56,7 +58,6 @@ class Player(pygame.sprite.Sprite):
         """Change the animation based on the player's movement direction and state."""
         self.is_moving = is_moving
         self.current_animation = self.animations[f'{"walk" if is_moving else "idle"}_{direction}']
-
         self.last_direction = direction
 
     def player_movement(self, keys, dt):
@@ -85,8 +86,23 @@ class Player(pygame.sprite.Sprite):
             dx /= 1.414
             dy /= 1.414
 
-        self.position.x += dx
-        self.position.y += dy
-        self.rect.center = self.position  # Update rect position
+        # Mise à jour de la position
+        new_position = self.position + pygame.Vector2(dx, dy)
+        
+        # Vérification des collisions avant de mettre à jour la position
+        new_rect = self.rect.copy()
+        new_rect.center = new_position
+        
+        # Ici, vous devriez implémenter une vérification de collision avec la carte
+        # Si pas de collision, mettez à jour la position
+        if not self.check_collision(new_rect):  # Implémentez cette méthode
+            self.position = new_position
+            self.rect.center = self.position
 
         self.change_animation(self.last_direction, moving)
+
+    def check_collision(self, new_rect):
+        # Implémentez ici la logique de vérification des collisions
+        # Retournez True s'il y a collision, False sinon
+        # Vous devrez probablement passer la carte (tilemap) en paramètre
+        pass

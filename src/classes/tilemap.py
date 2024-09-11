@@ -31,6 +31,16 @@ class TileMap:
                         self.collision_layer.append(pygame.Rect(x * self.tile_size, y * self.tile_size, self.tile_size, self.tile_size))
 
     def draw(self, screen, camera):
+        # Calculer la zone visible
+        cam_x, cam_y = camera.position_cam.x, camera.position_cam.y
+        view_width, view_height = screen.get_width() / camera.zoom, screen.get_height() / camera.zoom
+        
+        # Calculer les limites des tuiles visibles
+        start_x = max(0, int(cam_x // self.tile_size))
+        end_x = min(self.tmx_data.width, int((cam_x + view_width) // self.tile_size) + 1)
+        start_y = max(0, int(cam_y // self.tile_size))
+        end_y = min(self.tmx_data.height, int((cam_y + view_height) // self.tile_size) + 1)
+
         for layer in self.tmx_data.visible_layers:
             if isinstance(layer, pytmx.TiledTileLayer):
                 match layer.name:
