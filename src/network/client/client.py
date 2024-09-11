@@ -1,7 +1,6 @@
 import asyncio
 import asyncudp
 import json
-from server.protocols import Protocols
 
 class Client:
     def __init__(self, server_ip, server_port):
@@ -27,8 +26,9 @@ class Client:
         }
         await self.send_data(message)
 
+    # 
     async def receive_data(self):
-        data, _ = await self.client_socket.recvfrom()
+        data,addr = await self.client_socket.recvfrom()
         return json.loads(data.decode())
 
     async def listen(self):

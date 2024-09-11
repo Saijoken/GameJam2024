@@ -10,16 +10,28 @@ async def test_client_future():
     client = Client("localhost", 5555)
     await client.connect()
 
-    # Register
-    await client.send_command(Protocols.Request.REGISTER, {"username": "future_player", "password": "password456"})
+    # Play
+    await client.send_command(Protocols.Request.WANT_TO_PLAY)
     response = await client.receive_data()
-    print("Register response:", response)
+    print("Auth options:", response)
+
+    await client.send_command(Protocols.Request.LOGIN, {"username": "future_player", "password": "password456"})
+    response = await client.receive_data()
+    print("Login response:", response)
+
+    # Attendez la réponse du serveur avant d'envoyer la commande suivante
+    if response.get('type') == Protocols.Response.LOGIN_SUCCESS:
+        await client.send_command(Protocols.Request.CREATE_LOBBY)
+        response = await client.receive_data()
+        print("Create lobby response:", response)
 
     # Join lobby
     await client.send_command(Protocols.Request.JOIN_LOBBY, {"game_id": "ask_for_game_id"})
     response = await client.receive_data()
     print("Join lobby response:", response)
-    game_id = response.get("data", {}).get("game_id")
+
+    # Error
+    #game_id = response.get("data", {}).get("game_id")
 
     # Choose future player
     await client.send_command(Protocols.Request.CHOOSE_ROLE, {"role": "future", "game_id": game_id})

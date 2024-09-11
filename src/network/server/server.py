@@ -8,19 +8,21 @@ from lobby import Lobby
 from datetime import datetime
 import hashlib
 import uuid
+import traceback
 
 
 class Server:
 
     def __init__(self):
-        self.SERVER = socket.gethostname()
+        #self.SERVER = socket.gethostname()
         self.PORT = 5555
-        self.server_ip = socket.gethostbyname(self.SERVER)
+        #self.server_ip = socket.gethostbyname(self.SERVER)
+        # Listening on all available interfaces
+        self.server_ip = "0.0.0.0"
         self.udp_socket = None
         self.waiting_for_pair = None
         self.lobby = Lobby()
         self.running = True
-        #self.game = Game()
         # Struct of self.clients dict : { clientSocket1: nickname1, clientSocket2: nickname2 ...}
         self.clients = {}
         # Struct of self.lobbies dict : { 'game_id1': [clientSocket1, clientSocket2], 'game_id2': [clientSocket1] ... }
@@ -48,7 +50,7 @@ class Server:
             #self.serverSocket.listen(2)
             
             # Create UDP socket with asyncudp module
-            self.udp_socket = await asyncudp.create_socket(local_addr=(self.SERVER, self.PORT))
+            self.udp_socket = await asyncudp.create_socket(local_addr=(self.server_ip, self.PORT))
             print(f"{self.time()} [SERVER ON]")
             
             while self.running:
@@ -59,7 +61,6 @@ class Server:
 
                     # UDP doesn't use connections
                     data, addr = await self.udp_socket.recvfrom()
-                    print("data, address:", data, addr)
                     # Create the first task (the debut of the game, handle_client)
                     # Now handle_client doesn't use connections anymore just data
                     asyncio.create_task(self.handle_client(data, addr))
@@ -68,45 +69,54 @@ class Server:
         except Exception as e:
             print(f"Erreur dans init_connection: {str(e)}")
         finally:
-            self.udp_socket.close()
+            if self.udp_socket:
+                self.udp_socket.close()
 
     # Handle choice between play, credits, quit
     # If play then handle login/register
     # If login/register successful then handle joining or creating a lobby
     async def handle_client(self, data, addr, game_id=None):
         try:
-                msg = json.loads(data.decode())
-                # Menu : choose play, credits, settings or quit
-                options = ["Play", "Credits", "Settings", "Quit"]
-                await self.send_data(Protocols.Response.MENU, options, addr)
-                choice = msg.get('data')
-                # Switch/case to handle the choice
-                if choice == "Credits":
-                    self.send_data(Protocols.Response.CREDITS, "Credits", addr)
-                elif choice == "Quit":
-                    self.send_data(Protocols.Response.QUIT, "Quit", addr)
-                    del self.clients[addr]
-                elif choice == "Settings":
-                    self.send_data(Protocols.Response.SETTINGS, "Settings", addr)
-                elif choice == "Play":
-                    # First register or login
-                    auth_success = self.handle_auth(addr)
-                    # Then choose register or login
-                    if auth_success:
-                        options = ["Create a lobby", "Join a lobby"]
-                        await self.send_data(Protocols.Response.CREATE_JOIN, options, addr)
-                        choice = await msg.get('data')
-                        # Switch/case to handle the choice
-                        if choice == "Create a lobby":
-                            game_id = await self.create_lobby(addr)
-                            if game_id and self.lobby.get_len(game_id) == 2:
-                                await self.choose_role(addr)
-                        else:
-                            success = await self.join_lobby(addr)
-                            if success and self.lobby.get_len(game_id) == 2:
-                                await self.choose_role(addr)
+            # Decode the received data
+            #decoded_data = json.loads(data.decode())
+            #response_type = decoded_data.get('type')
+            #response_data = decoded_data.get('data')
+            options = ["Play", "Credits", "Settings", "Quit"]
+            await self.send_data(Protocols.Response.MENU, options, addr)
+            # Wait for the response
+            response = await self.receive_data(addr)
+            choice = response.get('type')
+            #print(f"Received from {addr}: type={response_type}, data={response_data}")
+            if choice == Protocols.Request.WANT_TO_PLAY:
+                auth_success = await self.handle_auth(addr)
+                if auth_success:
+                    lobby_opt = ["Create a lobby", "Join a lobby"]
+                    await self.send_data(Protocols.Response.CREATE_JOIN, lobby_opt, addr)
+                    # Wait for the response
+                    response = await self.receive_data(addr)
+                    choice = response.get('type')
+                    if choice == Protocols.Request.CREATE_LOBBY:
+                        game_id = await self.create_lobby(addr)
+                        if game_id and self.lobby.get_len(game_id) == 2:
+                            await self.choose_role(addr)
+                    elif choice == Protocols.Request.JOIN_LOBBY:
+                        success = await self.join_lobby(addr)
+                        if success and self.lobby.get_len(game_id) == 2:
+                            await self.choose_role(addr)
+            elif choice == Protocols.Request.CHOOSE_CREDITS:
+                pass
+            elif choice == Protocols.Request.CHOOSE_SETTINGS:
+                pass
+            else:
+                # Quit, close the client, close the socket? close the window
+                pass
+                #print(f"Unexpected request type: {response_type}")
+
         except Exception as e:
-            print(str(e))
+            print(f"Error in handle_client: {str(e)}")
+            traceback.print_exc()
+
+
 
 
     # Choose between past and future before playing
@@ -176,26 +186,28 @@ class Server:
 
     # Handle authentification choice
     async def handle_auth(self, addr):
-        print("Started handling authentification")
-        options = ["Login", "Register", "Return"]
-        await self.send_data(Protocols.Response.AUTH, options, addr)
-        choice = await self.get_data(addr)
-        # Switch/case on the choice
-        if choice == "Login":
+        print("Started handling authentication")
+        auth_options = ["Login", "Register", "Return"]
+        await self.send_data(Protocols.Response.AUTH, auth_options, addr)
+    
+        auth_choice = await self.receive_data(addr)
+        auth_choice_type = auth_choice.get('type')
+    
+        if auth_choice_type == Protocols.Request.LOGIN:
             return await self.handle_login(addr)
-        elif choice == "Register":
+        elif auth_choice_type == Protocols.Request.REGISTER:
             return await self.handle_register(addr)
         else:
             await self.send_data(Protocols.Response.RETURN, None, addr)
-            return await self.handle_client(addr)
+            return False
 
     # Login a client
     #TODO db->JSON
     async def handle_login(self, addr):
         # Ask the client for the login and password
         await self.send_data(Protocols.Response.LOGIN_REQUEST, "Entrez votre nom d'utilisateur et mot de passe", addr)
-        msg = await self.get_data(addr)
-        if msg.get("type") == Protocols.Request.LOGIN:
+        msg = await self.receive_data(addr)
+        if msg.get('type') == Protocols.Request.LOGIN:
             nickname = await msg.get("data").get("nickname")
             password = await msg.get("data").get("password")
             
@@ -273,11 +285,15 @@ class Server:
     # Data handling (send, receive...)
     ##########################################################################################
 
-    # Get the UDP datagram
-    async def get_data(self, addr):
-        data, recv_addr = await asyncio.wait_for(self.udp_socket.recvfrom())
-        if recv_addr == addr:
-            return json.loads(data.decode())
+    # Receive the info/response from client
+    # And decode it at the same time
+    async def receive_data(self, addr):
+        rcv_data, rcv_addr = await asyncio.wait_for(self.udp_socket.recvfrom(), timeout=30)
+        if rcv_addr == addr:
+            return json.loads(rcv_data.decode())
+        else:
+            print(f"Received response from unexpected address: {rcv_addr}")
+            return False
         
     # Send an info to one client/player
     async def send_data(self, r_type, data, addr):

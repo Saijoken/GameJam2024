@@ -1,0 +1,80 @@
+    # Handle choice between play, credits, quit
+    # If play then handle login/register
+    # If login/register successful then handle joining or creating a lobby
+    async def handle_client(self, data, addr, game_id=None):
+        try:
+                # Menu : choose play, credits, settings or quit
+                options = ["Play", "Credits", "Settings", "Quit"]
+                await self.send_data(Protocols.Response.MENU, options, addr)
+                # Receive client response
+                response = await self.receive_data(addr)
+                response_type = response.get('type')
+                response_data = response.get('data')
+                print("response_type:", response_type)
+                print("response_data:", response_data)
+                # Switch/case to handle the choice
+                choice = response_type
+                if choice == "protocol.choose_credits":
+                    self.send_data(Protocols.Response.CREDITS, "Credits", addr)
+                elif choice == "protocol.want_to_quit":
+                    self.send_data(Protocols.Response.QUIT, "Quit", addr)
+                    del self.clients[addr]
+                elif choice == "protocol.choose_settings":
+                    self.send_data(Protocols.Response.SETTINGS, "Settings", addr)
+
+
+
+
+
+                # If the client wants to play, a new menu appear with register/login option
+                elif choice == "protocol.want_to_play":
+                    # First register or login
+                    auth_success = await self.handle_auth(addr)
+                    # Then choose register or login
+                    if auth_success:
+                        lobby_opt = ["Create a lobby", "Join a lobby"]
+                        await self.send_data(Protocols.Response.CREATE_JOIN, lobby_opt, addr)
+                        # Receive client response
+                        # Receive client response
+                        response = await self.receive_data(addr)
+                        response_type = response.get('type')
+                        response_data = response.get('data')
+                        print("response_type:", response_type)
+                        print("response_data:", response_data)
+                        # Switch/case to handle the choice
+                        choice = response_type
+                        # Switch/case to handle the choice
+                        if choice == "protocol.create_lobby":
+                            game_id = await self.create_lobby(addr)
+                            if game_id and self.lobby.get_len(game_id) == 2:
+                                await self.choose_role(addr)
+                        else:
+                            success = await self.join_lobby(addr)
+                            if success and self.lobby.get_len(game_id) == 2:
+                                await self.choose_role(addr)
+
+
+
+
+        except Exception as e:
+            print(str(e))
+
+
+async def handle_auth(self, addr):
+        print("Started handling authentification")
+        auth_options = ["Login", "Register", "Return"]
+        await self.send_data(Protocols.Response.AUTH, auth_options, addr)
+        # Receive client response
+        auth_choice = await self.receive_data(addr)
+        auth_choice_type = auth_choice.get('type')
+        auth_choice_data = auth_choice.get('data')
+        print("auth_choice_type:", auth_choice_type)
+        print("autg_choice_data:", auth_choice_data)
+        # Switch/case on the choice
+        if auth_choice_type == "protocol.login":
+            return await self.handle_login(addr)
+        elif auth_choice_type == "protocol.register":
+            return await self.handle_register(addr)
+        else:
+            await self.send_data(Protocols.Response.RETURN, None, addr)
+            return await self.handle_client(addr)
