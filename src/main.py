@@ -14,9 +14,12 @@ from classes.cinematic import Cinematic
 from classes.sound import Sound
 from classes.hint_system import HintSystem, hint_system
 from classes.modal_menu import ModalMenu
+from classes.level import Level
 
 # Fullscreen 
 screen = pygame.display.set_mode((1024, 768), pygame.SCALED)
+
+level = Level(150, 260, "past", "enigma1")
 
 class Game:
     def __init__(self, screen_size, tilemap):
@@ -30,6 +33,7 @@ class Game:
         self.water_animation = WaterAnimation(screen) 
         self.hint_system = hint_system
         self.current_puzzle_id = "valve_puzzle"  # À modifier selon l'énigme en cours
+        self.level = Level(150, 260, "past", "enigma1")
 
         map_size = pygame.Vector2(tilemap.map_width, tilemap.map_height)
         self.camera = Camera(screen_size, self.player, map_size)
@@ -37,7 +41,8 @@ class Game:
         self.symbol_clicked = False
 
     def setup_collisions(self):
-        if tilemap.name == "enigma1.tmx":
+
+        if level.get_level_name() == "enigma1":
             #Props Enigma 1
             # 1er Salle
             self.props.append(Prop("01_valve", "Valve", pygame.Rect(305, 75, 35, 35), "valve", single_use=True, tilemap=tilemap))
@@ -49,10 +54,10 @@ class Game:
             self.props.append(Prop("01_sign_teleporter_past", "Téléporteur", pygame.Rect(16, 14*16, 32, 32), "sign_teleporter", text="Salle du téléporteur"))
             self.props.append(Prop("01_sign_teleporter_future", "Téléporteur", pygame.Rect(27*16, 14*16, 32, 32), "sign_teleporter", text="Salle du téléporteur"))
             self.props.append(Prop("01_sign_valve", "Valve", pygame.Rect(21*16, 7*16, 32, 32), "sign_valve", text="Contrôle de la valve"))     
-        elif tilemap.name == "enigma2and3.tmx":
+        elif level.get_level_name() == "enigma2and3":
             pass
             #Props Enigma 2 and 3
-        elif tilemap.name == "enigma4.tmx":
+        elif level.get_level_name() == "enigma4":
             #Props Enigma 4
             self.props.append(Prop("01_note_plate", "Note", pygame.Rect(112, 144, 64, 64), "note_plate"))
             self.props.append(Prop("02_note_plate", "Note", pygame.Rect(144, 144, 64, 64), "note_plate"))
@@ -67,8 +72,6 @@ class Game:
             self.props.append(Prop("11_note_plate", "Note", pygame.Rect(144, 272, 64, 64), "note_plate"))
             self.props.append(Prop("12_note_plate", "Note", pygame.Rect(208, 272, 64, 64), "note_plate"))
             self.props.append(Prop("13_note_plate", "Note", pygame.Rect(240, 272, 64, 64), "note_plate"))
-
-            
             
 
     def update_all(self):
@@ -102,10 +105,11 @@ running = True
 dt = 0
 
 # Créer une instance de TileMap
-tilemap = TileMap('assets/maps/enigma1.tmx')
+tilemap = level.level_tilemap("enigma1")
 
 # Initialisation du jeu
 game = Game(screen_size, tilemap)
+
 
 game.setup_collisions()
 
@@ -136,6 +140,7 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+        
         
         # Gestion des événements du menu modal
         if game.active_modal:
@@ -222,6 +227,33 @@ while running:
             game.interaction_key_pressed = True
         elif not keys[pygame.K_e]:
             game.interaction_key_pressed = False
+        
+    #DEBUG TP MAP
+    if keys[pygame.K_1]:
+        tilemap = game.level.level_tilemap("enigma1")
+        game.player.position = game.level.position_player(150, 260)
+        print(game.level.get_level_name())
+        game.setup_collisions()
+           
+
+    if keys[pygame.K_2]:
+        tilemap = game.level.level_tilemap("enigma2and3")
+        game.player.position = game.level.position_player(405, 330)
+        print(game.level.get_level_name())
+        game.setup_collisions()
+
+    if keys[pygame.K_3]:
+        tilemap = game.level.level_tilemap("enigma4")
+        game.player.position = game.level.position_player(16, 100)
+        game.setup_collisions()
+    
+    if keys[pygame.K_4]:
+        tilemap = game.level.level_tilemap("enigma5")
+        game.player.position = game.level.position_player(181, 54)
+        game.setup_collisions()
+
+    if keys[pygame.K_w]:
+        print(game.player.position)
 
     # Dessiner le menu modal s'il est actif
     if game.active_modal:
