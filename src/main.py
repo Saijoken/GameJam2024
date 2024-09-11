@@ -21,7 +21,7 @@ class Game:
         self.timer = Timer(300)
         self.props = []
         self.interaction_key_pressed = False
-        self.active_modal = None  
+        self.active_modal = None
         self.ray = Raycast(self.player.rect.center, 0, 200, math.radians(45))
         self.active_modal = None 
         self.water_animation = WaterAnimation(screen) 
@@ -58,13 +58,7 @@ running = True
 dt = 0
 
 # Créer une instance de TileMap
-tilemap = TileMap('assets/maps/enigma4.tmx')
-
-# Initialisation du jeu initialisant le joueur et la camera
-game = Game(screen_size, tilemap)
-game.setup_collisions()
-
-# Créer une instance de TileMap
+#tilemap = TileMap('assets/maps/enigma4.tmx')
 tilemap = TileMap('assets/maps/enigma1.tmx')
 
 # Initialisation du jeu
@@ -154,7 +148,7 @@ while running:
         prop.draw(screen, game.camera)
 
     screen.blit(game.player.image, game.camera.apply(game.player.rect.move(-7,-16)))
-    game.ray.draw(screen)
+    #game.ray.draw(screen)
 
     # Draw interaction text if collision is detected
     if collided_object:
