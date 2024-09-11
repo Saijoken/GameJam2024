@@ -18,31 +18,25 @@ class Camera:
     def apply(self, target):
         if isinstance(target, pygame.Rect):
             return pygame.Rect(
-                (target.x - self.position_cam.x) * self.zoom,
-                (target.y - self.position_cam.y) * self.zoom,
+                *self._apply_to_point(target.topleft),
                 target.width * self.zoom,
                 target.height * self.zoom
             )
-        elif isinstance(target, tuple):
-            return (
-                (target[0] - self.position_cam.x) * self.zoom,
-                (target[1] - self.position_cam.y) * self.zoom
-            )
-        elif isinstance(target, pygame.Vector2):
-            return (target - self.position_cam) * self.zoom
+        elif isinstance(target, (tuple, pygame.Vector2)):
+            return self._apply_to_point(target)
         else:
             raise TypeError("L'argument doit être un pygame.Rect, un tuple ou un pygame.Vector2")
 
+    def _apply_to_point(self, point):
+        return ((pygame.Vector2(point) - self.position_cam) * self.zoom).xy
+
     def update(self):
-        target_x = self.player.rect.centerx - self.zoomed_screen_size.x / 2
-        target_y = self.player.rect.centery - self.zoomed_screen_size.y / 2
-        
-        # Limiter la position de la caméra
-        target_x = max(0, min(target_x, self.map_size.x - self.zoomed_screen_size.x))
-        target_y = max(0, min(target_y, self.map_size.y - self.zoomed_screen_size.y))
-        
-        self.position_cam.x = self.lerp(self.position_cam.x, target_x, self.lerp_speed)
-        self.position_cam.y = self.lerp(self.position_cam.y, target_y, self.lerp_speed)
+        target = self.player.rect.center - self.zoomed_screen_size / 2
+        target = pygame.Vector2(
+            max(0, min(target.x, self.map_size.x - self.zoomed_screen_size.x)),
+            max(0, min(target.y, self.map_size.y - self.zoomed_screen_size.y))
+        )
+        self.position_cam = self.position_cam.lerp(target, self.lerp_speed)
 
     @staticmethod
     def lerp(start: float, end: float, amount: float) -> float:
