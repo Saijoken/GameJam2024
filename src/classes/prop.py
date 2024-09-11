@@ -4,6 +4,7 @@ from classes.prop_types.potentiometer import Potentiometer
 from classes.prop_types.symbol_lock import SymbolLock
 from classes.prop_types.note_plate import NotePlate
 from classes.tilemap import TileMap
+from classes.sound import Sound
 from classes.level import Level
 
 class Prop:
@@ -50,17 +51,30 @@ class Prop:
         screen.blit(self.text, self.text_rect)
         
 
-    def check_collision(self, player_rect):
+    def check_collision(self, player_pos, interaction_radius, screen, camera):
         """ 
-        Check la collision entre le joueur et l'objet.
+        Check the collision between the player and the object and draw the hitbox if collision occurs.
         
-        return :
-        - Objet si collision avec joueur 
-        - None si aucune 
-        
-        - param : {player_rect} : Rect
+        Parameters:
+        - player_pos: pygame.Vector2 or tuple, the center position of the player
+        - interaction_radius: float, the radius within which interaction is possible
+        - screen: pygame.Surface, the screen to draw on
+        - camera: Camera object, for applying camera offset
+
+        Returns:
+        - self if collision with player
+        - None if no collision
         """
-        if player_rect.colliderect(self.rect):
+        prop_center = pygame.Vector2(self.rect.center)
+        player_center = pygame.Vector2(player_pos)
+        
+        distance = prop_center.distance_to(player_center)
+        
+        if distance <= interaction_radius:
+            # Draw hitbox
+            hitbox_surface = pygame.Surface((interaction_radius * 2, interaction_radius * 2), pygame.SRCALPHA)
+            pygame.draw.circle(hitbox_surface, (255, 0, 0, 128), (interaction_radius, interaction_radius), interaction_radius)
+            screen.blit(hitbox_surface, camera.apply(player_center - pygame.Vector2(interaction_radius, interaction_radius)))
             return self
         return None
     
@@ -77,7 +91,7 @@ class Prop:
         
         match self.type:  
             case "valve":
-                print("valve")
+                Sound.get().play("valve")
                 self.tilemap.isValveOpen = False
                 for layer in self.tilemap.tmx_data.layers:
                     if layer.name == "SewerCode":

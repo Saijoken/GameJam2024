@@ -74,4 +74,3 @@ class SymbolLock:
                         
                         return True  # Symbol selected
         return False  # No symbol selected
-
