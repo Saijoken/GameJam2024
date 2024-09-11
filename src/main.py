@@ -66,13 +66,6 @@ class Game:
         print("Level : ",self.level.get_level_name())
         if self.level.get_level_name() == "enigma1":
             #Props Enigma 1
-            self.props.append(Prop("01_valve", "Valve", pygame.Rect(311, 75, 35, 35), "valve", single_use=True, tilemap=tilemap))
-            self.props.append(Prop("01_potentiometer1", "Potentiomètre 1", pygame.Rect(257, 205, 25, 35), "potentiometer",tilemap=tilemap))
-            self.props.append(Prop("01_potentiometer2", "Potentiomètre 2", pygame.Rect(290, 205, 25, 35), "potentiometer",tilemap=tilemap))
-            self.props.append(Prop("01_symbol_lock", "Symboles", pygame.Rect(194, 30, 25, 35), "symbol_lock"))
-            self.props.append(Prop("01_door_past", "Porte verouillée", pygame.Rect(9*16, 3*16, 32, 16), "door_past", text="Porte verouillée"))   
-            self.props.append(Prop("01_door_future", "Porte verouillée", pygame.Rect(35*16, 3*16, 32, 16), "door_future", text="Porte verouillée"))   
-        elif tilemap.name == "enigma2and3.tmx":
             # 1er Salle
             self.props.append(Prop("01_valve", "Valve", pygame.Rect(305, 75, 35, 35), "valve", single_use=True, tilemap=tilemap))
             self.props.append(Prop("01_potentiometer1", "Potentiomètre 1", pygame.Rect(253, 195, 25, 35), "potentiometer",tilemap=tilemap))
@@ -246,13 +239,13 @@ while running:
             collided_object = prop
         prop.draw(screen, game.camera)
 
-    screen.blit(game.player.image, game.camera.apply(game.player.rect.move(-16,-32)))
+    screen.blit(game.player.image, game.camera.apply(game.player.rect.move(-7,-16)))
     #game.ray.draw(screen)
 
     # Draw interaction text if collision is detected
     if collided_object and collided_object.usable == True:
         collided_object.draw_text(screen)
-        print(collided_object.id)
+        
         
         # Check if 'E' key is pressed and not already pressed in the previous frame
         if keys[pygame.K_e] and not game.interaction_key_pressed:
@@ -316,14 +309,19 @@ while running:
         if game.active_modal.name == "Symboles" and game.active_modal.custom_content.correct_symbol == True:
             print("Bon symbole !")
             for prop in game.props:
+                print(prop.id)
                 if prop.id == "01_symbol_lock":
+                    print("gros caca 2")
                     prop.update_usability(False)
                     for prop_door in game.props:
+                        print(prop_door.id)
                         if prop_door.id == "01_door_closed_past_1_up":
+                            print("gros caca 4")
                             prop_door.update_usability(True)
                             prop_door.update_type("door_opened_past_1_up")
                             prop_door.update_id("01_door_opened_past_1_up")
                             print(prop_door.type)
+                            print("gros caca ultime")
                             prop_door.update_text("Porte ouverte ! Appuyez sur E !")
                             
             game.active_modal = None
