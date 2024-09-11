@@ -16,12 +16,16 @@ class Prop:
         self.single_use = single_use
         self.used = False
         self.tilemap = tilemap
+        self.correct_symbol = False
         # Affichage du text intéraction
         self.font = pygame.font.Font(None, 36) 
-
+        self.usable = usable
         self.text = self.font.render(text if text is not None else f"Appuyez sur E pour interagir avec {name}", True, (255, 255, 255))
         self.text_rect = self.text.get_rect()
         
+    def update_usability(self, usable):
+        self.usable = usable
+    
     # Affichage du text + hitbox
     def draw(self, screen, camera):
         color_with_alpha = (255, 0, 0, 128) # Opacité 50% pour débug
@@ -73,7 +77,7 @@ class Prop:
         
         self.used = True
         
-        match self.type:  # Changez 'self.id' en 'self.type'
+        match self.type:  
             case "valve":
                 Sound.get().play("valve")
                 self.tilemap.isValveOpen = False
@@ -92,9 +96,5 @@ class Prop:
             case "note_plate":
                 #note_plate = NotePlate(self.player_rect, screen)
                 return None
-            case "01_door_past":
-                print("Porte verouiller")
-                return None
             case _:
-                modal_menu = ModalMenu(screen, image_path="assets/images/test.png")
-                return modal_menu
+                return None

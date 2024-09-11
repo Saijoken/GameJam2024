@@ -14,10 +14,13 @@ from classes.cinematic import Cinematic
 from classes.sound import Sound
 from classes.hint_system import HintSystem, hint_system
 from classes.modal_menu import ModalMenu
+from classes.level import Level
 
 # Fullscreen 
 screen = pygame.display.set_mode((1024, 768), pygame.SCALED)
 cinematic = Cinematic(screen)
+
+level = Level(150, 260, "past", "enigma1")
 
 class Game:
     def __init__(self, screen_size, tilemap):
@@ -31,12 +34,17 @@ class Game:
         self.water_animation = WaterAnimation(screen) 
         self.hint_system = hint_system
         self.current_puzzle_id = "valve_puzzle"  # À modifier selon l'énigme en cours
+        self.level = Level(150, 260, "past", "enigma1")
 
         map_size = pygame.Vector2(tilemap.map_width, tilemap.map_height)
         self.camera = Camera(screen_size, self.player, map_size)
+        self.cinematic = Cinematic(screen)
+        self.symbol_clicked = False
+        self.error_number = 0
 
     def setup_collisions(self):
-        if tilemap.name == "enigma1.tmx":
+
+        if level.get_level_name() == "enigma1":
             #Props Enigma 1
             self.props.append(Prop("01_valve", "Valve", pygame.Rect(311, 75, 35, 35), "valve", single_use=True, tilemap=tilemap))
             self.props.append(Prop("01_potentiometer1", "Potentiomètre 1", pygame.Rect(257, 205, 25, 35), "potentiometer",tilemap=tilemap))
@@ -45,9 +53,20 @@ class Game:
             self.props.append(Prop("01_door_past", "Porte verouillée", pygame.Rect(9*16, 3*16, 32, 16), "door_past", text="Porte verouillée"))   
             self.props.append(Prop("01_door_future", "Porte verouillée", pygame.Rect(35*16, 3*16, 32, 16), "door_future", text="Porte verouillée"))   
         elif tilemap.name == "enigma2and3.tmx":
+            # 1er Salle
+            self.props.append(Prop("01_valve", "Valve", pygame.Rect(305, 75, 35, 35), "valve", single_use=True, tilemap=tilemap))
+            self.props.append(Prop("01_potentiometer1", "Potentiomètre 1", pygame.Rect(253, 195, 25, 35), "potentiometer",tilemap=tilemap))
+            self.props.append(Prop("01_potentiometer2", "Potentiomètre 2", pygame.Rect(285, 195, 25, 35), "potentiometer",tilemap=tilemap))
+            self.props.append(Prop("01_symbol_lock", "Symboles", pygame.Rect(188, 22, 25, 35), "symbol_lock"))
+            self.props.append(Prop("01_door_past", "Porte verouillée", pygame.Rect(9*16, 3*16, 32, 16), "door_past", text="Porte verouillée"))
+            self.props.append(Prop("01_door_future", "Porte verouillée", pygame.Rect(35*16, 3*16, 32, 16), "door_future", text="Porte verouillée"))       
+            self.props.append(Prop("01_sign_teleporter_past", "Téléporteur", pygame.Rect(16, 14*16, 32, 32), "sign_teleporter", text="Salle du téléporteur"))
+            self.props.append(Prop("01_sign_teleporter_future", "Téléporteur", pygame.Rect(27*16, 14*16, 32, 32), "sign_teleporter", text="Salle du téléporteur"))
+            self.props.append(Prop("01_sign_valve", "Valve", pygame.Rect(21*16, 7*16, 32, 32), "sign_valve", text="Contrôle de la valve"))     
+        elif level.get_level_name() == "enigma2and3":
             pass
             #Props Enigma 2 and 3
-        elif tilemap.name == "enigma4.tmx":
+        elif level.get_level_name() == "enigma4":
             #Props Enigma 4
             self.props.append(Prop("01_note_plate", "Note", pygame.Rect(112, 144, 32, 32), "note_plate"))
             self.props.append(Prop("02_note_plate", "Note", pygame.Rect(144, 144, 32, 32), "note_plate"))
@@ -95,10 +114,12 @@ running = True
 dt = 0
 
 # Créer une instance de TileMap
-tilemap = TileMap('assets/maps/enigma1.tmx')
+tilemap = level.level_tilemap("enigma1")
 
 # Initialisation du jeu
 game = Game(screen_size, tilemap)
+
+
 game.setup_collisions()
 
 # Créer la caméra avec la taille de la carte
@@ -129,6 +150,7 @@ while running:
         if event.type == pygame.QUIT:
             running = False
         
+        
         # Gestion des événements du menu modal
         if game.active_modal:
             if game.active_modal.handle_event(event):
@@ -152,11 +174,11 @@ while running:
     # Empêcher le mouvement du joueur si le menu modal est actif
     if not game.active_modal:
         game.player.player_movement(keys, dt)
-
-    game.update_all()
     
-    game.camera.update()
 
+        
+    game.update_all()
+    game.camera.update()
     game.water_animation.update()
 
    
@@ -202,7 +224,7 @@ while running:
     #game.ray.draw(screen)
 
     # Draw interaction text if collision is detected
-    if collided_object:
+    if collided_object and collided_object.usable == True:
         collided_object.draw_text(screen)
         
         # Check if 'E' key is pressed and not already pressed in the previous frame
@@ -213,17 +235,60 @@ while running:
             game.interaction_key_pressed = True
         elif not keys[pygame.K_e]:
             game.interaction_key_pressed = False
+        
+    #DEBUG TP MAP
+    if keys[pygame.K_1]:
+        tilemap = game.level.level_tilemap("enigma1")
+        game.player.position = game.level.position_player(150, 260)
+        print(game.level.get_level_name())
+        game.setup_collisions()
+           
 
+    if keys[pygame.K_2]:
+        tilemap = game.level.level_tilemap("enigma2and3")
+        game.player.position = game.level.position_player(405, 330)
+        print(game.level.get_level_name())
+        game.setup_collisions()
+
+    if keys[pygame.K_3]:
+        tilemap = game.level.level_tilemap("enigma4")
+        game.player.position = game.level.position_player(16, 100)
+        game.setup_collisions()
+    
+    if keys[pygame.K_4]:
+        tilemap = game.level.level_tilemap("enigma5")
+        game.player.position = game.level.position_player(181, 54)
+        game.setup_collisions()
+
+    if keys[pygame.K_w]:
+        print(game.player.position)
+            
+    # if game.active_modal and game.active_modal.custom_content:
+    #     print(game.active_modal.custom_content.correct_symbol)
+
+    #TODO : Penser a ajouter un systeme de compteur d'erreur pour les symboles & tout
     # Dessiner le menu modal s'il est actif
     if game.active_modal:
         game.active_modal.draw()
-        if not game.active_modal.is_open:
+        if game.active_modal.name == "Symboles" and game.active_modal.custom_content.correct_symbol == True:
+            print("Bon symbole !")
+            for prop in game.props:
+                if prop.id == "01_symbol_lock":
+                    prop.update_usability(False)
             game.active_modal = None
+            
+        if game.active_modal is not None and not game.active_modal.is_open:
+            game.active_modal = None
+
 
     game.timer.draw(screen, font)
     
-    # if game.timer.is_time_up():
-    #     print("Time's up!")
+    if game.timer.is_time_up():
+        print("Time's up!")
+        
+    if game.error_number > 1:
+        print("Game Over")
+        running = False
 
     pygame.display.flip()
 
