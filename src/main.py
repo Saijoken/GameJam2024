@@ -19,12 +19,11 @@ from classes.level import Level
 screen = pygame.display.set_mode((1024, 768), pygame.SCALED)
 cinematic = Cinematic(screen)
 
-level = Level(150, 260, "past", "enigma1")
+level = Level(150, 260, "past", "enigma4")
 
 class Game:
     def __init__(self, screen_size, tilemap):
-        self.player = Player(screen)
-        self.player.temporality = "future"
+        self.player = Player(screen, "past")
         self.timer = Timer(300)
         self.props = []
         self.interaction_key_pressed = False
@@ -34,7 +33,7 @@ class Game:
         self.water_animation = WaterAnimation(screen) 
         self.hint_system = hint_system
         self.current_puzzle_id = "valve_puzzle"  # À modifier selon l'énigme en cours
-        self.level = Level(150, 260, "past", "enigma1")
+        self.level = Level(150, 260, "past", "enigma4")
         self.path_level = [{
             "name": "enigma1",
             "visible": False,
@@ -224,7 +223,7 @@ running = True
 dt = 0
 
 # Créer une instance de TileMap
-tilemap = level.level_tilemap("enigma1")
+tilemap = level.level_tilemap("enigma4")
 
 # Initialisation du jeu
 game = Game(screen_size, tilemap)
@@ -250,7 +249,7 @@ game.water_animation.rect.topleft = (16,16)
 #load the cinematic
 cinematic.story_screen()
 
-Sound.get().loop_music("cave")
+#Sound.get().loop_music("cave")
 
 running = True
 
@@ -259,7 +258,6 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-        
         
         # Gestion des événements du menu modal
         if game.active_modal:

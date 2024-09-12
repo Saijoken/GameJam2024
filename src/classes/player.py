@@ -1,11 +1,11 @@
 import pygame
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, screen):
+    def __init__(self, screen, temporality = "past"):
         super().__init__()
         
-        # Chargement de toutes les Sprite Sheets du personnage
-        self.animations = {
+        # Chargement de toutes les Sprite Sheets du personnage 1 (passé) et 2 (futur)
+        self.animationspast = {
             'idle_up': self.load_frames('assets/player/Player1IdleUp.png'),
             'idle_down': self.load_frames('assets/player/Player1Idle.png'),
             'idle_left': self.load_frames('assets/player/Player1IdleLeft.png'),
@@ -15,15 +15,27 @@ class Player(pygame.sprite.Sprite):
             'walk_left': self.load_frames('assets/player/Player1WalkLeft.png'),
             'walk_right': self.load_frames('assets/player/Player1WalkRight.png')
         }
-        
-        # Idle down -> Position par défaut
+
+        self.animationsfuture = {
+            'idle_up': self.load_frames('assets/player/Player2IdleUp.png'),
+            'idle_down': self.load_frames('assets/player/Player2Idle.png'),
+            'idle_left': self.load_frames('assets/player/Player2IdleLeft.png'),
+            'idle_right': self.load_frames('assets/player/Player2IdleRight.png'),
+            'walk_up': self.load_frames('assets/player/Player2WalkUp.png'),
+            'walk_down': self.load_frames('assets/player/Player2Walk.png'),
+            'walk_left': self.load_frames('assets/player/Player2WalkLeft.png'),
+            'walk_right': self.load_frames('assets/player/Player2WalkRight.png')
+        }
+
+        self.temporality = temporality
+        print(self.temporality)
+        self.animations = self.animationspast if temporality == "past" else self.animationsfuture
         self.current_animation = self.animations['idle_down']
         self.current_frame_index = 0
         self.image = self.current_animation[self.current_frame_index]
         self.rect = pygame.Rect(0, 0, 16, 16)  # Ajustez ces valeurs si nécessaire
-        self.position = pygame.Vector2(1525, 260)
+        self.position = pygame.Vector2(150, 260)
         self.speed = 100
-        self.temporality = "past" # "past" or "future"
 
         # Animation timing
         self.frame_counter = 0
