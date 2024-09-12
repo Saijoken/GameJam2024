@@ -4,12 +4,15 @@ import math
 class Raycast:
     def __init__(self, start_pos, direction, length, angle_spread, color=(255, 255, 0, 128)):
         self.start_pos = pygame.Vector2(start_pos)
-        self.direction = direction
+        self.direction = math.radians(direction)  # Convert direction to radians
         self.length = length
-        self.angle_spread = angle_spread
+        self.angle_spread = math.radians(angle_spread)  # Convert angle_spread to radians
         self.color = color
         self.surface = self.create_ray_surface()
+        self.rotated_surface = pygame.transform.rotate(self.surface, -math.degrees(self.direction))
+        self.rotated_rect = self.rotated_surface.get_rect(center=self.start_pos)
 
+    #use direction and angle_spread to create a ray
     def create_ray_surface(self):
         surface = pygame.Surface((self.length * 2, self.length * 2), pygame.SRCALPHA)
         center = (self.length, self.length)
@@ -19,12 +22,16 @@ class Raycast:
                         start_angle, end_angle, self.length)
         return surface
 
-    def update(self, new_start_pos, new_direction, camera):
-        self.start_pos = pygame.Vector2(new_start_pos) - camera.position_cam
-        self.direction = new_direction
-        rotated_surface = pygame.transform.rotate(self.surface, math.degrees(-self.direction))
-        self.rotated_rect = rotated_surface.get_rect(center=self.start_pos)
-        self.rotated_surface = rotated_surface
+    def update(self, new_start_pos, new_direction):
+        self.start_pos = pygame.Vector2(new_start_pos)
+        self.direction = math.radians(new_direction)
+        self.rotated_surface = pygame.transform.rotate(self.surface, -math.degrees(self.direction))
+        self.rotated_rect = self.rotated_surface.get_rect(center=self.start_pos)
+
+    def update_position(self, new_start_pos):
+        self.start_pos = pygame.Vector2(new_start_pos) 
+        self.rotated_surface = pygame.transform.rotate(self.surface, -math.degrees(self.direction))
+        self.rotated_rect = self.rotated_surface.get_rect(center=self.start_pos)
 
     def draw(self, screen):
         screen.blit(self.rotated_surface, self.rotated_rect)
@@ -35,3 +42,7 @@ class Raycast:
         dy = target_pos[1] - start_pos[1]
         return math.atan2(dy, dx)
 
+    @staticmethod
+    #calcul grace a un nombre situé entre 0 et 360  
+    def calculate_angle_by_number(number):
+        return math.radians(number)

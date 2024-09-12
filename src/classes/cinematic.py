@@ -46,7 +46,7 @@ class Cinematic:
             # Fade in story text
             if current_line < len(story_text):
                 if alphas[current_line] < 255:
-                    alphas[current_line] += 5
+                    alphas[current_line] += 3
                     if alphas[current_line] > 255:
                         alphas[current_line] = 255
                 else:

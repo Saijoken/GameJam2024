@@ -7,6 +7,7 @@ class Level:
         self.player_pos_y = player_pos_y
         self.player_temporality = player_temporality
         self.level = level_name
+        self.raycast_active = False
     
     def position_player(self, player_pos_x, player_pos_y):
         self.player_pos_x = player_pos_x

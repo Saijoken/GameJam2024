@@ -43,13 +43,13 @@ pip install -r requirements.txt
 ```
 ## Attribution des tâches
 
+Nacer Berkane : Lead Project
+
 Mohammed Ben Aicha : Lead Developer
 
 Axelle Broyer : Networking
 
 Marie Dos Santos : Developer
-
-Nacer Berkane : Lead Project
 
 Angel Gioanni : Graphic Designer, Developer
 
