@@ -6,9 +6,11 @@ from classes.prop_types.note_plate import NotePlate
 from classes.tilemap import TileMap
 from classes.sound import Sound
 from classes.level import Level
+from src.classes.server_manager import ServerManager  # Ajout de l'import
 
 class Prop:
-    # Création d'un New Prop
+
+
     def __init__(self, id, name, rect, type, single_use=False, tilemap=None, text=None, usable=True):
         self.id = id
         self.name = name
@@ -25,6 +27,7 @@ class Prop:
         self.text_rect = self.text.get_rect()
         self.level = None
         
+
     def update_usability(self, usable):
         self.usable = usable
 
@@ -98,6 +101,10 @@ class Prop:
                         layer.visible = True
                     if layer.name == "SewerWaterFall":
                         layer.visible = False
+                
+                # Modifiez cette ligne pour utiliser le server_manager passé en paramètre
+                self.server_manager.run_command("valve_opened", {"valve_id": self.id})
+                
                 return None
             case "potentiometer":
                 potentiometer = Potentiometer(screen)
