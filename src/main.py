@@ -19,7 +19,7 @@ from classes.level import Level
 screen = pygame.display.set_mode((1024, 768), pygame.SCALED)
 cinematic = Cinematic(screen)
 
-level = Level(150, 260, "past", "enigma1")
+level = Level(150, 260, "future", "enigma1")
 
 def reset_game():
     pass
@@ -29,7 +29,7 @@ def game_over():
 
 class Game:
     def __init__(self, screen_size, tilemap):
-        self.player = Player(screen, "past")
+        self.player = Player(screen, "future")
         self.timer = Timer(300)
         self.props = []
         self.interaction_key_pressed = False
@@ -39,7 +39,7 @@ class Game:
         self.water_animation = WaterAnimation(screen) 
         self.hint_system = hint_system
         self.current_puzzle_id = "valve_puzzle"  # À modifier selon l'énigme en cours
-        self.level = Level(150, 260, "past", "enigma1")
+        self.level = Level(150, 260, "future", "enigma1")
         self.path_level = [{
             "name": "enigma1",
             "visible": False,
@@ -149,7 +149,7 @@ class Game:
                 self.props.append(Prop("02_door_opened_future_2_right", "Porte ouverte ! Appuyez sur E !", pygame.Rect(98*16, 6*16, 16, 64), "door_opened_future_2_right", text="Porte ouverte ! Appuyez sur E !"))
             self.props.append(Prop("02_potentiometer", "Potentiomètre de la Bombe", pygame.Rect(81*16, 16, 32, 96), "potentiometer",tilemap=tilemap))
             self.props.append(Prop("02_sign_note_future", "Salle des notes", pygame.Rect(96*16, 8*16, 50, 50), "sign_note_future", text="Salle des notes"))
-
+            self.props.append(Prop("02_light_manual", "Manuel des lumière", pygame.Rect(93*16, 3*16, 64, 64), "02_light_manual", text="Allumez les lumières près de la porte pour ouvrir le passage"))
 
 
         elif self.level.get_level_name() == "enigma4":
@@ -421,7 +421,10 @@ while running:
         game.water_animation.draw(game.camera,8,9)
     
 
-
+    if game.note_plate_order_list == []:
+        game.path_level[3]["visible"] = True
+        game.setup_collisions()
+        game.note_plate_order_list = ["vide"]
     
     
     # Check for collisions with interactible objects
