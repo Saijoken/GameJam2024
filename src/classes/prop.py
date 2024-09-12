@@ -105,9 +105,6 @@ class Prop:
             case "symbol_lock":
                 symbol_lock = SymbolLock(screen)
                 return ModalMenu(screen, "Symboles", custom_content=symbol_lock)
-            case "note_plate":
-                #note_plate = NotePlate(self.player_rect, screen)
-                return None
             case "door":
                 if self.usable:
                     match self.id:
