@@ -133,16 +133,19 @@ class Game:
             self.props.append(Prop("02_manual", "Manuel d'activation/desactivation", pygame.Rect(8*16, 8*16, 64, 32), "manual", text="Manuel d'activation/desactivation : ... le SUD-OUEST a perdu 2 pièces ..."))
             self.props.append(Prop("02_sign_computer_past", "Salle de contrôle", pygame.Rect(18*16, 10*16, 50, 50), "sign_computer_past", text="Salle de contrôle"))
             self.props.append(Prop("02_door_opened_past_2_down", "Porte ouverte ! Appuyez sur E !", pygame.Rect(25*16, 21*16, 64, 32), "door_opened_past_2_down", text="Porte ouverte ! Appuyez sur E !"))
+            self.props.append(Prop("02_lantern_left_past", "Lantern", pygame.Rect(18*16, -8, 16, 64), "lantern", text="Lantern"))
+            self.props.append(Prop("02_lantern_right_past", "Lantern", pygame.Rect(37*16, -8, 16, 64), "lantern", text="Lantern"))
             if self.path_level[2]["visible"] == False and self.player.temporality == "past":
                 self.props.append(Prop("02_door_closed_past_2_right", "Porte verouillée", pygame.Rect(38*16, 6*16, 16, 64), "door_opened_past_2_right", text="Porte verouillée"))
             else:
                 self.props.append(Prop("02_door_opened_past_2_right", "Porte ouverte ! Appuyez sur E !", pygame.Rect(38*16, 6*16, 16, 64), "door_opened_past_2_right", text="Porte ouverte ! Appuyez sur E !"))
             self.props.append(Prop("02_sign_note_past", "Salle des notes", pygame.Rect(36*16, 8*16, 50, 50), "sign_note_past", text="Salle des notes"))
 
-
             #Future
             self.props.append(Prop("02_sign_computer_future", "Salle de contrôle", pygame.Rect(78*16, 10*16, 50, 50), "sign_computer_future", text="Salle de contrôle"))
             self.props.append(Prop("02_door_opened_future_2_down", "Porte ouverte ! Appuyez sur E !", pygame.Rect(85*16, 21*16, 64, 32), "door_opened_future_2_down", text="Porte ouverte ! Appuyez sur E !"))
+            self.props.append(Prop("02_lantern_left_future", "Lantern", pygame.Rect(78*16, -8, 16, 64), "lantern", text="Lantern"))
+            self.props.append(Prop("02_lantern_right_future", "Lantern", pygame.Rect(97*16, -8, 16, 64), "lantern", text="Lantern"))
             if self.path_level[2]["visible"] == False and self.player.temporality == "future":
                 self.props.append(Prop("02_door_closed_future_2_right", "Porte verouillée", pygame.Rect(98*16, 6*16, 16, 64), "door_opened_future_2_right", text="Porte verouillée"))
             else:
@@ -279,7 +282,8 @@ class Game:
         
         world_mouse_pos = (mouse_pos[0] + camera_offset.x, mouse_pos[1] + camera_offset.y)
         angle = Raycast.calculate_angle(player_center, world_mouse_pos)
-        self.ray.update(player_center, angle, self.camera)
+        self.ray.update(player_center, angle)
+
 
     def display_hint(self):
         hint = self.hint_system.get_current_hint(self.player.temporality, self.current_puzzle_id)
@@ -298,7 +302,7 @@ class Game:
         next_hint_rect = self.next_hint_icon.get_rect(topright=(hint_rect.left - padding, padding))
         
         screen.blit(self.hint_icon, hint_rect)
-        screen.blit(self.next_hint_icon, next_hint_rect)
+        screen.blit(self.next_hint_icon, next_hint_rect) 
     
     def get_correct_note_plate(self,collided_object):
         if self.note_plate_order_list != []:
@@ -306,7 +310,7 @@ class Game:
                 print("Cette plaque a déjà été activée")
                 return
             if collided_object.id == self.note_plate_order_list[0]:
-                # Bonne plaque
+                # Bonne plaque
                 print("Bonne plaque")
                 Sound.get().play(collided_object.id)
                 self.note_order.append(collided_object.id)
@@ -316,12 +320,12 @@ class Game:
             elif collided_object.id in self.all_false_note_prop and collided_object.check_collision(game.player.rect.center, 17, screen, game.camera) :
                 print("mauvaise plaque")
                 Sound.get().play("ayi")
-                self.error_number -= 1         
+                self.error_number -= 1
         else:
             print("Toutes les plaques sont bonnes")
-            
-    
-
+        
+    def reset_game(self):
+        print("Reset game")
         
         
 
@@ -361,7 +365,17 @@ game.water_animation.rect.topleft = (16,16)
 #load the cinematic
 cinematic.story_screen()
 
+#Sound.get().loop_music("tower")
+
+poto1 = 0
+poto2 = 0
+
+lanterns = []
+potentiometers = []
+
+
 Sound.get().loop_music("cave")
+
 pygame.mixer.music.set_volume(0.25)
 
 lastly_collided_object = None
@@ -397,14 +411,10 @@ while running:
     # Empêcher le mouvement du joueur si le menu modal est actif
     if not game.active_modal:
         game.player.player_movement(keys, dt)
-    
-
         
     game.update_all()
     game.camera.update()
     game.water_animation.update()
-
-   
         
     if tilemap.collides_with_walls(game.player.rect):
         # If there is a collision, revert to the previous position
@@ -442,6 +452,60 @@ while running:
 
     screen.blit(game.player.image, game.camera.apply(game.player.rect.move(-8,-16)))
     #game.ray.draw(screen)
+
+    if game.level.get_level_name() == "enigma1":
+        
+        if game.level.poto_init == False:
+            potentiometers = [prop for prop in game.props if prop.id == "01_potentiometer1" or prop.id == "01_potentiometer2"]
+            if potentiometers and potentiometers[0] and potentiometers[0].pot:
+                game.level.poto1 = potentiometers[0].pot.value
+            else:
+                # Handle the case when potentiometer is not available
+                game.level.poto1 = 0  # or some default value
+            if potentiometers and potentiometers[1] and potentiometers[1].pot:
+                game.level.poto2 = potentiometers[1].pot.value
+            else:
+                # Handle the case when potentiometer is not available
+                game.level.poto2 = 0  # or some default value
+            game.level.poto_init = True
+        else:
+            if potentiometers and potentiometers[0] and potentiometers[0].pot:
+                game.level.poto1 = potentiometers[0].pot.value
+            else:
+                # Handle the case when potentiometer is not available
+                game.level.poto1 = 0  # or some default value
+            if potentiometers and potentiometers[1] and potentiometers[1].pot:
+                game.level.poto2 = potentiometers[1].pot.value
+            else:
+                # Handle the case when potentiometer is not available
+                game.level.poto2 = 0  # or some default value
+    
+    if game.level.get_level_name() == "enigma2and3":
+        if game.level.raycast_active == False:
+            print("Raycast actif")
+            #find the two lanterns from the props list
+            lanterns = [prop for prop in game.props if prop.id == "02_lantern_left_future" or prop.id == "02_lantern_right_future"]
+            if game.level.poto1 == 0 & game.level.poto2 == 0:
+                rayon1 = Raycast(game.camera.apply(lanterns[0].rect.center), 40, 800, 5) #70 120 = valeur porte
+                rayon2 = Raycast(game.camera.apply(lanterns[1].rect.center), 160, 800, 5)
+            else:
+                rayon1 = Raycast(game.camera.apply(lanterns[0].rect.center), game.level.poto1, 800, 5) #70 120 = valeur porte
+                rayon2 = Raycast(game.camera.apply(lanterns[1].rect.center), game.level.poto2, 800, 5)
+            game.level.raycast_active = True
+        else:
+            #search for the two lanterns in the props list
+            rayon1.update_position(game.camera.apply(lanterns[0].rect.center))
+            rayon1.update_angle(game.level.poto1)
+            rayon2.update_position(game.camera.apply(lanterns[1].rect.center))
+            rayon2.update_angle(game.level.poto2)
+
+            if rayon1.get_angle() == 60 and rayon2.get_angle() == 110:
+                print("Porte ouverte")
+                
+
+
+        rayon1.draw(screen)
+        rayon2.draw(screen)
 
     # Draw interaction text if collision is detected
     if collided_object and collided_object.usable == True:
@@ -616,7 +680,6 @@ while running:
             game.interaction_key_pressed = True
         elif not keys[pygame.K_e]:
             game.interaction_key_pressed = False
-
         
         
     #DEBUG TP MAP
@@ -703,8 +766,7 @@ while running:
         while pygame.mixer.music.get_busy():
             print("waiting")
         running = False
-       
-            
+
         
 
     game.draw_hint_icons(screen)

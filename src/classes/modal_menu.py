@@ -23,7 +23,7 @@ class ModalMenu:
             self.content_rect.center = (screen.get_width() // 2, screen.get_height() // 2)
 
         # Ajout du bouton de fermeture
-        self.close_button = pygame.Rect(screen.get_width() * 3 // 4, screen.get_height() // 4, 30, 30)
+        self.close_button = pygame.Rect(screen.get_width() * 3 // 4, screen.get_height() // 4, 40, 40)
         self.is_open = True
 
         # Créer une surface semi-transparente pour l'arrière-plan
@@ -50,7 +50,10 @@ class ModalMenu:
         if self.is_open:
             self.screen.blit(self.overlay, (0, 0))
             self.screen.blit(self.title_text, self.title_rect)
-            pygame.draw.rect(self.screen, (255, 0, 0), self.close_button)
+            # load an image on the same spot as the close button
+            close_button_image = pygame.image.load("assets/images/cross.png")
+            close_button_image = pygame.transform.scale(close_button_image, (100, 100))
+            self.screen.blit(close_button_image, (self.close_button.x -30, self.close_button.y -30))
             
             if self.image:
                 self.screen.blit(self.image, self.image_rect)

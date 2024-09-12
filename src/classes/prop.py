@@ -1,8 +1,11 @@
 import pygame
+import math
+
 from classes.modal_menu import ModalMenu
 from classes.prop_types.potentiometer import Potentiometer
 from classes.prop_types.symbol_lock import SymbolLock
 from classes.prop_types.battery import Battery
+from classes.raycast import Raycast
 from classes.tilemap import TileMap
 from classes.sound import Sound
 from classes.level import Level
@@ -23,8 +26,13 @@ class Prop:
         self.usable = usable
         self.text = self.font.render(text if text is not None else f"Appuyez sur E pour interagir avec {name}", True, (255, 255, 255))
         self.text_rect = self.text.get_rect()
+        #define type of pot to Potentiometer
+        self.pot = None
         self.level = None
         
+        if "lantern" in self.type:
+            self.raycast = Raycast(self.rect.center, 0, 200, math.radians(45)) 
+
     def update_usability(self, usable):
         self.usable = usable
 
@@ -44,7 +52,6 @@ class Prop:
         surface = pygame.Surface((self.rect.width, self.rect.height), pygame.SRCALPHA)
         pygame.draw.rect(surface, color_with_alpha, surface.get_rect())
         screen.blit(surface, camera.apply(self.rect))
-
         
     def draw_text(self, screen):
         self.text_rect.center = (screen.get_width() // 2, screen.get_height() // 1.2)
@@ -101,6 +108,7 @@ class Prop:
                 return None
             case "potentiometer":
                 potentiometer = Potentiometer(screen)
+                self.pot = potentiometer
                 return ModalMenu(screen, "Potentiomètre", custom_content=potentiometer)
             case "symbol_lock":
                 symbol_lock = SymbolLock(screen)
