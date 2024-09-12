@@ -60,6 +60,9 @@ class Game:
             "visible": False,
             }
         ]
+        self.count_correct_note_plate = 0
+        self.note_order = []
+        self.note_plate_order_list = ['02_note_plate','08_note_plate','09_note_plate','06_note_plate']
 
         map_size = pygame.Vector2(tilemap.map_width, tilemap.map_height)
         self.camera = Camera(screen_size, self.player, map_size)
@@ -143,19 +146,20 @@ class Game:
 
         elif self.level.get_level_name() == "enigma4":
             #Props Enigma 4
-            self.props.append(Prop("01_note_plate", "Note", pygame.Rect(7*16, 9*16, 64, 64), "note_plate"))
-            self.props.append(Prop("02_note_plate", "Note", pygame.Rect(9*16, 9*16, 64, 64), "note_plate"))
-            self.props.append(Prop("03_note_plate", "Note", pygame.Rect(13*16, 9*16, 64, 64), "note_plate"))
-            self.props.append(Prop("04_note_plate", "Note", pygame.Rect(15*16, 9*16, 64, 64), "note_plate"))
-            self.props.append(Prop("05_note_plate", "Note", pygame.Rect(7*16, 11*16, 64, 64), "note_plate"))
-            self.props.append(Prop("06_note_plate", "Note", pygame.Rect(9*16, 11*16, 64, 64), "note_plate"))
-            self.props.append(Prop("07_note_plate", "Note", pygame.Rect(13*16, 11*16, 64, 64), "note_plate"))
-            self.props.append(Prop("08_note_plate", "Note", pygame.Rect(240, 13*16, 64, 64), "note_plate"))
-            self.props.append(Prop("09_note_plate", "Note", pygame.Rect(9*16, 15*16, 64, 64), "note_plate"))
-            self.props.append(Prop("10_note_plate", "Note", pygame.Rect(15*16, 15*16, 64, 64), "note_plate"))
-            self.props.append(Prop("11_note_plate", "Note", pygame.Rect(9*16, 17*16, 64, 64), "note_plate"))
-            self.props.append(Prop("12_note_plate", "Note", pygame.Rect(13*16, 17*16, 64, 64), "note_plate"))
-            self.props.append(Prop("13_note_plate", "Note", pygame.Rect(15*16, 17*16, 64, 64), "note_plate"))
+            self.props.append(Prop("01_note_plate", "Note", pygame.Rect(7*16, 9*16, 64, 64), "note_plate", text=""))
+            
+            self.props.append(Prop("02_note_plate", "Note", pygame.Rect(9*16, 9*16, 64, 64), "note_plate", text=""))
+            self.props.append(Prop("03_note_plate", "Note", pygame.Rect(13*16, 9*16, 64, 64), "note_plate", text=""))
+            self.props.append(Prop("04_note_plate", "Note", pygame.Rect(15*16, 9*16, 64, 64), "note_plate", text=""))
+            self.props.append(Prop("05_note_plate", "Note", pygame.Rect(7*16, 11*16, 64, 64), "note_plate", text=""))
+            self.props.append(Prop("06_note_plate", "Note", pygame.Rect(9*16, 11*16, 64, 64), "note_plate", text=""))
+            self.props.append(Prop("07_note_plate", "Note", pygame.Rect(13*16, 11*16, 64, 64), "note_plate", text=""))
+            self.props.append(Prop("08_note_plate", "Note", pygame.Rect(240, 13*16, 64, 64), "note_plate", text=""))
+            self.props.append(Prop("09_note_plate", "Note", pygame.Rect(9*16, 15*16, 64, 64), "note_plate", text=""))
+            self.props.append(Prop("10_note_plate", "Note", pygame.Rect(15*16, 15*16, 64, 64), "note_plate", text=""))
+            self.props.append(Prop("11_note_plate", "Note", pygame.Rect(9*16, 17*16, 64, 64), "note_plate", text=""))
+            self.props.append(Prop("12_note_plate", "Note", pygame.Rect(13*16, 17*16, 64, 64), "note_plate", text=""))
+            self.props.append(Prop("13_note_plate", "Note", pygame.Rect(15*16, 17*16, 64, 64), "note_plate", text=""))
 
             
     def update_all(self):
@@ -188,6 +192,28 @@ class Game:
         
         screen.blit(self.hint_icon, hint_rect)
         screen.blit(self.next_hint_icon, next_hint_rect)
+    
+    def get_correct_note_plate(self,collided_object):
+        print(collided_object.id)
+        if self.note_plate_order_list != []:
+            if collided_object.id in self.note_order:
+                print("Cette plaque a déjà été activée")
+                return
+            if collided_object.id == self.note_plate_order_list[0]:
+                # Bonne plaque
+                print("Bonne plaque")
+                self.note_order.append(collided_object.id)
+                self.note_plate_order_list.pop(0)
+            else:
+                print("mauvaise plaque")
+                self.reset_game()
+        else:
+            print("Toutes les plaques sont bonnes")
+    
+    def reset_game(self):
+        print("Reset game")
+        
+        
 
 pygame.display.set_caption("Game Jam")
 
@@ -224,7 +250,7 @@ game.water_animation.rect.topleft = (16,16)
 #load the cinematic
 cinematic.story_screen()
 
-#Sound.get().loop_music("midna")
+Sound.get().loop_music("cave")
 
 running = True
 
@@ -284,15 +310,6 @@ while running:
         game.water_animation.draw(game.camera,6,8)
         game.water_animation.draw(game.camera,7,7)
         game.water_animation.draw(game.camera,8,9)
-
-    if tilemap.isValveOpen == True:
-    # Affichage des vaguellette sur l'eau Future
-        game.water_animation.draw(game.camera,29,9)
-        game.water_animation.draw(game.camera,30,8)
-        game.water_animation.draw(game.camera,31,7)
-        game.water_animation.draw(game.camera,32,8)
-        game.water_animation.draw(game.camera,33,7)
-        game.water_animation.draw(game.camera,34,9)
     
 
 
@@ -314,6 +331,7 @@ while running:
     if collided_object and collided_object.usable == True:
         collided_object.draw_text(screen)
         
+        game.get_correct_note_plate(collided_object)
         
         # Check if 'E' key is pressed and not already pressed in the previous frame
         if keys[pygame.K_e] and not game.interaction_key_pressed:
