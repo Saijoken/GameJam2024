@@ -33,8 +33,16 @@ class Raycast:
         self.rotated_surface = pygame.transform.rotate(self.surface, -math.degrees(self.direction))
         self.rotated_rect = self.rotated_surface.get_rect(center=self.start_pos)
 
+    def update_angle(self, new_direction):
+        self.direction = math.radians(new_direction)
+        self.rotated_surface = pygame.transform.rotate(self.surface, -math.degrees(self.direction))
+        self.rotated_rect = self.rotated_surface.get_rect(center=self.start_pos)
+
     def draw(self, screen):
         screen.blit(self.rotated_surface, self.rotated_rect)
+
+    def get_angle(self):
+        return self.direction
 
     @staticmethod
     def calculate_angle(start_pos, target_pos):

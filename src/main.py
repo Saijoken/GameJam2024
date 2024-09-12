@@ -19,7 +19,7 @@ from classes.level import Level
 screen = pygame.display.set_mode((1024, 768), pygame.SCALED)
 cinematic = Cinematic(screen)
 
-level = Level(150, 260, "past", "enigma2and3")
+level = Level(150, 260, "past", "enigma1")
 
 def reset_game():
     pass
@@ -29,7 +29,7 @@ def game_over():
 
 class Game:
     def __init__(self, screen_size, tilemap):
-        self.player = Player(screen, "future")
+        self.player = Player(screen, "past")
         self.timer = Timer(300)
         self.props = []
         self.interaction_key_pressed = False
@@ -39,7 +39,7 @@ class Game:
         self.water_animation = WaterAnimation(screen) 
         self.hint_system = hint_system
         self.current_puzzle_id = "valve_puzzle"  # À modifier selon l'énigme en cours
-        self.level = Level(150, 260, "past", "enigma2and3")
+        self.level = Level(150, 260, "past", "enigma1")
         self.path_level = [{
             "name": "enigma1",
             "visible": False,
@@ -144,8 +144,8 @@ class Game:
             #Future
             self.props.append(Prop("02_sign_computer_future", "Salle de contrôle", pygame.Rect(78*16, 10*16, 50, 50), "sign_computer_future", text="Salle de contrôle"))
             self.props.append(Prop("02_door_opened_future_2_down", "Porte ouverte ! Appuyez sur E !", pygame.Rect(85*16, 21*16, 64, 32), "door_opened_future_2_down", text="Porte ouverte ! Appuyez sur E !"))
-            self.props.append(Prop("02_lantern_left_future", "Lantern", pygame.Rect(78*16, 16, 16, 64), "lantern", text="Lantern"))
-            self.props.append(Prop("02_lantern_right_future", "Lantern", pygame.Rect(97*16, 16, 16, 64), "lantern", text="Lantern"))
+            self.props.append(Prop("02_lantern_left_future", "Lantern", pygame.Rect(78*16, -8, 16, 64), "lantern", text="Lantern"))
+            self.props.append(Prop("02_lantern_right_future", "Lantern", pygame.Rect(97*16, -8, 16, 64), "lantern", text="Lantern"))
             if self.path_level[2]["visible"] == False and self.player.temporality == "future":
                 self.props.append(Prop("02_door_closed_future_2_right", "Porte verouillée", pygame.Rect(98*16, 6*16, 16, 64), "door_opened_future_2_right", text="Porte verouillée"))
             else:
@@ -307,7 +307,7 @@ class Game:
                 print("Cette plaque a déjà été activée")
                 return
             if collided_object.id == self.note_plate_order_list[0]:
-                # Bonne plaque
+                # Bonne plaque
                 print("Bonne plaque")
                 Sound.get().play(collided_object.id)
                 self.note_order.append(collided_object.id)
@@ -317,7 +317,7 @@ class Game:
             elif collided_object.id in self.all_false_note_prop and collided_object.check_collision(game.player.rect.center, 17, screen, game.camera) :
                 print("mauvaise plaque")
                 Sound.get().play("ayi")
-                self.error_number -= 1         
+                self.error_number -= 1
         else:
             print("Toutes les plaques sont bonnes")
         
@@ -335,7 +335,7 @@ running = True
 dt = 0
 
 # Créer une instance de TileMap
-tilemap = level.level_tilemap("enigma2and3")
+tilemap = level.level_tilemap("enigma1")
 
 # Initialisation du jeu
 game = Game(screen_size, tilemap)
@@ -363,10 +363,13 @@ cinematic.story_screen()
 
 #Sound.get().loop_music("tower")
 
-rayon1 = Raycast(game.player.rect.center, 0, 100, 100)
-rayon2 = Raycast(game.player.rect.center, 0, 100, 100)
+poto1 = 0
+poto2 = 0
 
 lanterns = []
+potentiometers = []
+
+
 Sound.get().loop_music("cave")
 
 pygame.mixer.music.set_volume(0.25)
@@ -445,19 +448,58 @@ while running:
 
     screen.blit(game.player.image, game.camera.apply(game.player.rect.move(-8,-16)))
     #game.ray.draw(screen)
+
+    if game.level.get_level_name() == "enigma1":
+        
+        if game.level.poto_init == False:
+            potentiometers = [prop for prop in game.props if prop.id == "01_potentiometer1" or prop.id == "01_potentiometer2"]
+            if potentiometers and potentiometers[0] and potentiometers[0].pot:
+                game.level.poto1 = potentiometers[0].pot.value
+            else:
+                # Handle the case when potentiometer is not available
+                game.level.poto1 = 0  # or some default value
+            if potentiometers and potentiometers[1] and potentiometers[1].pot:
+                game.level.poto2 = potentiometers[1].pot.value
+            else:
+                # Handle the case when potentiometer is not available
+                game.level.poto2 = 0  # or some default value
+            game.level.poto_init = True
+        else:
+            if potentiometers and potentiometers[0] and potentiometers[0].pot:
+                game.level.poto1 = potentiometers[0].pot.value
+            else:
+                # Handle the case when potentiometer is not available
+                game.level.poto1 = 0  # or some default value
+            if potentiometers and potentiometers[1] and potentiometers[1].pot:
+                game.level.poto2 = potentiometers[1].pot.value
+            else:
+                # Handle the case when potentiometer is not available
+                game.level.poto2 = 0  # or some default value
+    
     if game.level.get_level_name() == "enigma2and3":
         if game.level.raycast_active == False:
             print("Raycast actif")
             #find the two lanterns from the props list
-            lanterns = [prop for prop in game.props if prop.id == "02_lantern_left_past" or prop.id == "02_lantern_right_past"]
-            rayon1 = Raycast(game.camera.apply(lanterns[0].rect.center), 40, 800, 5) #70 120 = valeur porte
-            rayon2 = Raycast(game.camera.apply(lanterns[1].rect.center), 160, 800, 5)
+            lanterns = [prop for prop in game.props if prop.id == "02_lantern_left_future" or prop.id == "02_lantern_right_future"]
+            if game.level.poto1 == 0 & game.level.poto2 == 0:
+                rayon1 = Raycast(game.camera.apply(lanterns[0].rect.center), 40, 800, 5) #70 120 = valeur porte
+                rayon2 = Raycast(game.camera.apply(lanterns[1].rect.center), 160, 800, 5)
+            else:
+                rayon1 = Raycast(game.camera.apply(lanterns[0].rect.center), game.level.poto1, 800, 5) #70 120 = valeur porte
+                rayon2 = Raycast(game.camera.apply(lanterns[1].rect.center), game.level.poto2, 800, 5)
             game.level.raycast_active = True
         else:
             #search for the two lanterns in the props list
             rayon1.update_position(game.camera.apply(lanterns[0].rect.center))
+            rayon1.update_angle(game.level.poto1)
             rayon2.update_position(game.camera.apply(lanterns[1].rect.center))
-    
+            rayon2.update_angle(game.level.poto2)
+
+            if rayon1.get_angle() == 60 and rayon2.get_angle() == 110:
+                print("Porte ouverte")
+                
+
+
         rayon1.draw(screen)
         rayon2.draw(screen)
 
@@ -708,8 +750,7 @@ while running:
         while pygame.mixer.music.get_busy():
             print("waiting")
         running = False
-       
-            
+
         
 
     game.draw_hint_icons(screen)

@@ -26,6 +26,8 @@ class Prop:
         self.usable = usable
         self.text = self.font.render(text if text is not None else f"Appuyez sur E pour interagir avec {name}", True, (255, 255, 255))
         self.text_rect = self.text.get_rect()
+        #define type of pot to Potentiometer
+        self.pot = None
         self.level = None
         
         if "lantern" in self.type:
@@ -106,6 +108,7 @@ class Prop:
                 return None
             case "potentiometer":
                 potentiometer = Potentiometer(screen)
+                self.pot = potentiometer
                 return ModalMenu(screen, "Potentiomètre", custom_content=potentiometer)
             case "symbol_lock":
                 symbol_lock = SymbolLock(screen)

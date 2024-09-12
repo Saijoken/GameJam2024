@@ -99,4 +99,4 @@ class Cinematic:
             ""
         ]
 
-        self.story_screen(credits_text, 16, )
+        self.story_screen(credits_text, 16)
