@@ -1,11 +1,14 @@
 class Protocols:
-
     class Response:
         MENU = "protocol.menu"
         AUTH = "protocol.auth"
         PLAY = "protocol.play"
         CREDITS = "protocol.credits"
+        SETTINGS = "protocol.settings"
         QUIT = "protocol.quit"
+        RETURN = "protocol.return"
+        CREATE_JOIN = "protocol.create_join"
+        FUTURE_PAST = "protocol.future_past"
         NICKNAME = "protocol.request_nickname"
         NICKNAME_ERROR = "protocol.request.nickname_error"
         REQUEST_GAME_ID = "protocol.request_game_id"
@@ -19,6 +22,9 @@ class Protocols:
         ANSWER_VALID = "protocol.answer_valid"
         ANSWER_INVALID = 'protocol.answer_invalid'
         PLAYER_LEFT = "protocol.player_left"
+        LOGIN_REQUEST = "protocol.login_request"
+        LOGIN_SUCCESS = "protocol.login_success"
+        LOGIN_FAILED = "protocol.login_failed"
         REGISTER_REQUEST = "protocol.register_request"
         REGISTER_SUCCESS = "protocol.register_success"
         REGISTER_FAILED = "protocol.register_failed"
@@ -26,6 +32,15 @@ class Protocols:
         DISCONNECTED_FAILED = "protocol.disconnected_failed"
 
     class Request:
+        WANT_TO_PLAY = "protocol.want_to_play"
+        CHOOSE_CREDITS = "protocol.choose_credits"
+        CHOOSE_SETTINGS = "protocol.choose_settings"
+        WANT_TO_QUIT = "protocol.want_to_quit"
         NICKNAME = "protocol.send_nickname"
         LEAVE = "protocol.leave"
         REGISTER = "protocol.register"
+        LOGIN = "protocol.login"
+        CREATE_LOBBY = "protocol.create_lobby"
+        JOIN_LOBBY = "protocol.join_lobby"
+        CHOOSE_ROLE = "protocol.choose_role"
+        GAME_ACTION = "protocol.game_action"
