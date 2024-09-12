@@ -19,7 +19,7 @@ from classes.level import Level
 screen = pygame.display.set_mode((1024, 768), pygame.SCALED)
 cinematic = Cinematic(screen)
 
-level = Level(150, 260, "future", "enigma1")
+level = Level(150, 260, "past", "enigma1")
 
 def reset_game():
     pass
@@ -29,7 +29,7 @@ def game_over():
 
 class Game:
     def __init__(self, screen_size, tilemap):
-        self.player = Player(screen, "future")
+        self.player = Player(screen, "past")
         self.timer = Timer(300)
         self.props = []
         self.interaction_key_pressed = False
@@ -39,7 +39,7 @@ class Game:
         self.water_animation = WaterAnimation(screen) 
         self.hint_system = hint_system
         self.current_puzzle_id = "valve_puzzle"  # À modifier selon l'énigme en cours
-        self.level = Level(150, 260, "future", "enigma1")
+        self.level = Level(150, 260, "past", "enigma1")
         self.path_level = [{
             "name": "enigma1",
             "visible": False,
@@ -194,7 +194,7 @@ class Game:
             # Past
                 self.props.append(Prop("05_door_opened_past_5_up", "Porte ouverte ! Appuyez sur E !", pygame.Rect(11*16, 3*16, 64, 32), "05_door_opened_past_5_up", text="Porte ouverte ! Appuyez sur E !"))
                 if self.path_level[4]["visible"] == False and self.player.temporality == "past":
-                    self.props.append(Prop("05_door_opened_past_5_left", "Porte verouillée", pygame.Rect(1*16, 16*16, 32, 64), "door_opened_past_5_left", text="Porte verouillée"))
+                    self.props.append(Prop("05_door_closed_past_5_left", "Porte verouillée", pygame.Rect(1*16, 16*16, 32, 64), "door_closed_past_5_left", text="Porte verouillée"))
                 else:
                     self.props.append(Prop("05_door_opened_past_5_left", "Porte ouverte ! Appuyez sur E !", pygame.Rect(1*16, 16*16, 32, 64), "door_opened_past_5_left", text="Porte ouverte ! Appuyez sur E !"))
                 self.props.append(Prop("05_sign_principal_past", "Salle principale", pygame.Rect(2*16, 15*16, 50, 50), "sign_principal_past", text="Salle principale"))
@@ -205,10 +205,12 @@ class Game:
                 self.props.append(Prop("05_manual_past", "Manuel", pygame.Rect(17*16, 13*16, 32, 64), "manual_past", tilemap=tilemap))
                 self.props.append(Prop("05_manual_past", "Manuel", pygame.Rect(18*16, 14*16, 64, 32), "manual_past", tilemap=tilemap))
                 self.props.append(Prop("05_manual_past", "Manuel", pygame.Rect(20*16, 13*16, 32, 64), "manual_past", tilemap=tilemap))
+                self.props.append(Prop("05_code_past", "Code", pygame.Rect(3*16, 2*16, 80, 64), "code_past", tilemap=tilemap ))
+
             # Future
                 self.props.append(Prop("05_door_opened_future_5_up", "Porte ouverte ! Appuyez sur E !", pygame.Rect(97*16, 3*16, 64, 32), "door_opened_future_5_up", text="Porte ouverte ! Appuyez sur E !"))
                 if self.path_level[4]["visible"] == False and self.player.temporality == "past":
-                    self.props.append(Prop("05_door_opened_future_5_left", "Porte verouillée", pygame.Rect(87*16, 16*16, 32, 64), "door_opened_future_5_left", text="Porte verouillée"))
+                    self.props.append(Prop("05_door_closed_future_5_left", "Porte verouillée", pygame.Rect(87*16, 16*16, 32, 64), "door_closed_future_5_left", text="Porte verouillée"))
                 else:
                     self.props.append(Prop("05_door_opened_future_5_left", "Porte ouverte ! Appuyez sur E !", pygame.Rect(87*16, 16*16, 32, 64), "door_opened_future_5_left", text="Porte ouverte ! Appuyez sur E !"))
                 self.props.append(Prop("05_sign_principal_future", "Salle principale", pygame.Rect(88*16, 15*16, 50, 50), "sign_principal_future", text="Salle principale"))
@@ -224,6 +226,7 @@ class Game:
                 self.props.append(Prop("05_text_future", "Text", pygame.Rect(97*16, 20*16, 32, 64), "text_future", text="...ATTENDS sur le SYMBOLE et MAINTIENS la porte"))
                 self.props.append(Prop("05_text_future", "Text", pygame.Rect(104*16, 14*16, 64, 32), "text_future", text="Lorsque le MILIEU de seconde glisse entre RIEN et zéro..."))
                 self.props.append(Prop("05_text_future", "Text", pygame.Rect(95*16, 21*16, 64, 32), "text_future", text="...ATTENDS sur le SYMBOLE et MAINTIENS la porte"))
+                self.props.append(Prop("05_lock_future", "Text", pygame.Rect(89*16, 2*16, 80, 64), "lock_future", text="CODE : 52342"))
         
         elif self.level.get_level_name() == "teleporter":
             # Past
@@ -354,6 +357,7 @@ font = pygame.font.Font('assets/fonts/SpecialElite-Regular.ttf', 50)
 game.player.rect.center = game.player.position
 game.water_animation.rect.topleft = (16,16)
 
+
 #load the cinematic
 cinematic.story_screen()
 
@@ -467,14 +471,14 @@ while running:
                     Sound.get().play("grincement")
                 case "05_door_opened_past_5_left":
                     tilemap = game.level.level_tilemap("enigma1")
-                    game.player.position = game.level.position_player(243, 260)
-                    game.path_level[5]["visible"] = True
+                    game.player.position = game.level.position_player(336, 255)
+                    game.path_level[4]["visible"] = True
                     game.props = []
                     game.setup_collisions()
                     Sound.get().play("grincement")
                 case "05_door_opened_future_5_left":
                     tilemap = game.level.level_tilemap("enigma1")
-                    game.player.position = game.level.position_player(1715, 260)
+                    game.player.position = game.level.position_player(1715, 255)
                     game.path_level[5]["visible"] = True
                     game.props = []
                     game.setup_collisions()
@@ -505,7 +509,7 @@ while running:
                     Sound.get().play("grincement")
                 case "01_door_opened_past_1_up":
                     tilemap = game.level.level_tilemap("enigma2and3")
-                    game.player.position = game.level.position_player(153, 49)
+                    game.player.position = game.level.position_player(405, 330)
                     game.path_level[1]["visible"] = True
                     game.props = []
                     game.setup_collisions()
@@ -658,7 +662,6 @@ while running:
         if game.active_modal.name == "Symboles" and game.active_modal.custom_content.correct_symbol == True:
             print("Bon symbole !")
             for prop in game.props:
-                print(prop.id)
                 if prop.id == "01_symbol_lock":
                     prop.update_usability(False)
                     for prop_door in game.props:
@@ -669,7 +672,20 @@ while running:
                             prop_door.update_id("01_door_opened_future_1_up")
                             print(prop_door.type)
                             prop_door.update_text("Porte ouverte ! Appuyez sur E !")
-                            
+                if prop.id == "05_code_past" and (game.timer.get_minutes() == 5 or game.timer.get_seconds_dixieme() == 5 or game.timer.get_seconds_unite() == 5):
+                    prop.update_usability(False)
+                    for prop_door in game.props:
+                        if prop_door.id == "05_door_closed_past_5_left":
+                            prop_door.update_usability(True)
+                            prop_door.update_type("door_opened_past_5_left")
+                            prop_door.update_id("05_door_opened_past_5_left")
+                            prop_door.update_text("Porte ouverte ! Appuyez sur E !")
+                        if prop_door.id == "05_door_closed_future_5_left":
+                            print("ici")
+                            prop_door.update_usability(True)
+                            prop_door.update_type("door_opened_future_5_left")
+                            prop_door.update_id("05_door_opened_future_5_left")
+                            prop_door.update_text("Porte ouverte ! Appuyez sur E !")
             game.active_modal = None
             
         if game.active_modal is not None and not game.active_modal.is_open:
