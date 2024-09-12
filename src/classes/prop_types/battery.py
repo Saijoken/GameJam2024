@@ -9,11 +9,11 @@ class Battery:
 
     def draw(self):
         #draw the battery at the center of the screen manually
-        pygame.draw.rect(self.screen, (255, 255, 255), (self.screen.get_width() // 2 - 50, self.screen.get_height() // 2 - 50, 400, 100))
-        pygame.draw.rect(self.screen, (0, 0, 0), (self.screen.get_width() // 2 - 48, self.screen.get_height() // 2 - 48, 396, 96))
+        pygame.draw.rect(self.screen, (255, 255, 255), (self.screen.get_width() // 3 - 50, self.screen.get_height() // 2 - 50, 400, 100))
+        pygame.draw.rect(self.screen, (0, 0, 0), (self.screen.get_width() // 3 - 48, self.screen.get_height() // 2 - 48, 396, 96))
 
         #draw the charge of the battery when update
-        pygame.draw.rect(self.screen, (0, 255, 0), (self.screen.get_width() // 2 - 48, self.screen.get_height() // 2 - 48, self.charge, 96))
+        pygame.draw.rect(self.screen, (0, 255, 0), (self.screen.get_width() // 3 - 48, self.screen.get_height() // 2 - 48, self.charge, 96))
 
     def update(self, events):
         for event in events:
