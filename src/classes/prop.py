@@ -2,7 +2,6 @@ import pygame
 from classes.modal_menu import ModalMenu
 from classes.prop_types.potentiometer import Potentiometer
 from classes.prop_types.symbol_lock import SymbolLock
-from classes.prop_types.note_plate import NotePlate
 from classes.tilemap import TileMap
 from classes.sound import Sound
 from classes.level import Level
