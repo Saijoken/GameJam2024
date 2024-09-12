@@ -5,14 +5,16 @@
             "game": {
                 "room": "room",
                 "riddle": "riddle"
-            }
+            },
+            "role": "role"
         },
         "nickname2": {
             "password": "password",
             "game": {
                 "room": "room",
                 "riddle": "riddle"
-            }
+            },
+            "role": "role"
             
         }
     },
@@ -23,14 +25,16 @@
             "game": {
                 "room": "room",
                 "riddle": "riddle"
-            }
+            },
+            "role": "role"
         },
         "nickname2": {
             "password": "password",
             "game": {
                 "room": "room",
                 "riddle": "riddle"
-            }
+            },
+            "role": "role"
         }
 
     }

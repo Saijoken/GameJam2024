@@ -11,12 +11,12 @@ class Cinematic:
     def story_screen(self):
         story_text = [
             "Il était une fois, dans un monde voué à l'apocalypse,",
-            "2 héros liés par une pierre.",
+            "Deux héros liés par une pierre.",
             "Cette pierre magique, traversant les temps et les dimensions,",
             "permettait à ces deux personnes de temps différents",
             "de communiquer entre elles.",
             "Afin d'éviter de faire sombrer le monde qu'ils aiment tant,",
-            "ces deux héros vont devoir collaborer ensemble",
+            "ces deux héros devront collaborer ensemble",
             "afin de sauver le monde.",
             "Mais qui sait quelles péripéties ils vont rencontrer...",
             "Est-ce que cette amitié est vouée à durer ?"
