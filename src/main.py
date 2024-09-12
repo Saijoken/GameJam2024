@@ -1,5 +1,5 @@
 import math
-import pygame
+import pygame, time 
 
 pygame.init()
 
@@ -20,6 +20,12 @@ screen = pygame.display.set_mode((1024, 768), pygame.SCALED)
 cinematic = Cinematic(screen)
 
 level = Level(150, 260, "past", "enigma1")
+
+def reset_game():
+    pass
+
+def game_over():
+    pass
 
 class Game:
     def __init__(self, screen_size, tilemap):
@@ -68,7 +74,7 @@ class Game:
         self.camera = Camera(screen_size, self.player, map_size)
         self.cinematic = Cinematic(screen)
         self.symbol_clicked = False
-        self.error_number = 0
+        self.error_number = 3
         self.hint_icon = pygame.image.load("assets/images/hint_bulb.png").convert_alpha()
         self.next_hint_icon = pygame.image.load("assets/images/hint_key.png").convert_alpha()
         self.icon_size = (64, 64)  # Ajustez la taille selon vos besoins
@@ -292,7 +298,6 @@ class Game:
         screen.blit(self.next_hint_icon, next_hint_rect)
     
     def get_correct_note_plate(self,collided_object):
-        print(collided_object.id)
         if self.note_plate_order_list != []:
             if collided_object.id in self.note_order:
                 print("Cette plaque a déjà été activée")
@@ -305,19 +310,19 @@ class Game:
                 self.note_plate_order_list.pop(0)
                 if self.note_plate_order_list == []:
                     Sound.get().play("fullSong")
-            elif collided_object.id in self.all_false_note_prop:
+            elif collided_object.id in self.all_false_note_prop and collided_object.check_collision(game.player.rect.center, 17, screen, game.camera) :
                 print("mauvaise plaque")
                 Sound.get().play("ayi")
+                self.error_number -= 1         
         else:
             print("Toutes les plaques sont bonnes")
             
     
-    def reset_game(self):
-        print("Reset game")
+
         
         
 
-pygame.display.set_caption("Game Jam")
+pygame.display.set_caption("Lost in times")
 
 screen_size = pygame.Vector2(screen.get_width(), screen.get_height())
 
@@ -353,6 +358,9 @@ game.water_animation.rect.topleft = (16,16)
 cinematic.story_screen()
 
 Sound.get().loop_music("cave")
+pygame.mixer.music.set_volume(0.25)
+
+lastly_collided_object = None
 
 running = True
 
@@ -431,8 +439,9 @@ while running:
     # Draw interaction text if collision is detected
     if collided_object and collided_object.usable == True:
         collided_object.draw_text(screen)
-        
-        game.get_correct_note_plate(collided_object)
+        if collided_object != lastly_collided_object:
+            game.get_correct_note_plate(collided_object)
+        lastly_collided_object = collided_object
         
         # Check if 'E' key is pressed and not already pressed in the previous frame
         if keys[pygame.K_e] and not game.interaction_key_pressed:
@@ -669,9 +678,15 @@ while running:
     if game.timer.is_time_up():
         print("Time's up!")
         
-    if game.error_number > 1:
+    if game.error_number == -1:
         print("Game Over")
+        Sound.get().play("bomb")
+        while pygame.mixer.music.get_busy():
+            print("waiting")
         running = False
+       
+            
+        
 
     game.draw_hint_icons(screen)
 
