@@ -113,6 +113,18 @@ class Prop:
                         case "01_door_opened_future_1_up":
                             level = Level(1368, 304, "future", "enigma2and3")
                             return None
+                        case "01_door_opened_past_1_left":
+                            level = Level(16, 260, "past", "teleporter")
+                            return None
+                        case "01_door_opened_future_1_left":
+                            level = Level(1392, 304, "future", "teleporter")
+                            return None
+                        case "01_door_opened_past_1_right":
+                            level = Level(150, 260, "past", "enigma5")
+                            return None
+                        case "01_door_opened_future_1_right":
+                            level = Level(351, 304, "future", "enigma5")
+                            return None
                 else:
                     return None
             
