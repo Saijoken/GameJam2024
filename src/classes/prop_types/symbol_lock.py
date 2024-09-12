@@ -25,6 +25,7 @@ class SymbolLock:
         self.background = pygame.image.load('assets/symbol_lock/bg_symbol_lock.png')
         self.bg_rect = self.background.get_rect(center=(screen.get_width() // 2, screen.get_height() // 2))
         self.correct_symbol = False
+        self.bad_symbol = False
         self.correct_symbol_id = None
         
         self.symbols_per_row = 4
@@ -70,6 +71,7 @@ class SymbolLock:
                             self.correct_symbol = True
                             print(self.correct_symbol)
                         else:
+                            self.bad_symbol = True
                             print("Ayiiii le movai simbol")
                             
                         

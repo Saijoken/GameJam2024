@@ -74,7 +74,7 @@ class Game:
         self.camera = Camera(screen_size, self.player, map_size)
         self.cinematic = Cinematic(screen)
         self.symbol_clicked = False
-        self.error_number = 3
+        self.error_number = 2
         self.hint_icon = pygame.image.load("assets/images/hint_bulb.png").convert_alpha()
         self.next_hint_icon = pygame.image.load("assets/images/hint_key.png").convert_alpha()
         self.icon_size = (64, 64)  # Ajustez la taille selon vos besoins
@@ -722,35 +722,42 @@ while running:
     # Dessiner le menu modal s'il est actif
     if game.active_modal:
         game.active_modal.draw()
-        if game.active_modal.name == "Symboles" and game.active_modal.custom_content.correct_symbol == True:
-            print("Bon symbole !")
-            for prop in game.props:
-                if prop.id == "01_symbol_lock":
-                    prop.update_usability(False)
-                    for prop_door in game.props:
-                        print(prop_door.id)
-                        if prop_door.id == "01_door_closed_future_1_up":
-                            prop_door.update_usability(True)
-                            prop_door.update_type("door_opened_future_1_up")
-                            prop_door.update_id("01_door_opened_future_1_up")
-                            print(prop_door.type)
-                            prop_door.update_text("Porte ouverte ! Appuyez sur E !")
-                if prop.id == "05_code_past" and (game.timer.get_minutes() == 5 or game.timer.get_seconds_dixieme() == 5 or game.timer.get_seconds_unite() == 5):
-                    prop.update_usability(False)
-                    for prop_door in game.props:
-                        if prop_door.id == "05_door_closed_past_5_left":
-                            prop_door.update_usability(True)
-                            prop_door.update_type("door_opened_past_5_left")
-                            prop_door.update_id("05_door_opened_past_5_left")
-                            prop_door.update_text("Porte ouverte ! Appuyez sur E !")
-                        if prop_door.id == "05_door_closed_future_5_left":
-                            print("ici")
-                            prop_door.update_usability(True)
-                            prop_door.update_type("door_opened_future_5_left")
-                            prop_door.update_id("05_door_opened_future_5_left")
-                            prop_door.update_text("Porte ouverte ! Appuyez sur E !")
-            game.active_modal = None
-            
+        if game.active_modal.name == "Symboles" :
+            if game.active_modal.custom_content.correct_symbol == True:
+                print("Bon symbole !")
+                for prop in game.props:
+                    if prop.id == "01_symbol_lock":
+                        prop.update_usability(False)
+                        for prop_door in game.props:
+                            if prop_door.id == "01_door_closed_future_1_up":
+                                prop_door.update_usability(True)
+                                prop_door.update_type("door_opened_future_1_up")
+                                prop_door.update_id("01_door_opened_future_1_up")
+                                print(prop_door.type)
+                                prop_door.update_text("Porte ouverte ! Appuyez sur E !")
+                    if prop.id == "05_code_past" and (game.timer.get_minutes() == 5 or game.timer.get_seconds_dixieme() == 5 or game.timer.get_seconds_unite() == 5):
+                        prop.update_usability(False)
+                        for prop_door in game.props:
+                            if prop_door.id == "05_door_closed_past_5_left":
+                                prop_door.update_usability(True)
+                                prop_door.update_type("door_opened_past_5_left")
+                                prop_door.update_id("05_door_opened_past_5_left")
+                                prop_door.update_text("Porte ouverte ! Appuyez sur E !")
+                            if prop_door.id == "05_door_closed_future_5_left":
+                                print("ici")
+                                prop_door.update_usability(True)
+                                prop_door.update_type("door_opened_future_5_left")
+                                prop_door.update_id("05_door_opened_future_5_left")
+                                prop_door.update_text("Porte ouverte ! Appuyez sur E !")
+                game.active_modal = None
+            elif game.active_modal.custom_content.bad_symbol == True:
+                print("Mauvais symbole !")
+                if game.error_number != -1:
+                    game.error_number -= 1
+                    game.active_modal.custom_content.bad_symbol = False
+                else:
+                    game.active_modal = None
+           
         if game.active_modal is not None and not game.active_modal.is_open:
             game.active_modal = None
 
@@ -763,9 +770,9 @@ while running:
     if game.error_number == -1:
         print("Game Over")
         Sound.get().play("bomb")
-        while pygame.mixer.music.get_busy():
-            print("waiting")
+        pygame.time.wait(3000)
         running = False
+        
 
         
 
