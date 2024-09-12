@@ -108,13 +108,14 @@ class Prop:
             case "note_plate":
                 #note_plate = NotePlate(self.player_rect, screen)
                 return None
-            case "door_opened_past_1_up":
-                return None
             case "door":
                 if self.usable:
                     match self.id:
                         case "01_door_opened_past_1_up":
                             level = Level(150, 260, "past", "enigma2and3")
+                            return None
+                        case "01_door_opened_future_1_up":
+                            level = Level(1368, 304, "future", "enigma2and3")
                             return None
                 else:
                     return None

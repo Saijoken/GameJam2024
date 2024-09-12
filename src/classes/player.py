@@ -21,7 +21,7 @@ class Player(pygame.sprite.Sprite):
         self.current_frame_index = 0
         self.image = self.current_animation[self.current_frame_index]
         self.rect = pygame.Rect(0, 0, 16, 16)  # Ajustez ces valeurs si nécessaire
-        self.position = pygame.Vector2(150, 260)
+        self.position = pygame.Vector2(1525, 260)
         self.speed = 100
         self.temporality = "past" # "past" or "future"
 
