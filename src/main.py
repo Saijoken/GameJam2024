@@ -82,6 +82,7 @@ class Game:
             self.props.append(Prop("01_potentiometer1", "Potentiomètre 1", pygame.Rect(253, 205, 45, 65), "potentiometer",tilemap=tilemap))
             self.props.append(Prop("01_potentiometer2", "Potentiomètre 2", pygame.Rect(285, 205, 45, 65), "potentiometer",tilemap=tilemap))
             self.props.append(Prop("01_symbol_lock", "Symboles", pygame.Rect(188, 22, 55, 95), "symbol_lock"))
+            self.props.append(Prop("01_battery", "Batterie", pygame.Rect(188, 200, 55, 95), "battery"))
             
             #Past
 

@@ -15,7 +15,6 @@ class Battery:
         #draw the charge of the battery when update
         pygame.draw.rect(self.screen, (0, 255, 0), (self.screen.get_width() // 2 - 48, self.screen.get_height() // 2 - 48, self.charge, 96))
 
-
     def update(self, events):
         for event in events:
             if event.type == pygame.KEYDOWN:
@@ -29,6 +28,3 @@ class Battery:
 
     def get_charge(self):
         return self.charge
-
-    
-        

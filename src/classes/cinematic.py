@@ -39,7 +39,8 @@ class Cinematic:
                 if event.type == pygame.QUIT:
                     pygame.quit()
                 if event.type == pygame.KEYDOWN:
-                    running = False
+                    if event.key == pygame.K_SPACE:
+                        running = False
 
             # Fade in story text
             if current_line < len(story_text):
@@ -52,8 +53,7 @@ class Cinematic:
                     if current_line < len(story_text) - 1:
                         current_line += 1
 
-            # Render and blit text
-            self.screen.fill((0, 0, 0))  # Clear screen
+            self.screen.fill((0, 0, 0))
             pygame.draw.rect(self.screen, (100, 100, 100), (self.screen.get_width()/2 - 400, self.screen.get_height() / 2 - 250, 800, 500))
             
             for i, line in enumerate(story_text):
@@ -66,7 +66,7 @@ class Cinematic:
 
             # Render "Press any key" text
             if all(fade_complete):
-                press_key_text = font.render("Appuyez sur une touche pour commencer", True, (255, 255, 255))
+                press_key_text = font.render("Appuyez sur la touche \"Espace\" pour commencer", True, (255, 255, 255))
                 press_key_alpha = (pygame.time.get_ticks() % 1000) // 4 
                 press_key_surface = pygame.Surface(press_key_text.get_size(), pygame.SRCALPHA)
                 press_key_surface.fill((255, 255, 255, 0))
