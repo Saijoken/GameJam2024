@@ -24,6 +24,18 @@ from src.classes.sound import Sound
 from src.classes.hint_system import HintSystem, hint_system
 from src.classes.modal_menu import ModalMenu
 from src.classes.level import Level
+from src.classes.camera import Camera
+from src.classes.player import Player
+from src.classes.tilemap import TileMap
+from src.classes.timer import Timer
+from src.classes.prop import Prop
+from src.classes.raycast import Raycast
+from src.classes.water_animation import WaterAnimation
+from src.classes.cinematic import Cinematic
+from src.classes.sound import Sound
+from src.classes.hint_system import HintSystem, hint_system
+from src.classes.modal_menu import ModalMenu
+from src.classes.level import Level
 # Fullscreen 
 screen = pygame.display.set_mode((1024, 768), pygame.SCALED)
 cinematic = Cinematic(screen)
@@ -83,6 +95,7 @@ class Game:
         print("Level : ",self.level.get_level_name())
         if self.level.get_level_name() == "enigma1":
             #Props Enigma 1
+            # 1er Sallep
             # 1er Sallep
             self.props.append(Prop("01_valve", "Valve", pygame.Rect(308, 100, 50, 50), "valve", single_use=True, tilemap=tilemap))
             self.props.append(Prop("01_potentiometer1", "Potentiomètre 1", pygame.Rect(253, 205, 45, 65), "potentiometer",tilemap=tilemap))

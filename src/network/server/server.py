@@ -3,11 +3,10 @@ import asyncudp
 import asyncio
 from protocols import Protocols
 from lobby import Lobby
-#from game import Game
 from datetime import datetime
 import uuid
 import traceback
-from database import Database
+import database
 
 
 class Server:
@@ -25,16 +24,15 @@ class Server:
         self.clients = {}
         # Struct of self.lobbies dict : { 'game_id1': [clientSocket1, clientSocket2], 'game_id2': [clientSocket1] ... }
         self.lobbies = {}
-        # TODO implémenter la classe Rooms (ou juste une classe enum)
-        # Struct of self.rooms : { 'room1': [riddle1, riddle2], 'room2': [riddle3]...}
-        # Avec riddle classe directement implémentée dans le dico
-        self.rooms = {}
+        
 
     # Time function
     def time(self):
         return datetime.now().strftime("[%d/%m - %H:%M:%S]")
-
-    # Timer function for the game
+    
+    # TODO FAIRE LE TIMER
+    def timer(self):
+        pass
 
 
     ##########################################################################################
@@ -92,34 +90,35 @@ class Server:
                     if choice == Protocols.Request.CREATE_LOBBY:
                         game_id = await self.create_lobby(addr)
                         if game_id and self.lobby.get_len(game_id) == 2:
-                            await self.choose_role(addr)
+                            await self.choose_role(addr, game_id)
                     elif choice == Protocols.Request.JOIN_LOBBY:
                         success = await self.join_lobby(addr)
                         if success and self.lobby.get_len(game_id) == 2:
-                            await self.choose_role(addr)
+                            await self.choose_role(addr, game_id)
             elif choice == Protocols.Request.CHOOSE_CREDITS:
+                # As it is static and doesn't require a response
+                # We can pass, it is handled by the client
                 pass
             elif choice == Protocols.Request.CHOOSE_SETTINGS:
                 pass
             else:
-                #TODO Quit, close the client, close the socket? close the window
-                pass
-                #print(f"Unexpected request type: {response_type}")
-
+                self.udp_socket.close()
         except Exception as e:
             print(f"Error in handle_client: {str(e)}")
             traceback.print_exc()
 
-
-
-
     # Choose between past and future before playing
-    async def choose_role(self, addr):
+    async def choose_role(self, addr, game_id):
         options = ["Past", "Future"]
         await self.send_data(Protocols.Response.CHOOSE_ROLE, options, addr)
-        choice = await self.get_data(addr)
+        choice = await self.receive_data(addr)
+        nickname = self.clients[addr]
+        with open('src/network/server/infos.json', 'r') as f:
+            data = json.load(f)
+        data[game_id][nickname]['role'] = choice
+        with open('src/network/server/infos.json', 'w') as f:
+            json.dump(data, f, indent=4)
         return choice
-        # Add in JSON game_id, addr clients, which choose past/future
 
     # Get a valid nickname
     async def get_valid_nickname(self, addr):
@@ -194,6 +193,7 @@ class Server:
 
     # Login a client
     async def handle_login(self, addr):
+        counter = 3
         # Ask the client for the login and password
         await self.send_data(Protocols.Response.LOGIN_REQUEST, "Entrez votre nom d'utilisateur et mot de passe", addr)
         msg = await self.receive_data(addr)
@@ -208,12 +208,18 @@ class Server:
                     return True
                 else:
                     await self.send_data(Protocols.Response.LOGIN_FAILED, "Identifiants incorrects", addr)
-                    #TODO réessayer
-                    return False
+                    while counter > 0:
+                        await self.handle_login(addr)
+                        counter -= 1
+                        if counter == 0:
+                            return False
             else:
                 await self.send_data(Protocols.Response.LOGIN_FAILED, "Identifiants incorrects", addr)
-                #TODO réessayer
-                return False
+                while counter > 0:
+                        await self.handle_login(addr)
+                        counter -= 1
+                        if counter == 0:
+                            return False
         else:
             await self.send_data(Protocols.Response.LOGIN_FAILED, "Requête invalide", addr)
             return False
@@ -245,6 +251,7 @@ class Server:
 
     # Register a client
     async def handle_register(self, addr):
+        counter = 3
         await self.send_data(Protocols.Response.REGISTER_REQUEST, "Entrez un nickname et un mot de passe", addr)
         msg = await self.get_data(addr)
         # Check if nickname and password exist, are coherent and correct
@@ -253,8 +260,11 @@ class Server:
         password = data["password"]
         if self.database.exist_nickname(nickname):
             await self.send_data(Protocols.Response.REGISTER_FAILED, "Nickname déjà utilisé", addr)
-            #TODO réessayer
-            return False
+            while counter > 0:
+                await self.handle_register(addr)
+                counter -= 1
+                if counter == 0:
+                    return False
         self.database.add_user(nickname, password)
         await self.send_data(Protocols.Response.REGISTER_SUCCESS, "Inscription réussie", addr)
         return True
@@ -280,6 +290,14 @@ class Server:
         msg = {"type": r_type, "data": data}
         msg = json.dumps(msg).encode("ascii")
         self.udp_socket.sendto(msg, addr)
+
+    # Send an info to all clients
+    async def sendall_data(self, r_type, data):
+        msg = {"type": r_type, "data": data}
+        encoded_msg = json.dumps(msg).encode("ascii")
+        for addr in self.clients.keys():
+            self.udp_socket.sendto(encoded_msg, addr)
+        
 
     # Create unique ID for a new room
     def generate_game_id(self):

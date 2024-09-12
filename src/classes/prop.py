@@ -9,8 +9,15 @@ from classes.level import Level
 from src.classes.server_manager import ServerManager  # Ajout de l'import
 
 class Prop:
+    server_manager = None
 
+    @classmethod
+    def initialize_server_manager(cls):
+        if cls.server_manager is None:
+            cls.server_manager = ServerManager()
+            cls.server_manager.start_sync()
 
+    # Création d'un New Prop
     def __init__(self, id, name, rect, type, single_use=False, tilemap=None, text=None, usable=True):
         self.id = id
         self.name = name
@@ -27,6 +34,7 @@ class Prop:
         self.text_rect = self.text.get_rect()
         self.level = None
         
+        Prop.initialize_server_manager()
 
     def update_usability(self, usable):
         self.usable = usable
@@ -102,8 +110,8 @@ class Prop:
                     if layer.name == "SewerWaterFall":
                         layer.visible = False
                 
-                # Modifiez cette ligne pour utiliser le server_manager passé en paramètre
-                self.server_manager.run_command("valve_opened", {"valve_id": self.id})
+                # Envoi d'une requête au serveur
+                Prop.server_manager.run_command("valve_opened", {"valve_id": self.id})
                 
                 return None
             case "potentiometer":

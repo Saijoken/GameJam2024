@@ -45,6 +45,9 @@ class ServerManager:
 
     def run_command(self, command, data=None):
         return self.loop.run_until_complete(self.send_command(command, data))
+    
+    
+
 
     def start_sync(self):
         self.loop.run_until_complete(self.start())
