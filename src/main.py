@@ -66,6 +66,11 @@ class Game:
         self.cinematic = Cinematic(screen)
         self.symbol_clicked = False
         self.error_number = 0
+        self.hint_icon = pygame.image.load("assets/images/hint_bulb.png").convert_alpha()
+        self.next_hint_icon = pygame.image.load("assets/images/hint_key.png").convert_alpha()
+        self.icon_size = (64, 64)  # Ajustez la taille selon vos besoins
+        self.hint_icon = pygame.transform.scale(self.hint_icon, self.icon_size)
+        self.next_hint_icon = pygame.transform.scale(self.next_hint_icon, self.icon_size)
 
     def setup_collisions(self):
         print("Level : ",self.level.get_level_name())
@@ -174,6 +179,15 @@ class Game:
             self.display_hint()
         else:
             print("Debug: Pas d'autre indice disponible.")
+
+    def draw_hint_icons(self, screen):
+        screen_width = screen.get_width()
+        padding = 10
+        hint_rect = self.hint_icon.get_rect(topright=(screen_width - padding - self.icon_size[0], padding))
+        next_hint_rect = self.next_hint_icon.get_rect(topright=(hint_rect.left - padding, padding))
+        
+        screen.blit(self.hint_icon, hint_rect)
+        screen.blit(self.next_hint_icon, next_hint_rect)
 
 pygame.display.set_caption("Game Jam")
 
@@ -398,6 +412,8 @@ while running:
     if game.error_number > 1:
         print("Game Over")
         running = False
+
+    game.draw_hint_icons(screen)
 
     pygame.display.flip()
 
