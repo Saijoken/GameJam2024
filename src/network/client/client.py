@@ -30,7 +30,7 @@ class Client:
 
     # 
     async def receive_data(self):
-        data = await self.client_socket.recvfrom()
+        data, addr = await self.client_socket.recvfrom()
         return json.loads(data.decode())
 
     async def listen(self):

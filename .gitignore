@@ -1,8 +1,4 @@
 .venv
 .idea
-<<<<<<< HEAD
 .pyc
-=======
-src.network.server.database.json
 __pycache__
->>>>>>> bbb6cabec07b5b6dcba8fbdd26ca0089180039a2

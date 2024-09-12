@@ -25,7 +25,7 @@ class TileMap:
             
             # Check if it's a tile layer (TiledTileLayer)
             elif isinstance(layer, pytmx.TiledTileLayer):
-                print(f"Tile layer: {layer.name}")
+                # print(f"Tile layer: {layer.name}")
                 for x, y, gid in layer:
                     tile = self.tmx_data.get_tile_properties_by_gid(gid)
                     if tile and 'WallsCol' in tile and tile['WallsCol']:

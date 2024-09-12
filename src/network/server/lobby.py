@@ -9,11 +9,14 @@ class Lobby(object):
 
     # Add the game_id as the lobby id and add the first client after a connection
     async def add_game(self, game_id, addr):
-        self.games[game_id] = {
-            "game_id": game_id,
-            "clients": [addr],
-            "game_started": False
-        }
+        try:
+            self.games[game_id] = {
+                "game_id": game_id,
+                "clients": [addr],
+                "game_started": False
+            }
+        except Exception as e:
+            print(f"[ERROR] Error adding game: {str(e)}")
 
     # Get lobby from game (join)
     async def get_game(self, game_id):

@@ -25,10 +25,17 @@ async def test_client_past():
         print("Erreur : le menu n'a pas été reçu correctement")
 
     # Login
-    # Ne va potentiellement pas fonctionner
-    await client.send_command(Protocols.Request.LOGIN, {"username": "past_player", "password": "password123"})
-    login_response = await client.receive_data()
-    print("Login response (normalement directement create ou join lobby):", login_response)
+    try:
+        await client.send_command(Protocols.Request.LOGIN, {"username": "past_player", "password": "password123"})
+        login_response = await client.receive_data()
+        print("Login response:", login_response)
+        
+        if login_response.get("type") == Protocols.Response.LOGIN_FAILED:
+            print("Login failed. Exiting.")
+            return
+    except Exception as e:
+        print(f"Error during login: {str(e)}")
+        return
 
     # Create or join lobby options
 

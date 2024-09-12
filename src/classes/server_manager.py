@@ -7,6 +7,11 @@ class ServerManager:
         self.loop = asyncio.get_event_loop()
         self.running = False
         self.connected = False
+        
+        self.isValveOpen = False
+        self.enigme1potentiometer1 = False
+        self.enigme1potentiometer2 = False
+        
 
     async def start(self):
         if not self.connected:
