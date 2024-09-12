@@ -31,7 +31,7 @@ async def test_client_future():
     print("Join lobby response:", response)
 
     # Error
-    #game_id = response.get("data", {}).get("game_id")
+    game_id = response.get("data", {}).get("game_id")
 
     # Choose future player
     await client.send_command(Protocols.Request.CHOOSE_ROLE, {"role": "future", "game_id": game_id})
