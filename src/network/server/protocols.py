@@ -30,6 +30,7 @@ class Protocols:
         REGISTER_FAILED = "protocol.register_failed"
         DISCONNECTED_SUCCESS = "protocol.disconnected_success"
         DISCONNECTED_FAILED = "protocol.disconnected_failed"
+        BROADCAST = "BROADCAST"
 
     class Request:
         WANT_TO_PLAY = "protocol.want_to_play"
@@ -44,3 +45,4 @@ class Protocols:
         JOIN_LOBBY = "protocol.join_lobby"
         CHOOSE_ROLE = "protocol.choose_role"
         GAME_ACTION = "protocol.game_action"
+        BROADCAST = "BROADCAST"

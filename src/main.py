@@ -301,6 +301,8 @@ while running:
                 case _:
                     pass
             modal = collided_object.interact_with(screen)
+            if collided_object.id == "01_valve":
+                game.server_manager.run_command("BROADCAST", {"valve_opened": True})
             if modal:
                 game.active_modal = modal
             game.interaction_key_pressed = True

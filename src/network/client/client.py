@@ -8,6 +8,7 @@ class Client:
         self.server_port = server_port
         self.client_socket = None
         self.running = True
+        self.message_callback = None
 
     async def connect(self):
         self.client_socket = await asyncudp.create_socket(remote_addr=(self.server_ip, self.server_port))
@@ -38,10 +39,15 @@ class Client:
             try:
                 data = await self.receive_data()
                 print("Received from server:", data)
+                if self.message_callback:
+                    await self.message_callback(data)
             except Exception as e:
                 print(f"Error receiving data: {e}")
                 if not self.running:
                     break
+
+    def set_message_callback(self, callback):
+        self.message_callback = callback
 
     async def run(self):
         await self.connect()

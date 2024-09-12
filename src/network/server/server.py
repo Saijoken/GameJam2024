@@ -79,6 +79,15 @@ class Server:
     async def handle_client(self, data, addr, game_id=None):
         try:
             print(f"{self.time()} [SERVER] Handling client {addr}")
+            
+            decoded_data = json.loads(data.decode())
+            message_type = decoded_data.get('type')
+            message_data = decoded_data.get('data')
+            
+            if message_type == Protocols.Request.BROADCAST:
+                await self.broadcast_message(message_data)
+                return  # Ajoutez cette ligne pour sortir de la fonction après le broadcast
+            
             # Send menu to client
             options = ["Play", "Credits", "Settings", "Quit"]
             await self.send_data(Protocols.Response.MENU, options, addr)
@@ -332,6 +341,11 @@ class Server:
     def generate_game_id(self):
         game_id = (str(uuid.uuid4())[:6])
         return game_id
+    
+    async def broadcast_message(self, message):
+        print(f"{self.time()} [SERVER] Broadcasting message to all clients: {message}")
+        for addr in self.clients.keys():
+            await self.send_data(Protocols.Response.BROADCAST, message, addr)
 
 
 if __name__ == "__main__":
