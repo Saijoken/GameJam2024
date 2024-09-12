@@ -1,4 +1,3 @@
-import riddles
 import protocols
 import asyncio
 #import lobby
@@ -31,12 +30,15 @@ class Game:
           
         def __init__(self):
                 # Get the players and the number of rooms
-                super().__init__()
                 self.valve_closed = False
                 self.water_evaporated = False
-                self.door_opened_up = False
-                self.door_opened_right = False
-                self.door_opened_down = False
+                self.door_opened_up_past = False
+                self.door_opened_right_past = False
+                self.door_opened_down_past = False
+                self.door_opened_up_future = False
+                self.door_opened_right_future = False
+                self.door_opened_down_future = False
+
 
         
         async def start(self, game_id, game):

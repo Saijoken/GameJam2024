@@ -22,6 +22,10 @@ class Lobby(object):
     # Get length of players
     async def get_len(self, game_id):
         return len(self.games[game_id]["clients"])
+    
+    # Get players
+    async def get_players(self, game_id):
+        return self.games[game_id]["clients"]
 
     # Add a client (player) to an existing lobby
     async def add_client_to_game(self, game_id, client):
@@ -34,14 +38,9 @@ class Lobby(object):
         if game_id in self.games:
             if client in self.games[game_id]["clients"]:
                 self.games[game_id]["clients"].remove(client)
-    
-
-    # Check if a lobby is full
-    #def is_full(self, game_id):
-        #return len(self.games[game_id]["clients"]) == 2
 
     # Start the game once the lobby has two clients
-    #def start_game(self, game_id):
-        #if self.get_len(game_id) == 2:
-            #self.games[game_id]["game_started"] = True
+    async def start_game(self, game_id):
+        if self.get_len(game_id) == 2:
+            self.games[game_id]["game_started"] = True
 
