@@ -19,7 +19,7 @@ from classes.level import Level
 screen = pygame.display.set_mode((1024, 768), pygame.SCALED)
 cinematic = Cinematic(screen)
 
-level = Level(150, 260, "past", "enigma4")
+level = Level(150, 260, "past", "enigma1")
 
 class Game:
     def __init__(self, screen_size, tilemap):
@@ -33,7 +33,7 @@ class Game:
         self.water_animation = WaterAnimation(screen) 
         self.hint_system = hint_system
         self.current_puzzle_id = "valve_puzzle"  # À modifier selon l'énigme en cours
-        self.level = Level(150, 260, "past", "enigma4")
+        self.level = Level(150, 260, "past", "enigma1")
         self.path_level = [{
             "name": "enigma1",
             "visible": False,
@@ -201,13 +201,18 @@ class Game:
             if collided_object.id == self.note_plate_order_list[0]:
                 # Bonne plaque
                 print("Bonne plaque")
+                Sound.get().play(collided_object.id)
                 self.note_order.append(collided_object.id)
                 self.note_plate_order_list.pop(0)
+                if self.note_plate_order_list == []:
+                    Sound.get().play("fullSong")
             else:
                 print("mauvaise plaque")
+                Sound.get().play("ayi")
                 self.reset_game()
         else:
             print("Toutes les plaques sont bonnes")
+            
     
     def reset_game(self):
         print("Reset game")
@@ -223,7 +228,7 @@ running = True
 dt = 0
 
 # Créer une instance de TileMap
-tilemap = level.level_tilemap("enigma4")
+tilemap = level.level_tilemap("enigma1")
 
 # Initialisation du jeu
 game = Game(screen_size, tilemap)
@@ -249,7 +254,7 @@ game.water_animation.rect.topleft = (16,16)
 #load the cinematic
 cinematic.story_screen()
 
-#Sound.get().loop_music("cave")
+Sound.get().loop_music("cave")
 
 running = True
 
@@ -340,12 +345,14 @@ while running:
                     game.path_level[0]["visible"] = True
                     game.props = []
                     game.setup_collisions()
+                    Sound.get().play("grincement")
                 case "02_door_opened_future_2_down":
                     tilemap = game.level.level_tilemap("enigma1")
                     game.player.position = game.level.position_player(1530, 55)
                     game.path_level[1]["visible"] = True
                     game.props = []
                     game.setup_collisions()
+                    Sound.get().play("grincement")
                 case _:
                     pass
             modal = collided_object.interact_with(screen)
