@@ -1,0 +1,38 @@
+{
+    "lobby1": {
+        "nickname1": {
+            "password": "password",
+            "game": {
+                "room": "room",
+                "riddle": "riddle"
+            }
+        },
+        "nickname2": {
+            "password": "password",
+            "game": {
+                "room": "room",
+                "riddle": "riddle"
+            }
+            
+        }
+    },
+
+    "lobby2": {
+        "nickname1": {
+            "password": "password",
+            "game": {
+                "room": "room",
+                "riddle": "riddle"
+            }
+        },
+        "nickname2": {
+            "password": "password",
+            "game": {
+                "room": "room",
+                "riddle": "riddle"
+            }
+        }
+
+    }
+
+}

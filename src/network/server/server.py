@@ -1,23 +1,21 @@
 import json
-import socket
 import asyncudp
 import asyncio
 from protocols import Protocols
 from lobby import Lobby
 #from game import Game
 from datetime import datetime
-import hashlib
 import uuid
 import traceback
+from database import Database
 
 
 class Server:
 
     def __init__(self):
-        #self.SERVER = socket.gethostname()
         self.PORT = 5555
+        #self.SERVER = socket.gethostname()
         #self.server_ip = socket.gethostbyname(self.SERVER)
-        # Listening on all available interfaces
         self.server_ip = "127.0.0.1"
         self.udp_socket = None
         self.waiting_for_pair = None
@@ -46,8 +44,6 @@ class Server:
     async def init_task(self):
         try:
             print("server_ip:", self.server_ip)
-            #self.serverSocket.bind((self.server_ip, self.PORT))
-            #self.serverSocket.listen(2)
             
             # Create UDP socket with asyncudp module
             self.udp_socket = await asyncudp.create_socket(local_addr=(self.server_ip, self.PORT))
@@ -55,10 +51,6 @@ class Server:
             
             while self.running:
                 try:
-                    #client, addr = self.serverSocket.accept()
-                    #thread = threading.Thread(target=self.handle_client, args=(client, addr))
-                    #thread.start()
-
                     # UDP doesn't use connections
                     print(f"{self.time()} En attente de données")
                     data, addr = await self.udp_socket.recvfrom()
@@ -79,8 +71,6 @@ class Server:
     # If login/register successful then handle joining or creating a lobby
     async def handle_client(self, data, addr, game_id=None):
         try:
-            # Ajout d'un log pour voir les données reçues
-            print(f"Data received from {addr}: {data}")
             # Send menu to client
             options = ["Play", "Credits", "Settings", "Quit"]
             await self.send_data(Protocols.Response.MENU, options, addr)
@@ -89,7 +79,6 @@ class Server:
             response = await self.receive_data(addr)
             print(f"Client response: {response}")
             choice = response.get('type')
-            #print(f"Received from {addr}: type={response_type}, data={response_data}")
             if choice == Protocols.Request.WANT_TO_PLAY:
                 auth_success = await self.handle_auth(addr)
                 # Log pour voir si l'authentification est atteinte
@@ -113,7 +102,7 @@ class Server:
             elif choice == Protocols.Request.CHOOSE_SETTINGS:
                 pass
             else:
-                # Quit, close the client, close the socket? close the window
+                #TODO Quit, close the client, close the socket? close the window
                 pass
                 #print(f"Unexpected request type: {response_type}")
 
@@ -164,9 +153,6 @@ class Server:
             await asyncio.sleep(1)
     
         return game_id
-        # Créer un nouveau thread pour gérer la partie
-        #game_thread = threading.Thread(target=self.handle_game, args=(game_id, player1, player2))
-        #game_thread.start()
 
 
     # Join a lobby
@@ -207,20 +193,23 @@ class Server:
             return False
 
     # Login a client
-    #TODO db->JSON
     async def handle_login(self, addr):
         # Ask the client for the login and password
         await self.send_data(Protocols.Response.LOGIN_REQUEST, "Entrez votre nom d'utilisateur et mot de passe", addr)
         msg = await self.receive_data(addr)
         if msg.get('type') == Protocols.Request.LOGIN:
-            nickname = await msg.get("data").get("nickname")
-            password = await msg.get("data").get("password")
+            nickname = await msg.get('data').get('nickname')
+            password = await msg.get('data').get('password')
             
-            #TODO json file
-            if self.database.check_credentials(nickname, password):
-                await self.send_data(Protocols.Response.LOGIN_SUCCESS, "Connexion réussie", addr)
-                self.clients[addr] = nickname
-                return True
+            if self.database.exist_nickname(nickname):
+                if self.database.check_password(nickname, password):
+                    await self.send_data(Protocols.Response.LOGIN_SUCCESS, "Connexion réussie", addr)
+                    self.clients[addr] = nickname
+                    return True
+                else:
+                    await self.send_data(Protocols.Response.LOGIN_FAILED, "Identifiants incorrects", addr)
+                    #TODO réessayer
+                    return False
             else:
                 await self.send_data(Protocols.Response.LOGIN_FAILED, "Identifiants incorrects", addr)
                 #TODO réessayer
@@ -230,7 +219,6 @@ class Server:
             return False
 
     # Logout a client
-    #TODO db->json
     async def handle_logout(self, addr):
         if addr in self.clients:
             nickname = self.clients[addr]
@@ -256,33 +244,20 @@ class Server:
 
 
     # Register a client
-    #TODO db->json
     async def handle_register(self, addr):
         await self.send_data(Protocols.Response.REGISTER_REQUEST, "Entrez un nickname et un mot de passe", addr)
-        message = await self.get_data(addr)
-        
-        #TODO
-        if isinstance(message, dict) and "nickname" in message and "password" in message:
-            nickname = message["nickname"]
-            password = message["password"]
-            
-            if self.database.user_exists(nickname):
-                await self.send_data(Protocols.Response.REGISTER_FAILED, "Nickname déjà utilisé", addr)
-                return False
-            
-            # Hachage du mot de passe avant stockage
-            hashed_password = hashlib.sha256(password.encode()).hexdigest()
-            
-            if self.database.add_user(nickname, hashed_password):
-                await self.send_data(Protocols.Response.REGISTER_SUCCESS, "Inscription réussie", addr)
-                return True
-            else:
-                await self.send_data(Protocols.Response.REGISTER_FAILED, "Erreur lors de l'inscription", addr)
-                #TODO réessayer
-                return False
-        else:
-            await self.send_data(Protocols.Response.REGISTER_FAILED, "Requête invalide", addr)
+        msg = await self.get_data(addr)
+        # Check if nickname and password exist, are coherent and correct
+        data = msg.get('data')
+        nickname = data["nickname"]
+        password = data["password"]
+        if self.database.exist_nickname(nickname):
+            await self.send_data(Protocols.Response.REGISTER_FAILED, "Nickname déjà utilisé", addr)
+            #TODO réessayer
             return False
+        self.database.add_user(nickname, password)
+        await self.send_data(Protocols.Response.REGISTER_SUCCESS, "Inscription réussie", addr)
+        return True
         
         
 
