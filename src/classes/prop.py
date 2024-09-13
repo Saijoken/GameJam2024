@@ -139,6 +139,3 @@ class Prop:
                     if layer.name == "SewerWaterFall":
                         layer.visible = False
 
-    def update_potentiometer(self, game_manager):
-        # Cette méthode n'est plus nécessaire car les mises à jour sont gérées par le callback
-        pass

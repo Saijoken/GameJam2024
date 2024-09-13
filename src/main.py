@@ -1,5 +1,7 @@
 import math
 import pygame, time 
+import sys
+import argparse
 
 pygame.init()
 
@@ -29,9 +31,15 @@ def reset_game():
 def game_over():
     pass
 
+def parse_arguments():
+    parser = argparse.ArgumentParser(description="Lancer le jeu avec une temporalité spécifique.")
+    parser.add_argument('--temporality', choices=['past', 'future'], default='past',
+                        help='Choisissez la temporalité initiale (past ou future)')
+    return parser.parse_args()
+
 class Game:
-    def __init__(self, screen_size, tilemap):
-        self.player = Player(screen, "past")
+    def __init__(self, screen_size, tilemap, temporality):
+        self.player = Player(screen, temporality)
         self.timer = Timer(300)
         self.props = []
         self.interaction_key_pressed = False
@@ -559,7 +567,8 @@ dt = 0
 tilemap = level.level_tilemap("enigma1")
 
 # Initialisation du jeu
-game = Game(screen_size, tilemap)
+args = parse_arguments()
+game = Game(screen_size, tilemap, args.temporality)
 
 # Créez une instance de GameManager
 game_manager = GameManager()
