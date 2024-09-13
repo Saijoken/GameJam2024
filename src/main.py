@@ -24,18 +24,6 @@ from src.classes.sound import Sound
 from src.classes.hint_system import HintSystem, hint_system
 from src.classes.modal_menu import ModalMenu
 from src.classes.level import Level
-from src.classes.camera import Camera
-from src.classes.player import Player
-from src.classes.tilemap import TileMap
-from src.classes.timer import Timer
-from src.classes.prop import Prop
-from src.classes.raycast import Raycast
-from src.classes.water_animation import WaterAnimation
-from src.classes.cinematic import Cinematic
-from src.classes.sound import Sound
-from src.classes.hint_system import HintSystem, hint_system
-from src.classes.modal_menu import ModalMenu
-from src.classes.level import Level
 # Fullscreen 
 screen = pygame.display.set_mode((1024, 768), pygame.SCALED)
 cinematic = Cinematic(screen)
@@ -340,6 +328,9 @@ while running:
 
     if keys[pygame.K_w]:
         print(game.player.position)
+
+    #if keys[pygame.K_e]:
+    #    game.server_manager.run_command("BROADCAST", {"valve_opened": True})
             
     # if game.active_modal and game.active_modal.custom_content:
     #     print(game.active_modal.custom_content.correct_symbol)

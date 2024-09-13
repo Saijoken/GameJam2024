@@ -30,10 +30,6 @@ class Server:
     # Time function
     def time(self):
         return datetime.now().strftime("[%d/%m - %H:%M:%S]")
-    
-    # TODO FAIRE LE TIMER
-    def timer(self):
-        pass
 
 
     ##########################################################################################
@@ -81,6 +77,7 @@ class Server:
             print(f"{self.time()} [SERVER] Handling client {addr}")
             
             decoded_data = json.loads(data.decode())
+            print("Données décodées:", decoded_data)
             message_type = decoded_data.get('type')
             message_data = decoded_data.get('data')
             

@@ -1,4 +1,6 @@
 class Protocols:
+
+    # Response from server to client
     class Response:
         MENU = "protocol.menu"
         AUTH = "protocol.auth"
@@ -9,7 +11,7 @@ class Protocols:
         RETURN = "protocol.return"
         CREATE_JOIN = "protocol.create_join"
         FUTURE_PAST = "protocol.future_past"
-        NICKNAME = "protocol.request_nickname"
+        NICKNAME_REQUEST = "protocol.request_nickname"
         NICKNAME_ERROR = "protocol.request.nickname_error"
         REQUEST_GAME_ID = "protocol.request_game_id"
         WAITING_FOR_PAIR = "protocol.waiting_for_pair"
@@ -30,8 +32,9 @@ class Protocols:
         REGISTER_FAILED = "protocol.register_failed"
         DISCONNECTED_SUCCESS = "protocol.disconnected_success"
         DISCONNECTED_FAILED = "protocol.disconnected_failed"
-        BROADCAST = "BROADCAST"
+        SEND_BROADCAST = "protocol.send_broadcast"
 
+    # Request from client to server
     class Request:
         WANT_TO_PLAY = "protocol.want_to_play"
         CHOOSE_CREDITS = "protocol.choose_credits"
@@ -45,4 +48,4 @@ class Protocols:
         JOIN_LOBBY = "protocol.join_lobby"
         CHOOSE_ROLE = "protocol.choose_role"
         GAME_ACTION = "protocol.game_action"
-        BROADCAST = "BROADCAST"
+        BROADCAST = "protocol.broadcast"

@@ -1,4 +1,5 @@
 import asyncio
+from network.server.protocols import Protocols
 from src.network.client.client import Client  # Changement pour un import absolu
 
 class ServerManager:
@@ -35,18 +36,35 @@ class ServerManager:
             await self.start()
         await self.client.send_command(command, data)
 
+    # Receive and handle info from server
     async def handle_received_data(self, data):
         print("Données reçues du serveur:", data)
-        # Traitez les données reçues ici, par exemple:
-        if data['type'] == 'BROADCAST':
-            message = data['data']
-            # Mettez à jour les variables en fonction du message reçu
-            if 'valve_opened' in message:
-                self.isValveOpen = message['valve_opened']
-            if 'potentiometer1' in message:
-                self.enigme1potentiometer1 = message['potentiometer1']
-            if 'potentiometer2' in message:
-                self.enigme1potentiometer2 = message['potentiometer2']
+        # ERROR: we wait for server data but get client data "First"
+        decoded_data = self.client.receive_data(data=data)
+        if decoded_data:
+            print("Données décodées:", decoded_data)
+            if decoded_data.get('type') == Protocols.Response.SEND_BROADCAST:
+                message = decoded_data.get('data')
+                if 'valve_opened' in message:
+                    self.isValveOpen = message['valve_opened']
+                if 'potentiometer1' in message:
+                    self.enigme1potentiometer1 = message['potentiometer1']
+                if 'potentiometer2' in message:
+                    self.enigme1potentiometer2 = message['potentiometer2']
+
+
+
+
+    #async def handle_received_data(self, data):
+        #print("Données reçues du serveur:", data)
+        #  if data.get('type') == Protocols.Response.SEND_BROADCAST:
+        #    message = data.get('data')
+        #    if 'valve_opened' in message:
+                #self.isValveOpen = message['valve_opened']
+            #if 'potentiometer1' in message:
+                #self.enigme1potentiometer1 = message['potentiometer1']
+        #if 'potentiometer2' in message:
+        #    self.enigme1potentiometer2 = message['potentiometer2']
 
     def run_command(self, command, data=None):
         return self.loop.run_until_complete(self.send_command(command, data))
