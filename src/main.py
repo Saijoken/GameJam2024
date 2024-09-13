@@ -15,6 +15,7 @@ from classes.sound import Sound
 from classes.hint_system import HintSystem, hint_system
 from classes.modal_menu import ModalMenu
 from classes.level import Level
+from classes.fadeeffect import FadeEffect
 
 # Fullscreen 
 screen = pygame.display.set_mode((1024, 768), pygame.SCALED)
@@ -84,6 +85,8 @@ class Game:
 
         self.is_boom_desactivated = False
         self.is_door_light_activated = False
+        self.fade_effect = FadeEffect(screen_size)
+        self.teleport_cooldown = 0
     def setup_collisions(self):
         print("Level : ",self.level.get_level_name())
         if self.level.get_level_name() == "enigma1":
@@ -238,7 +241,7 @@ class Game:
             # Past
             self.props.append(Prop("t_door_opened_past_t_right", "Porte ouverte ! Appuyez sur E !", pygame.Rect(22*16, 16*16, 32, 64), "door_opened_past_t_right", text="Porte ouverte ! Appuyez sur E !"))
             
-            #Teleporter
+            #Interaction avec le téléporteur final du passé
             self.props.append(Prop("t_teleporter_past", "Téléporteur", pygame.Rect(9*16, 11*16, 64, 32), "sign_teleporter"))
             self.props.append(Prop("t_teleporter_past", "Téléporteur", pygame.Rect(11*16, 11*16, 64, 32), "sign_teleporter"))
             self.props.append(Prop("t_teleporter_past", "Téléporteur", pygame.Rect(13*16, 11*16, 64, 32), "sign_teleporter"))
@@ -258,6 +261,7 @@ class Game:
             # Future 
             self.props.append(Prop("t_door_opened_future_t_right", "Porte ouverte ! Appuyez sur E !", pygame.Rect(108*16, 16*16, 32, 64), "door_opened_future_t_right", text="Porte ouverte ! Appuyez sur E !"))
             
+            #Interaction avec le téléporteur final du futur
             self.props.append(Prop("t_teleporter_future", "Téléporteur", pygame.Rect(95*16, 11*16, 64, 32), "sign_teleporter"))
             self.props.append(Prop("t_teleporter_future", "Téléporteur", pygame.Rect(97*16, 11*16, 64, 32), "sign_teleporter"))
             self.props.append(Prop("t_teleporter_future", "Téléporteur", pygame.Rect(99*16, 11*16, 64, 32), "sign_teleporter"))
@@ -558,12 +562,14 @@ while running:
                     tilemap = game.level.level_tilemap("enigma1")
                     game.player.position = game.level.position_player(336, 255)
                     game.path_level[4]["visible"] = True
+                    game.path_level[5]["visible"] = True
                     game.props = []
                     game.setup_collisions()
                     Sound.get().play("grincement")
                 case "05_door_opened_future_5_left":
                     tilemap = game.level.level_tilemap("enigma1")
                     game.player.position = game.level.position_player(1715, 255)
+                    game.path_level[4]["visible"] = True
                     game.path_level[5]["visible"] = True
                     game.props = []
                     game.setup_collisions()
@@ -693,6 +699,13 @@ while running:
                     game.setup_collisions()
                     Sound.get().play("grincement")
                 
+                case "t_teleporter_past" | "t_teleporter_future":   
+                    # Ajoutez cette ligne pour jouer le son du téléporteur
+                    if game.teleport_cooldown == 0:
+                        Sound.get().play("portalTp")
+                        game.fade_effect.start_fade()
+                        game.teleport_cooldown = 300  # Set cooldown to 1 second (assuming 60 FPS)
+
                 case _:
                     pass
             modal = collided_object.interact_with(screen)
@@ -764,12 +777,15 @@ while running:
                                 prop_door.update_type("door_opened_past_5_left")
                                 prop_door.update_id("05_door_opened_past_5_left")
                                 prop_door.update_text("Porte ouverte ! Appuyez sur E !")
+
                             if prop_door.id == "05_door_closed_future_5_left":
                                 print("ici")
                                 prop_door.update_usability(True)
                                 prop_door.update_type("door_opened_future_5_left")
                                 prop_door.update_id("05_door_opened_future_5_left")
                                 prop_door.update_text("Porte ouverte ! Appuyez sur E !")
+                                game.path_level[5]["visible"] = True
+                            
                 game.active_modal = None
             elif game.active_modal.custom_content.bad_symbol == True:
                 print("Mauvais symbole !")
@@ -797,6 +813,17 @@ while running:
 
 
     game.draw_hint_icons(screen)
+
+    if game.teleport_cooldown > 0:
+        game.teleport_cooldown -= 1
+
+    game.fade_effect.update()
+
+    game.fade_effect.draw(screen)
+
+    if game.fade_effect.is_fade_complete():
+        # Perform teleportation or level change here
+        pass
 
     pygame.display.flip()
 
