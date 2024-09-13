@@ -12,6 +12,8 @@ class Level:
         self.poto1 = 0
         self.poto2 = 0
         self.poto3 = 0
+        self.rayon1 = None
+        self.rayon2 = None
     
     def position_player(self, player_pos_x, player_pos_y):
         self.player_pos_x = player_pos_x
@@ -28,3 +30,15 @@ class Level:
     
     def get_level_name(self):
         return self.level
+    
+    def update_raycasts(self, game_manager):
+        poto1_value = game_manager.get_potentiometer_value("01_potentiometer1")
+        poto2_value = game_manager.get_potentiometer_value("01_potentiometer2")
+
+        if self.rayon1:
+            self.rayon1.update_angle(poto1_value - 90)
+        if self.rayon2:
+            self.rayon2.update_angle(poto2_value - 90)
+
+        self.poto1 = poto1_value
+        self.poto2 = poto2_value

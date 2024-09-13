@@ -85,12 +85,7 @@ class Prop:
             return self
         return None
     
-    def interact_with(self, screen):
-        """ 
-        Fonction attachée a un objet executant l'intéraction voulue
-        
-        Retourne le menu modal a afficher
-        """
+    def interact_with(self, screen, game_manager):
         if self.single_use and self.used:
             return None
         
@@ -98,14 +93,20 @@ class Prop:
         
         match self.type:  
             case "valve":
-                Sound.get().play("valve")
-                self.tilemap.isValveOpen = False
-                for layer in self.tilemap.tmx_data.layers:
-                    if layer.name == "SewerCode":
-                        layer.visible = True
-                    if layer.name == "SewerWaterFall":
-                        layer.visible = False
+                game_manager.send_prop_interaction(self.id, "valve_activated")
                 return None
+            case "potentiometer":
+                potentiometer = Potentiometer(screen)
+                potentiometer.on_value_change = lambda value: game_manager.send_prop_interaction(self.id, "potentiometer_updated", value=value)
+                self.pot = potentiometer
+                return ModalMenu(screen, "Potentiomètre", custom_content=potentiometer)
+            # ... autres cas ...
+
+        game_manager.send_prop_interaction(self.id, "interacted")
+        return self.get_modal(screen, game_manager)
+
+    def get_modal(self, screen, game_manager):
+        match self.type:
             case "potentiometer":
                 potentiometer = Potentiometer(screen)
                 self.pot = potentiometer
@@ -117,7 +118,6 @@ class Prop:
             case "battery":
                 battery = Battery(screen)
                 return ModalMenu(screen, "Batterie", custom_content=battery)
-            
             case "manual_past":
                 manual = ModalMenu(screen, image_path="assets/images/test.png") 
                 return manual
@@ -125,6 +125,20 @@ class Prop:
                 symbol_lock = SymbolLock(screen) 
                 symbol_lock.correct_symbol_id = "11"
                 return ModalMenu(screen,"Symboles",custom_content=symbol_lock)
-            
             case _:
                 return None
+
+    def apply_valve_effect(self, game_manager):
+        if self.type == "valve" and game_manager.valve_activated:
+            Sound.get().play("valve")
+            if self.tilemap:
+                self.tilemap.isValveOpen = False
+                for layer in self.tilemap.tmx_data.layers:
+                    if layer.name == "SewerCode":
+                        layer.visible = True
+                    if layer.name == "SewerWaterFall":
+                        layer.visible = False
+
+    def update_potentiometer(self, game_manager):
+        # Cette méthode n'est plus nécessaire car les mises à jour sont gérées par le callback
+        pass

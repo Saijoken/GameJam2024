@@ -15,6 +15,7 @@ from classes.sound import Sound
 from classes.hint_system import HintSystem, hint_system
 from classes.modal_menu import ModalMenu
 from classes.level import Level
+from classes.game_manager import GameManager
 
 # Fullscreen 
 screen = pygame.display.set_mode((1024, 768), pygame.SCALED)
@@ -88,189 +89,405 @@ class Game:
         print("Level : ",self.level.get_level_name())
         if self.level.get_level_name() == "enigma1":
             #Props Enigma 1
-            self.props.append(Prop("01_valve", "Valve", pygame.Rect(308, 100, 50, 50), "valve", single_use=True, tilemap=tilemap))
-            self.props.append(Prop("01_potentiometer1", "Potentiomètre 1", pygame.Rect(253, 205, 45, 65), "potentiometer",tilemap=tilemap))
-            self.props.append(Prop("01_potentiometer2", "Potentiomètre 2", pygame.Rect(285, 205, 45, 65), "potentiometer",tilemap=tilemap))
-            self.props.append(Prop("01_symbol_lock", "Symboles", pygame.Rect(188, 22, 55, 95), "symbol_lock"))
-            self.props.append(Prop("01_battery", "Batterie", pygame.Rect(188, 200, 55, 95), "battery"))
+            prop = Prop("01_valve", "Valve", pygame.Rect(308, 100, 50, 50), "valve", single_use=True, tilemap=tilemap)
+            self.props.append(prop)
+            game_manager.add_prop(prop)
+            prop = Prop("01_potentiometer1", "Potentiomètre 1", pygame.Rect(253, 205, 45, 65), "potentiometer",tilemap=tilemap)
+            self.props.append(prop)
+            game_manager.add_prop(prop)
+            prop = Prop("01_potentiometer2", "Potentiomètre 2", pygame.Rect(285, 205, 45, 65), "potentiometer",tilemap=tilemap)
+            self.props.append(prop)
+            game_manager.add_prop(prop)
+            prop = Prop("01_symbol_lock", "Symboles", pygame.Rect(188, 22, 55, 95), "symbol_lock")
+            self.props.append(prop)
+            game_manager.add_prop(prop)
+            prop = Prop("01_battery", "Batterie", pygame.Rect(188, 200, 55, 95), "battery")
+            self.props.append(prop)
+            game_manager.add_prop(prop)
             
             #Past
             if self.path_level[0]["visible"] == False and self.player.temporality == "past":
-                self.props.append(Prop("01_door_closed_past_1_up", "Porte verouillée", pygame.Rect(9*16, 3*16, 64, 32), "door_closed_past_1_up", text="Porte verouillée"))
+                prop = Prop("01_door_closed_past_1_up", "Porte verouillée", pygame.Rect(9*16, 3*16, 64, 32), "door_closed_past_1_up", text="Porte verouillée")
+                self.props.append(prop)
+                game_manager.add_prop(prop)
             else:
-                self.props.append(Prop("01_door_opened_past_1_up", "Porte ouverte ! Appuyez sur E !", pygame.Rect(9*16, 3*16, 64, 32), "door_opened_past_1_up", text="Porte ouverte ! Appuyez sur E !"))
+                prop = Prop("01_door_opened_past_1_up", "Porte ouverte ! Appuyez sur E !", pygame.Rect(9*16, 3*16, 64, 32), "door_opened_past_1_up", text="Porte ouverte ! Appuyez sur E !")
+                self.props.append(prop)
+                game_manager.add_prop(prop)
             
             if self.path_level[5]["visible"] == False and self.player.temporality == "past":
-                self.props.append(Prop("01_door_closed_past_1_left", "Porte verouillée", pygame.Rect(16, 16*16, 16, 64), "door_closed_past_1_left", text="Porte verouillée"))
+                prop = Prop("01_door_closed_past_1_left", "Porte verouillée", pygame.Rect(16, 16*16, 16, 64), "door_closed_past_1_left", text="Porte verouillée")
+                self.props.append(prop)
+                game_manager.add_prop(prop)
             else:
-                self.props.append(Prop("01_door_opened_past_1_left", "Porte ouverte ! Appuyez sur E !", pygame.Rect(16, 16*16, 16, 64), "door_opened_past_1_left", text="Porte ouverte ! Appuyez sur E !"))
+                prop = Prop("01_door_opened_past_1_left", "Porte ouverte ! Appuyez sur E !", pygame.Rect(16, 16*16, 16, 64), "door_opened_past_1_left", text="Porte ouverte ! Appuyez sur E !")
+                self.props.append(prop)
+                game_manager.add_prop(prop)
             
             if self.path_level[4]["visible"] == False and self.player.temporality == "past":
-                self.props.append(Prop("01_door_closed_past_1_right", "Porte verouillée", pygame.Rect(22*16, 16*16, 16, 64), "door_closed_past_1_right", text="Porte verouillée"))
+                prop = Prop("01_door_closed_past_1_right", "Porte verouillée", pygame.Rect(22*16, 16*16, 16, 64), "door_closed_past_1_right", text="Porte verouillée")
+                self.props.append(prop)
+                game_manager.add_prop(prop)
             else:
-                self.props.append(Prop("01_door_opened_past_1_right", "Porte ouverte ! Appuyez sur E !", pygame.Rect(22*16, 16*16, 16, 64), "door_opened_past_1_right", text="Porte ouverte ! Appuyez sur E !"))
+                prop = Prop("01_door_opened_past_1_right", "Porte ouverte ! Appuyez sur E !", pygame.Rect(22*16, 16*16, 16, 64), "door_opened_past_1_right", text="Porte ouverte ! Appuyez sur E !")
+                self.props.append(prop)
+                game_manager.add_prop(prop)
             
-            self.props.append(Prop("01_sign_teleporter_past", "Téléporteur", pygame.Rect(16, 15*16, 50, 50), "sign_teleporter", text="Salle du téléporteur"))
-            self.props.append(Prop("01_sign_valve", "Valve", pygame.Rect(21*16, 7*16, 50, 50), "sign_valve", text="Contrôle de la valve"))     
+            prop = Prop("01_sign_teleporter_past", "Téléporteur", pygame.Rect(16, 15*16, 50, 50), "sign_teleporter", text="Salle du téléporteur")
+            self.props.append(prop)
+            game_manager.add_prop(prop)
+            prop = Prop("01_sign_valve", "Valve", pygame.Rect(21*16, 7*16, 50, 50), "sign_valve", text="Contrôle de la valve")     
 
             #Future
             if self.path_level[0]["visible"] == False and self.player.temporality == "future":
-                self.props.append(Prop("01_door_closed_future_1_up", "Porte verouillée", pygame.Rect(95*16, 3*16, 64, 32), "door_closed_future_1_up", text="Porte verouillée"))
+                prop = Prop("01_door_closed_future_1_up", "Porte verouillée", pygame.Rect(95*16, 3*16, 64, 32), "door_closed_future_1_up", text="Porte verouillée")
+                self.props.append(prop)
+                game_manager.add_prop(prop)
             else:
-                self.props.append(Prop("01_door_opened_future_1_up", "Porte ouverte ! Appuyez sur E !", pygame.Rect(95*16, 3*16, 64, 32), "door_opened_future_1_up", text="Porte ouverte ! Appuyez sur E !"))
+                prop = Prop("01_door_opened_future_1_up", "Porte ouverte ! Appuyez sur E !", pygame.Rect(95*16, 3*16, 64, 32), "door_opened_future_1_up", text="Porte ouverte ! Appuyez sur E !")
+                self.props.append(prop)
+                game_manager.add_prop(prop)
             if self.path_level[5]["visible"] == False and self.player.temporality == "future":
-                self.props.append(Prop("01_door_closed_future_1_left", "Porte verouillée", pygame.Rect(87*16, 16*16, 16, 64), "door_closed_future_1_left", text="Porte verouillée"))
+                prop = Prop("01_door_closed_future_1_left", "Porte verouillée", pygame.Rect(87*16, 16*16, 16, 64), "door_closed_future_1_left", text="Porte verouillée")
+                self.props.append(prop)
+                game_manager.add_prop(prop)
             else:
-                self.props.append(Prop("01_door_opened_future_1_left", "Porte ouverte ! Appuyez sur E !", pygame.Rect(87*16, 16*16, 16, 64), "door_opened_future_1_left", text="Porte ouverte ! Appuyez sur E !"))
+                prop = Prop("01_door_opened_future_1_left", "Porte ouverte ! Appuyez sur E !", pygame.Rect(87*16, 16*16, 16, 64), "door_opened_future_1_left", text="Porte ouverte ! Appuyez sur E !")
+                self.props.append(prop)
+                game_manager.add_prop(prop)
             if self.path_level[4]["visible"] == False and self.player.temporality == "future":
-                self.props.append(Prop("01_door_closed_future_1_right", "Porte verouillée", pygame.Rect(108*16, 16*16, 16, 64), "door_closed_future_1_right", text="Porte verouillée"))
+                prop = Prop("01_door_closed_future_1_right", "Porte verouillée", pygame.Rect(108*16, 16*16, 16, 64), "door_closed_future_1_right", text="Porte verouillée")
+                self.props.append(prop)
+                game_manager.add_prop(prop)
             else:
-                self.props.append(Prop("01_door_opened_future_1_right", "Porte ouverte ! Appuyez sur E !", pygame.Rect(108*16, 16*16, 16, 64), "door_opened_future_1_right", text="Porte ouverte ! Appuyez sur E !"))    
-            self.props.append(Prop("01_sign_teleporter_future", "Téléporteur", pygame.Rect(87*16, 15*16, 50, 50), "sign_teleporter", text="Salle du téléporteur"))
+                prop = Prop("01_door_opened_future_1_right", "Porte ouverte ! Appuyez sur E !", pygame.Rect(108*16, 16*16, 16, 64), "door_opened_future_1_right", text="Porte ouverte ! Appuyez sur E !")
+                self.props.append(prop)
+                game_manager.add_prop(prop)
+            prop = Prop("01_sign_teleporter_future", "Téléporteur", pygame.Rect(87*16, 15*16, 50, 50), "sign_teleporter", text="Salle du téléporteur")
+            self.props.append(prop)
+            game_manager.add_prop(prop)
         
         elif self.level.get_level_name() == "enigma2and3":
             pass
             #Props Enigma 2 and 3
             #Past 25 21
-            self.props.append(Prop("02_computer", "Ordinateur", pygame.Rect(16, 8*16, 64, 32), "computer", text="La bombe 'Bite The Dust' est activée !"))
-            self.props.append(Prop("02_manual", "Manuel d'activation/desactivation", pygame.Rect(8*16, 8*16, 64, 32), "manual", text="Manuel d'activation/desactivation : ... le SUD-OUEST a perdu 2 pièces ..."))
-            self.props.append(Prop("02_sign_computer_past", "Salle de contrôle", pygame.Rect(18*16, 10*16, 50, 50), "sign_computer_past", text="Salle de contrôle"))
-            self.props.append(Prop("02_door_opened_past_2_down", "Porte ouverte ! Appuyez sur E !", pygame.Rect(25*16, 21*16, 64, 32), "door_opened_past_2_down", text="Porte ouverte ! Appuyez sur E !"))
-            self.props.append(Prop("02_lantern_left_past", "Lantern", pygame.Rect(18*16, -8, 16, 64), "lantern", text="Lantern"))
-            self.props.append(Prop("02_lantern_right_past", "Lantern", pygame.Rect(37*16, -8, 16, 64), "lantern", text="Lantern"))
+            prop = Prop("02_computer", "Ordinateur", pygame.Rect(16, 8*16, 64, 32), "computer", text="La bombe 'Bite The Dust' est activée !")
+            self.props.append(prop)
+            game_manager.add_prop(prop)
+            prop = Prop("02_manual", "Manuel d'activation/desactivation", pygame.Rect(8*16, 8*16, 64, 32), "manual", text="Manuel d'activation/desactivation : ... le SUD-OUEST a perdu 2 pièces ...")
+            self.props.append(prop)
+            game_manager.add_prop(prop)
+            prop = Prop("02_sign_computer_past", "Salle de contrôle", pygame.Rect(18*16, 10*16, 50, 50), "sign_computer_past", text="Salle de contrôle")
+            self.props.append(prop)
+            game_manager.add_prop(prop)
+            prop = Prop("02_door_opened_past_2_down", "Porte ouverte ! Appuyez sur E !", pygame.Rect(25*16, 21*16, 64, 32), "door_opened_past_2_down", text="Porte ouverte ! Appuyez sur E !")
+            self.props.append(prop)
+            game_manager.add_prop(prop)
+            prop = Prop("02_lantern_left_past", "Lantern", pygame.Rect(18*16, -8, 16, 64), "lantern", text="Lantern")
+            self.props.append(prop)
+            game_manager.add_prop(prop)
+            prop = Prop("02_lantern_right_past", "Lantern", pygame.Rect(37*16, -8, 16, 64), "lantern", text="Lantern")
+            self.props.append(prop)
+            game_manager.add_prop(prop)
             if self.path_level[2]["visible"] == False and self.player.temporality == "past":
-                self.props.append(Prop("02_door_closed_past_2_right", "Porte verouillée", pygame.Rect(38*16, 6*16, 16, 64), "door_opened_past_2_right", text="Porte verouillée"))
+                prop = Prop("02_door_closed_past_2_right", "Porte verouillée", pygame.Rect(38*16, 6*16, 16, 64), "door_opened_past_2_right", text="Porte verouillée")
+                self.props.append(prop)
+                game_manager.add_prop(prop)
             else:
-                self.props.append(Prop("02_door_opened_past_2_right", "Porte ouverte ! Appuyez sur E !", pygame.Rect(38*16, 6*16, 16, 64), "door_opened_past_2_right", text="Porte ouverte ! Appuyez sur E !"))
-            self.props.append(Prop("02_sign_note_past", "Salle des notes", pygame.Rect(36*16, 8*16, 50, 50), "sign_note_past", text="Salle des notes"))
+                prop = Prop("02_door_opened_past_2_right", "Porte ouverte ! Appuyez sur E !", pygame.Rect(38*16, 6*16, 16, 64), "door_opened_past_2_right", text="Porte ouverte ! Appuyez sur E !")
+                self.props.append(prop)
+                game_manager.add_prop(prop)
+            prop = Prop("02_sign_note_past", "Salle des notes", pygame.Rect(36*16, 8*16, 50, 50), "sign_note_past", text="Salle des notes")
+            self.props.append(prop)
+            game_manager.add_prop(prop)
 
             #Future
-            self.props.append(Prop("02_sign_computer_future", "Salle de contrôle", pygame.Rect(78*16, 10*16, 50, 50), "sign_computer_future", text="Salle de contrôle"))
-            self.props.append(Prop("02_door_opened_future_2_down", "Porte ouverte ! Appuyez sur E !", pygame.Rect(85*16, 21*16, 64, 32), "door_opened_future_2_down", text="Porte ouverte ! Appuyez sur E !"))
-            self.props.append(Prop("02_lantern_left_future", "Lantern", pygame.Rect(78*16, -8, 16, 64), "lantern", text="Lantern"))
-            self.props.append(Prop("02_lantern_right_future", "Lantern", pygame.Rect(97*16, -8, 16, 64), "lantern", text="Lantern"))
+            prop = Prop("02_sign_computer_future", "Salle de contrôle", pygame.Rect(78*16, 10*16, 50, 50), "sign_computer_future", text="Salle de contrôle")
+            self.props.append(prop)
+            game_manager.add_prop(prop)
+            prop = Prop("02_door_opened_future_2_down", "Porte ouverte ! Appuyez sur E !", pygame.Rect(85*16, 21*16, 64, 32), "door_opened_future_2_down", text="Porte ouverte ! Appuyez sur E !")
+            self.props.append(prop)
+            game_manager.add_prop(prop)
+            prop = Prop("02_lantern_left_future", "Lantern", pygame.Rect(78*16, -8, 16, 64), "lantern", text="Lantern")
+            self.props.append(prop)
+            game_manager.add_prop(prop)
+            prop = Prop("02_lantern_right_future", "Lantern", pygame.Rect(97*16, -8, 16, 64), "lantern", text="Lantern")
+            self.props.append(prop)
+            game_manager.add_prop(prop)
             if self.path_level[2]["visible"] == False and self.player.temporality == "future":
-                self.props.append(Prop("02_door_closed_future_2_right", "Porte verouillée", pygame.Rect(98*16, 6*16, 16, 64), "door_opened_future_2_right", text="Porte verouillée"))
+                prop = Prop("02_door_closed_future_2_right", "Porte verouillée", pygame.Rect(98*16, 6*16, 16, 64), "door_opened_future_2_right", text="Porte verouillée")
+                self.props.append(prop)
+                game_manager.add_prop(prop)
             else:
-                self.props.append(Prop("02_door_opened_future_2_right", "Porte ouverte ! Appuyez sur E !", pygame.Rect(98*16, 6*16, 16, 64), "door_opened_future_2_right", text="Porte ouverte ! Appuyez sur E !"))
-            self.props.append(Prop("02_potentiometer", "Potentiomètre de la Bombe", pygame.Rect(81*16, 16, 32, 96), "potentiometer",tilemap=tilemap))
-            self.props.append(Prop("02_sign_note_future", "Salle des notes", pygame.Rect(96*16, 8*16, 50, 50), "sign_note_future", text="Salle des notes"))
-            self.props.append(Prop("02_light_manual", "Manuel des lumière", pygame.Rect(93*16, 3*16, 64, 64), "02_light_manual", text="Allumez les lumières près de la porte pour ouvrir le passage"))
+                prop = Prop("02_door_opened_future_2_right", "Porte ouverte ! Appuyez sur E !", pygame.Rect(98*16, 6*16, 16, 64), "door_opened_future_2_right", text="Porte ouverte ! Appuyez sur E !")
+                self.props.append(prop)
+                game_manager.add_prop(prop)
+            prop = Prop("02_potentiometer", "Potentiomètre de la Bombe", pygame.Rect(81*16, 16, 32, 96), "potentiometer",tilemap=tilemap)
+            self.props.append(prop)
+            game_manager.add_prop(prop)
+            prop = Prop("02_sign_note_future", "Salle des notes", pygame.Rect(96*16, 8*16, 50, 50), "sign_note_future", text="Salle des notes")
+            self.props.append(prop)
+            game_manager.add_prop(prop)
+            prop = Prop("02_light_manual", "Manuel des lumière", pygame.Rect(93*16, 3*16, 64, 64), "02_light_manual", text="Allumez les lumières près de la porte pour ouvrir le passage")
+            self.props.append(prop)
+            game_manager.add_prop(prop)
 
 
         elif self.level.get_level_name() == "enigma4":
             #Props Enigma 4
             # Past
-            self.props.append(Prop("04_door_opened_past_4_left", "Porte ouverte ! Appuyez sur E !", pygame.Rect(16, 6*16, 32, 64), "door_opened_past_4_left", text="Porte ouverte ! Appuyez sur E !"))
+            prop = Prop("04_door_opened_past_4_left", "Porte ouverte ! Appuyez sur E !", pygame.Rect(16, 6*16, 32, 64), "door_opened_past_4_left", text="Porte ouverte ! Appuyez sur E !")
+            self.props.append(prop)
+            game_manager.add_prop(prop)
 
             if self.path_level[3]["visible"] == False and self.player.temporality == "past":
-                self.props.append(Prop("04_door_closed_past_4_down", "Porte verouillée", pygame.Rect(11*16, 21*16, 64, 32), "door_closed_past_4_down", text="Porte verouillée"))
+                prop = Prop("04_door_closed_past_4_down", "Porte verouillée", pygame.Rect(11*16, 21*16, 64, 32), "door_closed_past_4_down", text="Porte verouillée")
+                self.props.append(prop)
+                game_manager.add_prop(prop)
             else:
-                self.props.append(Prop("04_door_opened_past_4_down", "Porte ouverte ! Appuyez sur E !", pygame.Rect(11*16, 21*16, 64, 32), "door_opened_past_4_down", text="Porte ouverte ! Appuyez sur E !"))
+                prop = Prop("04_door_opened_past_4_down", "Porte ouverte ! Appuyez sur E !", pygame.Rect(11*16, 21*16, 64, 32), "door_opened_past_4_down", text="Porte ouverte ! Appuyez sur E !")
+                self.props.append(prop)
+                game_manager.add_prop(prop)
 
-            self.props.append(Prop("04_sign_computer_past", "Salle de contrôle", pygame.Rect(2*16, 8*16, 50, 50), "sign_computer_past", text="Salle de contrôle"))
+            prop = Prop("04_sign_computer_past", "Salle de contrôle", pygame.Rect(2*16, 8*16, 50, 50), "sign_computer_past", text="Salle de contrôle")
+            self.props.append(prop)
+            game_manager.add_prop(prop)
 
-            self.props.append(Prop("01_note_plate", "Note", pygame.Rect(7*16, 9*16, 64, 64), "note_plate", text=""))
-            self.props.append(Prop("02_note_plate", "Note", pygame.Rect(9*16, 9*16, 64, 64), "note_plate", text=""))
-            self.props.append(Prop("03_note_plate", "Note", pygame.Rect(13*16, 9*16, 64, 64), "note_plate", text=""))
-            self.props.append(Prop("04_note_plate", "Note", pygame.Rect(15*16, 9*16, 64, 64), "note_plate", text=""))
-            self.props.append(Prop("05_note_plate", "Note", pygame.Rect(7*16, 11*16, 64, 64), "note_plate", text=""))
-            self.props.append(Prop("06_note_plate", "Note", pygame.Rect(9*16, 11*16, 64, 64), "note_plate", text=""))
-            self.props.append(Prop("07_note_plate", "Note", pygame.Rect(13*16, 11*16, 64, 64), "note_plate", text=""))
-            self.props.append(Prop("08_note_plate", "Note", pygame.Rect(240, 13*16, 64, 64), "note_plate", text=""))
-            self.props.append(Prop("09_note_plate", "Note", pygame.Rect(9*16, 15*16, 64, 64), "note_plate", text=""))
-            self.props.append(Prop("10_note_plate", "Note", pygame.Rect(15*16, 15*16, 64, 64), "note_plate", text=""))
-            self.props.append(Prop("11_note_plate", "Note", pygame.Rect(9*16, 17*16, 64, 64), "note_plate", text=""))
-            self.props.append(Prop("12_note_plate", "Note", pygame.Rect(13*16, 17*16, 64, 64), "note_plate", text=""))
-            self.props.append(Prop("13_note_plate", "Note", pygame.Rect(15*16, 17*16, 64, 64), "note_plate", text=""))
+            prop = Prop("01_note_plate", "Note", pygame.Rect(7*16, 9*16, 64, 64), "note_plate", text="")
+            self.props.append(prop)
+            game_manager.add_prop(prop)
+            prop = Prop("02_note_plate", "Note", pygame.Rect(9*16, 9*16, 64, 64), "note_plate", text="")
+            self.props.append(prop)
+            game_manager.add_prop(prop)
+            prop = Prop("03_note_plate", "Note", pygame.Rect(13*16, 9*16, 64, 64), "note_plate", text="")
+            self.props.append(prop)
+            game_manager.add_prop(prop)
+            prop = Prop("04_note_plate", "Note", pygame.Rect(15*16, 9*16, 64, 64), "note_plate", text="")
+            self.props.append(prop)
+            game_manager.add_prop(prop)
+            prop = Prop("05_note_plate", "Note", pygame.Rect(7*16, 11*16, 64, 64), "note_plate", text="")
+            self.props.append(prop)
+            game_manager.add_prop(prop)
+            prop = Prop("06_note_plate", "Note", pygame.Rect(9*16, 11*16, 64, 64), "note_plate", text="")
+            self.props.append(prop)
+            game_manager.add_prop(prop)
+            prop = Prop("07_note_plate", "Note", pygame.Rect(13*16, 11*16, 64, 64), "note_plate", text="")
+            self.props.append(prop)
+            game_manager.add_prop(prop)
+            prop = Prop("08_note_plate", "Note", pygame.Rect(240, 13*16, 64, 64), "note_plate", text="")
+            self.props.append(prop)
+            game_manager.add_prop(prop)
+            prop = Prop("09_note_plate", "Note", pygame.Rect(9*16, 15*16, 64, 64), "note_plate", text="")
+            self.props.append(prop)
+            game_manager.add_prop(prop)
+            prop = Prop("10_note_plate", "Note", pygame.Rect(15*16, 15*16, 64, 64), "note_plate", text="")
+            self.props.append(prop)
+            game_manager.add_prop(prop)
+            prop = Prop("11_note_plate", "Note", pygame.Rect(9*16, 17*16, 64, 64), "note_plate", text="")
+            self.props.append(prop)
+            game_manager.add_prop(prop)
+            prop = Prop("12_note_plate", "Note", pygame.Rect(13*16, 17*16, 64, 64), "note_plate", text="")
+            self.props.append(prop)
+            game_manager.add_prop(prop)
+            prop = Prop("13_note_plate", "Note", pygame.Rect(15*16, 17*16, 64, 64), "note_plate", text="")
+            self.props.append(prop)
+            game_manager.add_prop(prop)
 
             # Future
-            self.props.append(Prop("04_door_opened_future_4_left", "Porte ouverte ! Appuyez sur E !", pygame.Rect(87*16, 6*16, 32, 64), "door_opened_future_4_left", text="Porte ouverte ! Appuyez sur E !"))
+            prop = Prop("04_door_opened_future_4_left", "Porte ouverte ! Appuyez sur E !", pygame.Rect(87*16, 6*16, 32, 64), "door_opened_future_4_left", text="Porte ouverte ! Appuyez sur E !")
+            self.props.append(prop)
+            game_manager.add_prop(prop)
 
             if self.path_level[3]["visible"] == False and self.player.temporality == "future":
-                self.props.append(Prop("04_door_closed_future_4_down", "Porte verouillée", pygame.Rect(97*16, 21*16, 64, 32), "door_closed_future_4_down", text="Porte verouillée"))
+                prop = Prop("04_door_closed_future_4_down", "Porte verouillée", pygame.Rect(97*16, 21*16, 64, 32), "door_closed_future_4_down", text="Porte verouillée")
+                self.props.append(prop)
+                game_manager.add_prop(prop)
             else:
-                self.props.append(Prop("04_door_opened_future_4_down", "Porte ouverte ! Appuyez sur E !", pygame.Rect(97*16, 21*16, 64, 32), "door_opened_future_4_down", text="Porte ouverte ! Appuyez sur E !"))
+                prop = Prop("04_door_opened_future_4_down", "Porte ouverte ! Appuyez sur E !", pygame.Rect(97*16, 21*16, 64, 32), "door_opened_future_4_down", text="Porte ouverte ! Appuyez sur E !")
+                self.props.append(prop)
+                game_manager.add_prop(prop)
 
-            self.props.append(Prop("04_sign_computer_past", "Salle de contrôle", pygame.Rect(88*16, 8*16, 50, 50), "sign_computer_past", text="Salle de contrôle"))
+            prop = Prop("04_sign_computer_past", "Salle de contrôle", pygame.Rect(88*16, 8*16, 50, 50), "sign_computer_past", text="Salle de contrôle")
+            self.props.append(prop)
+            game_manager.add_prop(prop)
 
 
         elif self.level.get_level_name() == "enigma5":
             #Props Enigma 5
             # Past
-                self.props.append(Prop("05_door_opened_past_5_up", "Porte ouverte ! Appuyez sur E !", pygame.Rect(11*16, 3*16, 64, 32), "05_door_opened_past_5_up", text="Porte ouverte ! Appuyez sur E !"))
+                prop = Prop("05_door_opened_past_5_up", "Porte ouverte ! Appuyez sur E !", pygame.Rect(11*16, 3*16, 64, 32), "05_door_opened_past_5_up", text="Porte ouverte ! Appuyez sur E !")
+                self.props.append(prop)
+                game_manager.add_prop(prop)
                 if self.path_level[4]["visible"] == False and self.player.temporality == "past":
-                    self.props.append(Prop("05_door_closed_past_5_left", "Porte verouillée", pygame.Rect(1*16, 16*16, 32, 64), "door_closed_past_5_left", text="Porte verouillée"))
+                    prop = Prop("05_door_closed_past_5_left", "Porte verouillée", pygame.Rect(1*16, 16*16, 32, 64), "door_closed_past_5_left", text="Porte verouillée")
+                    self.props.append(prop)
+                    game_manager.add_prop(prop)
                 else:
-                    self.props.append(Prop("05_door_opened_past_5_left", "Porte ouverte ! Appuyez sur E !", pygame.Rect(1*16, 16*16, 32, 64), "door_opened_past_5_left", text="Porte ouverte ! Appuyez sur E !"))
-                self.props.append(Prop("05_sign_principal_past", "Salle principale", pygame.Rect(2*16, 15*16, 50, 50), "sign_principal_past", text="Salle principale"))
+                    prop = Prop("05_door_opened_past_5_left", "Porte ouverte ! Appuyez sur E !", pygame.Rect(1*16, 16*16, 32, 64), "door_opened_past_5_left", text="Porte ouverte ! Appuyez sur E !")
+                    self.props.append(prop)
+                    game_manager.add_prop(prop)
+                prop = Prop("05_sign_principal_past", "Salle principale", pygame.Rect(2*16, 15*16, 50, 50), "sign_principal_past", text="Salle principale")
+                self.props.append(prop)
+                game_manager.add_prop(prop)
                 #les PLEINS 
-                self.props.append(Prop("05_manual_past", "Manuel", pygame.Rect(17*16, 11*16, 32, 64), "manual_past", tilemap=tilemap))
-                self.props.append(Prop("05_manual_past", "Manuel", pygame.Rect(18*16, 11*16, 64, 32), "manual_past", tilemap=tilemap))
-                self.props.append(Prop("05_manual_past", "Manuel", pygame.Rect(20*16, 11*16, 32, 64), "manual_past", tilemap=tilemap))
-                self.props.append(Prop("05_manual_past", "Manuel", pygame.Rect(17*16, 13*16, 32, 64), "manual_past", tilemap=tilemap))
-                self.props.append(Prop("05_manual_past", "Manuel", pygame.Rect(18*16, 14*16, 64, 32), "manual_past", tilemap=tilemap))
-                self.props.append(Prop("05_manual_past", "Manuel", pygame.Rect(20*16, 13*16, 32, 64), "manual_past", tilemap=tilemap))
-                self.props.append(Prop("05_code_past", "Code", pygame.Rect(3*16, 2*16, 80, 64), "code_past", tilemap=tilemap ))
+                prop = Prop("05_manual_past", "Manuel", pygame.Rect(17*16, 11*16, 32, 64), "manual_past", tilemap=tilemap)
+                self.props.append(prop)
+                game_manager.add_prop(prop)
+                prop = Prop("05_manual_past", "Manuel", pygame.Rect(18*16, 11*16, 64, 32), "manual_past", tilemap=tilemap)
+                self.props.append(prop)
+                game_manager.add_prop(prop)
+                prop = Prop("05_manual_past", "Manuel", pygame.Rect(20*16, 11*16, 32, 64), "manual_past", tilemap=tilemap)
+                self.props.append(prop)
+                game_manager.add_prop(prop)
+                prop = Prop("05_manual_past", "Manuel", pygame.Rect(17*16, 13*16, 32, 64), "manual_past", tilemap=tilemap)
+                self.props.append(prop)
+                game_manager.add_prop(prop)
+                prop = Prop("05_manual_past", "Manuel", pygame.Rect(18*16, 14*16, 64, 32), "manual_past", tilemap=tilemap)
+                self.props.append(prop)
+                game_manager.add_prop(prop)
+                prop = Prop("05_manual_past", "Manuel", pygame.Rect(20*16, 13*16, 32, 64), "manual_past", tilemap=tilemap)
+                self.props.append(prop)
+                game_manager.add_prop(prop)
+                prop = Prop("05_code_past", "Code", pygame.Rect(3*16, 2*16, 80, 64), "code_past", tilemap=tilemap )
+                self.props.append(prop)
+                game_manager.add_prop(prop)
 
             # Future
-                self.props.append(Prop("05_door_opened_future_5_up", "Porte ouverte ! Appuyez sur E !", pygame.Rect(97*16, 3*16, 64, 32), "door_opened_future_5_up", text="Porte ouverte ! Appuyez sur E !"))
+                prop = Prop("05_door_opened_future_5_up", "Porte ouverte ! Appuyez sur E !", pygame.Rect(97*16, 3*16, 64, 32), "door_opened_future_5_up", text="Porte ouverte ! Appuyez sur E !")
+                self.props.append(prop)
+                game_manager.add_prop(prop)
                 if self.path_level[4]["visible"] == False and self.player.temporality == "past":
-                    self.props.append(Prop("05_door_closed_future_5_left", "Porte verouillée", pygame.Rect(87*16, 16*16, 32, 64), "door_closed_future_5_left", text="Porte verouillée"))
+                    prop = Prop("05_door_closed_future_5_left", "Porte verouillée", pygame.Rect(87*16, 16*16, 32, 64), "door_closed_future_5_left", text="Porte verouillée")
+                    self.props.append(prop)
+                    game_manager.add_prop(prop)
                 else:
-                    self.props.append(Prop("05_door_opened_future_5_left", "Porte ouverte ! Appuyez sur E !", pygame.Rect(87*16, 16*16, 32, 64), "door_opened_future_5_left", text="Porte ouverte ! Appuyez sur E !"))
-                self.props.append(Prop("05_sign_principal_future", "Salle principale", pygame.Rect(88*16, 15*16, 50, 50), "sign_principal_future", text="Salle principale"))
-                self.props.append(Prop("05_text_future", "Text", pygame.Rect(103*16, 11*16, 32, 64), "text_future", text="Lorsque le MILIEU de seconde glisse entre RIEN et zéro..."))
-                self.props.append(Prop("05_text_future", "Text", pygame.Rect(94*16, 18*16, 32, 64), "text_future", text="...ATTENDS sur le SYMBOLE et MAINTIENS la porte"))
-                self.props.append(Prop("05_text_future", "Text", pygame.Rect(104*16, 11*16, 64, 32), "text_future", text="Lorsque le MILIEU de seconde glisse entre RIEN et zéro..."))
-                self.props.append(Prop("05_text_future", "Text", pygame.Rect(95*16, 18*16, 64, 32), "text_future", text="...ATTENDS sur le SYMBOLE et MAINTIENS la porte"))
-                self.props.append(Prop("05_text_future", "Text", pygame.Rect(106*16, 11*16, 32, 64), "text_future", text="Lorsque le MILIEU de seconde glisse entre RIEN et zéro... "))
-                self.props.append(Prop("05_text_future", "Text", pygame.Rect(97*16, 18*16, 32, 64), "text_future", text="...ATTENDS sur le SYMBOLE et MAINTIENS la porte"))
-                self.props.append(Prop("05_text_future", "Text", pygame.Rect(103*16, 13*16, 32, 64), "text_future", text="Lorsque le MILIEU de seconde glisse entre RIEN et zéro... "))
-                self.props.append(Prop("05_text_future", "Text", pygame.Rect(94*16, 20*16, 32, 64), "text_future", text="...ATTENDS sur le SYMBOLE et MAINTIENS la porte"))
-                self.props.append(Prop("05_text_future", "Text", pygame.Rect(106*16, 13*16, 32, 64), "text_future", text="Lorsque le MILIEU de seconde glisse entre RIEN et zéro..."))
-                self.props.append(Prop("05_text_future", "Text", pygame.Rect(97*16, 20*16, 32, 64), "text_future", text="...ATTENDS sur le SYMBOLE et MAINTIENS la porte"))
-                self.props.append(Prop("05_text_future", "Text", pygame.Rect(104*16, 14*16, 64, 32), "text_future", text="Lorsque le MILIEU de seconde glisse entre RIEN et zéro..."))
-                self.props.append(Prop("05_text_future", "Text", pygame.Rect(95*16, 21*16, 64, 32), "text_future", text="...ATTENDS sur le SYMBOLE et MAINTIENS la porte"))
-                self.props.append(Prop("05_lock_future", "Text", pygame.Rect(89*16, 2*16, 80, 64), "lock_future", text="CODE : 52342"))
+                    prop = Prop("05_door_opened_future_5_left", "Porte ouverte ! Appuyez sur E !", pygame.Rect(87*16, 16*16, 32, 64), "door_opened_future_5_left", text="Porte ouverte ! Appuyez sur E !")
+                    self.props.append(prop)
+                    game_manager.add_prop(prop)
+                prop = Prop("05_sign_principal_future", "Salle principale", pygame.Rect(88*16, 15*16, 50, 50), "sign_principal_future", text="Salle principale")
+                self.props.append(prop)
+                game_manager.add_prop(prop)
+                prop = Prop("05_text_future", "Text", pygame.Rect(103*16, 11*16, 32, 64), "text_future", text="Lorsque le MILIEU de seconde glisse entre RIEN et zéro...")
+                self.props.append(prop)
+                game_manager.add_prop(prop)
+                prop = Prop("05_text_future", "Text", pygame.Rect(94*16, 18*16, 32, 64), "text_future", text="...ATTENDS sur le SYMBOLE et MAINTIENS la porte")
+                self.props.append(prop)
+                game_manager.add_prop(prop)
+                prop = Prop("05_text_future", "Text", pygame.Rect(104*16, 11*16, 64, 32), "text_future", text="Lorsque le MILIEU de seconde glisse entre RIEN et zéro...")
+                self.props.append(prop)
+                game_manager.add_prop(prop)
+                prop = Prop("05_text_future", "Text", pygame.Rect(95*16, 18*16, 64, 32), "text_future", text="...ATTENDS sur le SYMBOLE et MAINTIENS la porte")
+                self.props.append(prop)
+                game_manager.add_prop(prop)
+                prop = Prop("05_text_future", "Text", pygame.Rect(106*16, 11*16, 32, 64), "text_future", text="Lorsque le MILIEU de seconde glisse entre RIEN et zéro... ")
+                self.props.append(prop)
+                game_manager.add_prop(prop)
+                prop = Prop("05_text_future", "Text", pygame.Rect(97*16, 18*16, 32, 64), "text_future", text="...ATTENDS sur le SYMBOLE et MAINTIENS la porte")
+                self.props.append(prop)
+                game_manager.add_prop(prop)
+                prop = Prop("05_text_future", "Text", pygame.Rect(103*16, 13*16, 32, 64), "text_future", text="Lorsque le MILIEU de seconde glisse entre RIEN et zéro... ")
+                self.props.append(prop)
+                game_manager.add_prop(prop)
+                prop = Prop("05_text_future", "Text", pygame.Rect(94*16, 20*16, 32, 64), "text_future", text="...ATTENDS sur le SYMBOLE et MAINTIENS la porte")
+                self.props.append(prop)
+                game_manager.add_prop(prop)
+                prop = Prop("05_text_future", "Text", pygame.Rect(106*16, 13*16, 32, 64), "text_future", text="Lorsque le MILIEU de seconde glisse entre RIEN et zéro...")
+                self.props.append(prop)
+                game_manager.add_prop(prop)
+                prop = Prop("05_text_future", "Text", pygame.Rect(97*16, 20*16, 32, 64), "text_future", text="...ATTENDS sur le SYMBOLE et MAINTIENS la porte")
+                self.props.append(prop)
+                game_manager.add_prop(prop)
+                prop = Prop("05_text_future", "Text", pygame.Rect(104*16, 14*16, 64, 32), "text_future", text="Lorsque le MILIEU de seconde glisse entre RIEN et zéro...")
+                self.props.append(prop)
+                game_manager.add_prop(prop)
+                prop = Prop("05_text_future", "Text", pygame.Rect(95*16, 21*16, 64, 32), "text_future", text="...ATTENDS sur le SYMBOLE et MAINTIENS la porte")
+                self.props.append(prop)
+                game_manager.add_prop(prop)
+                prop = Prop("05_lock_future", "Text", pygame.Rect(89*16, 2*16, 80, 64), "lock_future", text="CODE : 52342")
+                self.props.append(prop)
+                game_manager.add_prop(prop)
         
         elif self.level.get_level_name() == "teleporter":
             # Past
-            self.props.append(Prop("t_door_opened_past_t_right", "Porte ouverte ! Appuyez sur E !", pygame.Rect(22*16, 16*16, 32, 64), "door_opened_past_t_right", text="Porte ouverte ! Appuyez sur E !"))
+            prop = Prop("t_door_opened_past_t_right", "Porte ouverte ! Appuyez sur E !", pygame.Rect(22*16, 16*16, 32, 64), "door_opened_past_t_right", text="Porte ouverte ! Appuyez sur E !")
+            self.props.append(prop)
+            game_manager.add_prop(prop)
             
             #Teleporter
-            self.props.append(Prop("t_teleporter_past", "Téléporteur", pygame.Rect(9*16, 11*16, 64, 32), "sign_teleporter"))
-            self.props.append(Prop("t_teleporter_past", "Téléporteur", pygame.Rect(11*16, 11*16, 64, 32), "sign_teleporter"))
-            self.props.append(Prop("t_teleporter_past", "Téléporteur", pygame.Rect(13*16, 11*16, 64, 32), "sign_teleporter"))
+            prop = Prop("t_teleporter_past", "Téléporteur", pygame.Rect(9*16, 11*16, 64, 32), "sign_teleporter")
+            self.props.append(prop)
+            game_manager.add_prop(prop)
+            prop = Prop("t_teleporter_past", "Téléporteur", pygame.Rect(11*16, 11*16, 64, 32), "sign_teleporter")
+            self.props.append(prop)
+            game_manager.add_prop(prop)
+            prop = Prop("t_teleporter_past", "Téléporteur", pygame.Rect(13*16, 11*16, 64, 32), "sign_teleporter")
+            self.props.append(prop)
+            game_manager.add_prop(prop)
 
-            self.props.append(Prop("t_teleporter_past", "Téléporteur", pygame.Rect(15*16, 7*16, 32, 64), "sign_teleporter"))
-            self.props.append(Prop("t_teleporter_past", "Téléporteur", pygame.Rect(15*16, 9*16, 32, 64), "sign_teleporter"))
+            prop = Prop("t_teleporter_past", "Téléporteur", pygame.Rect(15*16, 7*16, 32, 64), "sign_teleporter")
+            self.props.append(prop)
+            game_manager.add_prop(prop)
+            prop = Prop("t_teleporter_past", "Téléporteur", pygame.Rect(15*16, 9*16, 32, 64), "sign_teleporter")
+            self.props.append(prop)
+            game_manager.add_prop(prop)
 
-            self.props.append(Prop("t_teleporter_past", "Téléporteur", pygame.Rect(9*16, 6*16, 64, 32), "sign_teleporter"))
-            self.props.append(Prop("t_teleporter_past", "Téléporteur", pygame.Rect(11*16, 6*16, 64, 32), "sign_teleporter"))
-            self.props.append(Prop("t_teleporter_past", "Téléporteur", pygame.Rect(13*16, 6*16, 64, 32), "sign_teleporter"))
+            prop = Prop("t_teleporter_past", "Téléporteur", pygame.Rect(9*16, 6*16, 64, 32), "sign_teleporter")
+            self.props.append(prop)
+            game_manager.add_prop(prop)
+            prop = Prop("t_teleporter_past", "Téléporteur", pygame.Rect(11*16, 6*16, 64, 32), "sign_teleporter")
+            self.props.append(prop)
+            game_manager.add_prop(prop)
+            prop = Prop("t_teleporter_past", "Téléporteur", pygame.Rect(13*16, 6*16, 64, 32), "sign_teleporter")
+            self.props.append(prop)
+            game_manager.add_prop(prop)
 
-            self.props.append(Prop("t_teleporter_past", "Téléporteur", pygame.Rect(8*16, 7*16, 32, 64), "sign_teleporter"))
-            self.props.append(Prop("t_teleporter_past", "Téléporteur", pygame.Rect(8*16, 9*16, 32, 64), "sign_teleporter"))
+            prop = Prop("t_teleporter_past", "Téléporteur", pygame.Rect(8*16, 7*16, 32, 64), "sign_teleporter")
+            self.props.append(prop)
+            game_manager.add_prop(prop)
+            prop = Prop("t_teleporter_past", "Téléporteur", pygame.Rect(8*16, 9*16, 32, 64), "sign_teleporter")
+            self.props.append(prop)
+            game_manager.add_prop(prop)
             
 
             
             # Future 
-            self.props.append(Prop("t_door_opened_future_t_right", "Porte ouverte ! Appuyez sur E !", pygame.Rect(108*16, 16*16, 32, 64), "door_opened_future_t_right", text="Porte ouverte ! Appuyez sur E !"))
+            prop = Prop("t_door_opened_future_t_right", "Porte ouverte ! Appuyez sur E !", pygame.Rect(108*16, 16*16, 32, 64), "door_opened_future_t_right", text="Porte ouverte ! Appuyez sur E !")
+            self.props.append(prop)
+            game_manager.add_prop(prop)
             
-            self.props.append(Prop("t_teleporter_future", "Téléporteur", pygame.Rect(95*16, 11*16, 64, 32), "sign_teleporter"))
-            self.props.append(Prop("t_teleporter_future", "Téléporteur", pygame.Rect(97*16, 11*16, 64, 32), "sign_teleporter"))
-            self.props.append(Prop("t_teleporter_future", "Téléporteur", pygame.Rect(99*16, 11*16, 64, 32), "sign_teleporter"))
+            prop = Prop("t_teleporter_future", "Téléporteur", pygame.Rect(95*16, 11*16, 64, 32), "sign_teleporter")
+            self.props.append(prop)
+            game_manager.add_prop(prop)
+            prop = Prop("t_teleporter_future", "Téléporteur", pygame.Rect(97*16, 11*16, 64, 32), "sign_teleporter")
+            self.props.append(prop)
+            game_manager.add_prop(prop)
+            prop = Prop("t_teleporter_future", "Téléporteur", pygame.Rect(99*16, 11*16, 64, 32), "sign_teleporter")
+            self.props.append(prop)
+            game_manager.add_prop(prop)
 
-            self.props.append(Prop("t_teleporter_future", "Téléporteur", pygame.Rect(101*16, 7*16, 32, 64), "sign_teleporter"))
-            self.props.append(Prop("t_teleporter_future", "Téléporteur", pygame.Rect(101*16, 9*16, 32, 64), "sign_teleporter"))
+            prop = Prop("t_teleporter_future", "Téléporteur", pygame.Rect(101*16, 7*16, 32, 64), "sign_teleporter")
+            self.props.append(prop)
+            game_manager.add_prop(prop)
+            prop = Prop("t_teleporter_future", "Téléporteur", pygame.Rect(101*16, 9*16, 32, 64), "sign_teleporter")
+            self.props.append(prop)
+            game_manager.add_prop(prop)
 
-            self.props.append(Prop("t_teleporter_future", "Téléporteur", pygame.Rect(95*16, 6*16, 64, 32), "sign_teleporter"))
-            self.props.append(Prop("t_teleporter_future", "Téléporteur", pygame.Rect(97*16, 6*16, 64, 32), "sign_teleporter"))
-            self.props.append(Prop("t_teleporter_future", "Téléporteur", pygame.Rect(99*16, 6*16, 64, 32), "sign_teleporter"))
+            prop = Prop("t_teleporter_future", "Téléporteur", pygame.Rect(95*16, 6*16, 64, 32), "sign_teleporter")
+            self.props.append(prop)
+            game_manager.add_prop(prop)
+            prop = Prop("t_teleporter_future", "Téléporteur", pygame.Rect(97*16, 6*16, 64, 32), "sign_teleporter")
+            self.props.append(prop)
+            game_manager.add_prop(prop)
+            prop = Prop("t_teleporter_future", "Téléporteur", pygame.Rect(99*16, 6*16, 64, 32), "sign_teleporter")
+            self.props.append(prop)
+            game_manager.add_prop(prop)
 
-            self.props.append(Prop("t_teleporter_future", "Téléporteur", pygame.Rect(94*16, 7*16, 32, 64), "sign_teleporter"))
-            self.props.append(Prop("t_teleporter_future", "Téléporteur", pygame.Rect(94*16, 9*16, 32, 64), "sign_teleporter"))
+            prop = Prop("t_teleporter_future", "Téléporteur", pygame.Rect(94*16, 7*16, 32, 64), "sign_teleporter")
+            self.props.append(prop)
+            game_manager.add_prop(prop)
+            prop = Prop("t_teleporter_future", "Téléporteur", pygame.Rect(94*16, 9*16, 32, 64), "sign_teleporter")
+            self.props.append(prop)
+            game_manager.add_prop(prop)
           
 
 
@@ -344,6 +561,8 @@ tilemap = level.level_tilemap("enigma1")
 # Initialisation du jeu
 game = Game(screen_size, tilemap)
 
+# Créez une instance de GameManager
+game_manager = GameManager()
 
 game.setup_collisions()
 
@@ -415,6 +634,8 @@ while running:
         game.player.player_movement(keys, dt)
         
     game.update_all()
+    game_manager.update()
+    game.level.update_raycasts(game_manager)
     game.camera.update()
     game.water_animation.update()
         
@@ -484,32 +705,15 @@ while running:
     if game.level.get_level_name() == "enigma2and3":
         if game.level.raycast_active == False:
             print("Raycast actif")
-            #find the two lanterns from the props list
             lanterns = [prop for prop in game.props if prop.id == "02_lantern_left_future" or prop.id == "02_lantern_right_future"]
-            if game.level.poto1 == 0 & game.level.poto2 == 0:
-                print("POTI 0", game.level.poto1, game.level.poto2)
-                rayon1 = Raycast(game.camera.apply(lanterns[0].rect.center), 40, 800, 5) #70 120 = valeur porte
-                rayon2 = Raycast(game.camera.apply(lanterns[1].rect.center), 160, 800, 5)
-            else:
-                
-                game.level.poto1 = game.level.poto1 -90
-                game.level.poto2 = game.level.poto2 -90
-                print("POTI 1", game.level.poto1, game.level.poto2)
-                rayon1 = Raycast(game.camera.apply(lanterns[0].rect.center), game.level.poto1, 800, 5) #70 120 = valeur porte
-                rayon2 = Raycast(game.camera.apply(lanterns[1].rect.center), game.level.poto2, 800, 5)
+            if lanterns:
+                game.level.rayon1 = Raycast(game.camera.apply(lanterns[0].rect.center), game.level.poto1, 800, 5)
+                game.level.rayon2 = Raycast(game.camera.apply(lanterns[1].rect.center), game.level.poto2, 800, 5)
             game.level.raycast_active = True
         else:
-            #search for the two lanterns in the props list
-            rayon1.update_position(game.camera.apply(lanterns[0].rect.center))
-            rayon1.update_angle(game.level.poto1)
-            rayon2.update_position(game.camera.apply(lanterns[1].rect.center))
-            rayon2.update_angle(game.level.poto2)
-
-            if rayon1.get_angle() == 60 and rayon2.get_angle() == 110 and game.is_door_light_activated == False:
-                game.is_door_light_activated = True
-                print("Porte ouverte")
-                game.path_level[1]["visible"] = True
-                game.setup_collisions()
+            if game.level.rayon1 and game.level.rayon2:
+                game.level.rayon1.update_position(game.camera.apply(lanterns[0].rect.center))
+                game.level.rayon2.update_position(game.camera.apply(lanterns[1].rect.center))
 
         potentiometers3 = [prop for prop in game.props if prop.id == "02_potentiometer"]
         if potentiometers3 and potentiometers3[0] and potentiometers3[0].pot:
@@ -521,12 +725,9 @@ while running:
             game.setup_collisions()
             game.active_modal = None
 
-            
-                
-
-
-        rayon1.draw(screen)
-        rayon2.draw(screen)
+        if game.level.rayon1 and game.level.rayon2:
+            game.level.rayon1.draw(screen)
+            game.level.rayon2.draw(screen)
 
     # Draw interaction text if collision is detected
     if collided_object and collided_object.usable == True:
@@ -695,7 +896,7 @@ while running:
                 
                 case _:
                     pass
-            modal = collided_object.interact_with(screen)
+            modal = collided_object.interact_with(screen, game_manager)
             if modal:
                 game.active_modal = modal
             game.interaction_key_pressed = True
@@ -802,5 +1003,8 @@ while running:
 
     # Calculate delta time
     dt = clock.tick(60) / 1000
+
+    # Dans votre boucle de jeu, ajoutez également une mise à jour du game_manager
+    game_manager.update()
 
 pygame.quit()
