@@ -34,7 +34,9 @@ class GameManager:
         data = {"action": "prop_interaction", "prop_id": prop_id, "specific_action": action}
         if value is not None:
             data["value"] = value
-        self.network.send(data)
+        response = self.network.send(data)
+        if response:
+            self.handle_server_action(response)
 
     def handle_server_action(self, action):
         if action["action"] == "prop_interaction":
@@ -44,10 +46,20 @@ class GameManager:
             
             if specific_action == "valve_activated":
                 self.valve_activated = True
-                print(f"Valve {prop_id} a été activée sur tous les clients!")
+                print(f"Valve {prop_id} a été activée!")
             elif specific_action == "potentiometer_updated":
                 self.potentiometer_values[prop_id] = action["value"]
                 print(f"Potentiomètre {prop_id} mis à jour avec la valeur {action['value']}")
+            
+            # Appliquer les effets immédiatement
+            self.apply_effects()
+
+    def apply_effects(self):
+        if self.valve_activated:
+            for prop in self.props:
+                if prop.type == "valve":
+                    prop.apply_valve_effect(self)
+            self.valve_activated = False
 
     def add_prop(self, prop):
         self.props.append(prop)
