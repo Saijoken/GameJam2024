@@ -1,4 +1,6 @@
 import pygame
+from classes.sound import Sound
+
 
 #chargement de la police
 font = pygame.font.Font(None, 36)
@@ -34,6 +36,8 @@ class Cinematic:
         fade_complete = [False] * len(story_text)
         current_line = 0
 
+        Sound.get().loop_music("midna")
+        pygame.mixer.music.set_volume(0.25)
         running = True
         while running:
             for event in pygame.event.get():
@@ -41,6 +45,7 @@ class Cinematic:
                     pygame.quit()
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_SPACE:
+                        Sound.get().stop_music()
                         running = False
 
             # Fade in story text

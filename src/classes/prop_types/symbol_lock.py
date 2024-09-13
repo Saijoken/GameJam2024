@@ -25,9 +25,11 @@ class SymbolLock:
         self.background = pygame.image.load('assets/symbol_lock/bg_symbol_lock.png')
         self.bg_rect = self.background.get_rect(center=(screen.get_width() // 2, screen.get_height() // 2))
         self.correct_symbol = False
+        self.bad_symbol = False
+        self.correct_symbol_id = None
         
         self.symbols_per_row = 4
-        symbol_paths = [f'assets/symbol_lock/symbol{i}.png' for i in range(1, 11)]
+        symbol_paths = [f'assets/symbol_lock/symbol{i}.png' for i in range(1, 12)]
         random.shuffle(symbol_paths)
         
         symbol_width = pygame.image.load(symbol_paths[0]).get_width()
@@ -65,10 +67,11 @@ class SymbolLock:
                             self.symbols[self.selected_symbol].selected = False
                         self.selected_symbol = i
                         symbol.selected = True
-                        if symbol.id == "8":
+                        if symbol.id == self.correct_symbol_id:
                             self.correct_symbol = True
                             print(self.correct_symbol)
                         else:
+                            self.bad_symbol = True
                             print("Ayiiii le movai simbol")
                             
                         

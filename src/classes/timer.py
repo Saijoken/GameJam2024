@@ -19,3 +19,15 @@ class Timer:
     def draw(self, screen, font):
         timer_text = font.render(self.remaining_time, True, (255, 255, 255))
         screen.blit(timer_text, (50, 50))
+    
+    def get_remaining_time(self):
+        return self.remaining_time
+
+    def get_minutes(self):
+        return int(self.remaining_time.split(':')[0])
+    
+    def get_seconds_dixieme(self):
+        return int(self.remaining_time.split(':')[1][0])
+    
+    def get_seconds_unite(self):
+        return int(self.remaining_time.split(':')[1][1])

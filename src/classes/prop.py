@@ -112,6 +112,7 @@ class Prop:
                 return ModalMenu(screen, "Potentiomètre", custom_content=potentiometer)
             case "symbol_lock":
                 symbol_lock = SymbolLock(screen)
+                symbol_lock.correct_symbol_id = "8"
                 return ModalMenu(screen, "Symboles", custom_content=symbol_lock)
             case "battery":
                 battery = Battery(screen)
@@ -120,6 +121,10 @@ class Prop:
             case "manual_past":
                 manual = ModalMenu(screen, image_path="assets/images/test.png") 
                 return manual
+            case "code_past":
+                symbol_lock = SymbolLock(screen) 
+                symbol_lock.correct_symbol_id = "11"
+                return ModalMenu(screen,"Symboles",custom_content=symbol_lock)
             
             case _:
                 return None
