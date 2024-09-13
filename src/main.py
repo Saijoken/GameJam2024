@@ -87,7 +87,7 @@ class Game:
         self.error_number = 2
         self.hint_icon = pygame.image.load("assets/images/hint_bulb.png").convert_alpha()
         self.next_hint_icon = pygame.image.load("assets/images/hint_key.png").convert_alpha()
-        self.icon_size = (64, 64)  # Ajustez la taille selon vos besoins
+        self.icon_size = (64, 64)
         self.hint_icon = pygame.transform.scale(self.hint_icon, self.icon_size)
         self.next_hint_icon = pygame.transform.scale(self.next_hint_icon, self.icon_size)
 

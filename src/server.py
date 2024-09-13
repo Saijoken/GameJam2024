@@ -50,8 +50,7 @@ class Server:
             
             if specific_action == "valve_activated":
                 print(f"Valve {prop_id} a été activée!")
-                # Ici, vous pouvez ajouter toute logique supplémentaire nécessaire
-                # pour gérer l'activation de la valve au niveau du serveur
+
             
             # Diffuser l'état mis à jour à tous les clients
             self.broadcast(action)  # On envoie l'action complète au lieu de game_state

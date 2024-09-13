@@ -108,9 +108,9 @@ class Player(pygame.sprite.Sprite):
         new_rect = self.rect.copy()
         new_rect.center = new_position
         
-        # Ici, vous devriez implémenter une vérification de collision avec la carte
-        # Si pas de collision, mettez à jour la position
-        if not self.check_collision(new_rect):  # Implémentez cette méthode
+
+        # Si pas de collision, mettre à jour la position
+        if not self.check_collision(new_rect):
             self.position = new_position
             self.rect.center = self.position
 
@@ -119,5 +119,5 @@ class Player(pygame.sprite.Sprite):
     def check_collision(self, new_rect):
         # Implémentez ici la logique de vérification des collisions
         # Retournez True s'il y a collision, False sinon
-        # Vous devrez probablement passer la carte (tilemap) en paramètre
+
         pass
