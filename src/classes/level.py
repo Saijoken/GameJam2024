@@ -11,6 +11,7 @@ class Level:
         self.poto_init = False
         self.poto1 = 0
         self.poto2 = 0
+        self.poto3 = 0
     
     def position_player(self, player_pos_x, player_pos_y):
         self.player_pos_x = player_pos_x

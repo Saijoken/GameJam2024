@@ -15,6 +15,7 @@ from classes.sound import Sound
 from classes.hint_system import HintSystem, hint_system
 from classes.modal_menu import ModalMenu
 from classes.level import Level
+
 # Fullscreen 
 screen = pygame.display.set_mode((1024, 768), pygame.SCALED)
 cinematic = Cinematic(screen)
@@ -324,8 +325,6 @@ class Game:
     def reset_game(self):
         print("Reset game")
         
-        
-
 pygame.display.set_caption("Lost in times")
 
 screen_size = pygame.Vector2(screen.get_width(), screen.get_height())
@@ -368,6 +367,7 @@ poto2 = 0
 
 lanterns = []
 potentiometers = []
+potentiometers3 = []
 
 
 Sound.get().loop_music("cave")
@@ -457,24 +457,23 @@ while running:
                 game.level.poto1 = potentiometers[0].pot.value
             else:
                 # Handle the case when potentiometer is not available
-                game.level.poto1 = 0  # or some default value
+                game.level.poto_init = True
             if potentiometers and potentiometers[1] and potentiometers[1].pot:
                 game.level.poto2 = potentiometers[1].pot.value
             else:
                 # Handle the case when potentiometer is not available
-                game.level.poto2 = 0  # or some default value
-            game.level.poto_init = True
+                game.level.poto_init = True
         else:
             if potentiometers and potentiometers[0] and potentiometers[0].pot:
                 game.level.poto1 = potentiometers[0].pot.value
             else:
                 # Handle the case when potentiometer is not available
-                game.level.poto1 = 0  # or some default value
+                game.level.poto_init = True
             if potentiometers and potentiometers[1] and potentiometers[1].pot:
                 game.level.poto2 = potentiometers[1].pot.value
             else:
                 # Handle the case when potentiometer is not available
-                game.level.poto2 = 0  # or some default value
+                game.level.poto_init = True
     
     if game.level.get_level_name() == "enigma2and3":
         if game.level.raycast_active == False:
@@ -482,9 +481,14 @@ while running:
             #find the two lanterns from the props list
             lanterns = [prop for prop in game.props if prop.id == "02_lantern_left_future" or prop.id == "02_lantern_right_future"]
             if game.level.poto1 == 0 & game.level.poto2 == 0:
+                print("POTI 0", game.level.poto1, game.level.poto2)
                 rayon1 = Raycast(game.camera.apply(lanterns[0].rect.center), 40, 800, 5) #70 120 = valeur porte
                 rayon2 = Raycast(game.camera.apply(lanterns[1].rect.center), 160, 800, 5)
             else:
+                
+                game.level.poto1 = game.level.poto1 -90
+                game.level.poto2 = game.level.poto2 -90
+                print("POTI 1", game.level.poto1, game.level.poto2)
                 rayon1 = Raycast(game.camera.apply(lanterns[0].rect.center), game.level.poto1, 800, 5) #70 120 = valeur porte
                 rayon2 = Raycast(game.camera.apply(lanterns[1].rect.center), game.level.poto2, 800, 5)
             game.level.raycast_active = True
@@ -497,6 +501,12 @@ while running:
 
             if rayon1.get_angle() == 60 and rayon2.get_angle() == 110:
                 print("Porte ouverte")
+
+        potentiometers3 = [prop for prop in game.props if prop.id == "02_potentiometer"]
+        if potentiometers3 and potentiometers3[0] and potentiometers3[0].pot:
+            game.level.poto3 = potentiometers3[0].pot.value
+        if game.level.poto3 == 200:
+            print("Porte de fou")
                 
 
 
@@ -751,7 +761,6 @@ while running:
             print("waiting")
         running = False
 
-        
 
     game.draw_hint_icons(screen)
 
