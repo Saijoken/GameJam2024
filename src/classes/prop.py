@@ -48,9 +48,9 @@ class Prop:
     
     # Affichage du text + hitbox
     def draw(self, screen, camera):
-        color_with_alpha = (255, 0, 0, 128) # Opacité 50% pour débug
+        #color_with_alpha = (255, 0, 0, 128) # Opacité 50% pour débug
         surface = pygame.Surface((self.rect.width, self.rect.height), pygame.SRCALPHA)
-        pygame.draw.rect(surface, color_with_alpha, surface.get_rect())
+        #pygame.draw.rect(surface, color_with_alpha, surface.get_rect())
         screen.blit(surface, camera.apply(self.rect))
         
     def draw_text(self, screen):

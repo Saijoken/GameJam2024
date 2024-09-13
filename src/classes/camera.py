@@ -7,7 +7,7 @@ class Camera:
         self.screen_size = screen_size
         self.player = player
         self.lerp_speed = 0.05  # Ajustez cette valeur pour modifier la vitesse de suivi
-        self.zoom = 2  # Ajustez selon vos besoins
+        self.zoom = 2  
         self.zoomed_screen_size = self.screen_size / self.zoom
         self.map_size = map_size  # Nouvelle propriété pour stocker la taille de la carte
 
