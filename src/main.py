@@ -82,6 +82,8 @@ class Game:
         self.hint_icon = pygame.transform.scale(self.hint_icon, self.icon_size)
         self.next_hint_icon = pygame.transform.scale(self.next_hint_icon, self.icon_size)
 
+        self.is_boom_desactivated = False
+        self.is_door_light_activated = False
     def setup_collisions(self):
         print("Level : ",self.level.get_level_name())
         if self.level.get_level_name() == "enigma1":
@@ -503,14 +505,23 @@ while running:
             rayon2.update_position(game.camera.apply(lanterns[1].rect.center))
             rayon2.update_angle(game.level.poto2)
 
-            if rayon1.get_angle() == 60 and rayon2.get_angle() == 110:
+            if rayon1.get_angle() == 60 and rayon2.get_angle() == 110 and game.is_door_light_activated == False:
+                game.is_door_light_activated = True
                 print("Porte ouverte")
+                game.path_level[1]["visible"] = True
+                game.setup_collisions()
 
         potentiometers3 = [prop for prop in game.props if prop.id == "02_potentiometer"]
         if potentiometers3 and potentiometers3[0] and potentiometers3[0].pot:
             game.level.poto3 = potentiometers3[0].pot.value
-        if game.level.poto3 == 200:
+        if game.level.poto3 == 200 and game.is_boom_desactivated ==False:
             print("Porte de fou")
+            game.is_boom_desactivated = True
+            game.path_level[2]["visible"] = True
+            game.setup_collisions()
+            game.active_modal = None
+
+            
                 
 
 
